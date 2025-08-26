@@ -62,6 +62,31 @@ export const constantRoutes = [
   }
 ]
 export const asyncRoutes = [
+  // 服务器管理
+  {
+    path: '/appConfig',
+    component: Layout,
+    name: 'appConfig',
+    meta: { title: 'App配置', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/appConfigPage',
+        component: () => import('@/views/appConfig/appConfigPage'),
+        name: 'appConfigPage',
+        meta: {
+          title: 'App配置',
+        }
+      },
+      {
+        path: '/staticResources',
+        component: () => import('@/views/appConfig/staticResources'),
+        name: 'staticResources',
+        meta: {
+          title: '静态资源',
+        }
+      },
+    ]
+  },
   // 权限配置
   {
     path: '/permission',
