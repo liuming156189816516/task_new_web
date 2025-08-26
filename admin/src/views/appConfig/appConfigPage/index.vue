@@ -76,7 +76,7 @@
         <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click.stop="editOpenFun(scope.row)">编辑</el-button>
-            <el-button size="small" class="bt-l-8 del" @click.stop="delDataFun(scope.row)">编辑</el-button>
+            <el-button size="small" class="bt-l-8 del" @click.stop="delDataFun(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
