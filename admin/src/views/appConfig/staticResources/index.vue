@@ -100,7 +100,7 @@
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="120px" :rules="addModal.rules">
+      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
         <el-form-item label="名称:" prop="name">
           <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
         </el-form-item>

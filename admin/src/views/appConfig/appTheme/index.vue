@@ -1,11 +1,8 @@
-<!-- App配置 -->
+<!-- App主题 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
-      <el-form-item>
-        <el-input v-model="queryData.schema" clearable placeholder="请输入版本" @input="changeInput" />
-      </el-form-item>
       <el-form-item>
         <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
       </el-form-item>
@@ -43,22 +40,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="版本" min-width="120" prop="schema" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="默认语言" min-width="120" prop="default_lang" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="ttl" min-width="120" prop="ttl" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="签名" min-width="120" prop="sig" show-overflow-tooltip>
+        <el-table-column label="配置" min-width="200" prop="json_str" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -107,14 +89,8 @@
         <el-form-item label="名称:" prop="name">
           <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
         </el-form-item>
-        <el-form-item v-if="addModal.type ==='add'" label="版本:" prop="schema">
-          <el-input v-model="addModal.formData.schema" placeholder="请输入版本" @input="changeInput" />
-        </el-form-item>
-        <el-form-item v-if="addModal.type ==='add'" label="默认语言:" prop="default_lang">
-          <el-input v-model="addModal.formData.default_lang" placeholder="请输入默认语言" @input="changeInput" />
-        </el-form-item>
-        <el-form-item label="ttl:" prop="ttl">
-          <el-input v-model="addModal.formData.ttl" placeholder="请输入ttl" @input="changeInput" />
+        <el-form-item label="配置:" prop="json_str">
+          <el-input v-model="addModal.formData.json_str" type="textarea" :rows="5" placeholder="请输入配置" @input="changeInput" />
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
           <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
@@ -141,11 +117,9 @@ export default {
         page: 1,
         limit: 10,
         total: 0,
-        schema: '',
         name: '',
       },
       pageOption: resetPage(),
-      formData: {},
       tableData: [],
       cliHeight: null,
       addModal: {
@@ -153,16 +127,12 @@ export default {
         type: 'add',
         formData: {
           name: '',
-          schema: '',
-          default_lang: '',
-          ttl: '',
+          json_str: '',
           remark: '',
         },
         rules: {
           name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
-          schema: [{ required: true, message: '请输入版本！', trigger: 'change' }],
-          default_lang: [{ required: true, message: '请输入默认语言！', trigger: 'change' }],
-          ttl: [{ required: true, message: '请输入ttl！', trigger: 'change' }],
+          json_str: [{ required: true, message: '请输入配置！', trigger: 'change' }],
           remark: [{ required: true, message: '请输入备注！', trigger: 'change' }],
         },
         isLoading: false,
@@ -188,7 +158,6 @@ export default {
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        schema: this.queryData.schema,
         name: this.queryData.name,
       }
       getDataApi(params).then(res => {
@@ -222,7 +191,6 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.ttl = formData.ttl ? Number(formData.ttl) : ''
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -249,9 +217,7 @@ export default {
       this.addModal.isLoading = false
       this.addModal.formData = {
         name: '',
-        schema: '',
-        default_lang: '',
-        ttl: '',
+        json_str: '',
         remark: '',
       }
       this.$refs.refAddModal.resetFields();

@@ -85,6 +85,14 @@ export const asyncRoutes = [
           title: '静态资源',
         }
       },
+      {
+        path: '/appTheme',
+        component: () => import('@/views/appConfig/appTheme'),
+        name: 'appTheme',
+        meta: {
+          title: 'App主题',
+        }
+      },
     ]
   },
   // 权限配置
