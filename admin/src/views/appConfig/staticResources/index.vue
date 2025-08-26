@@ -17,13 +17,26 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
-        <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
+        <el-button icon="el-icon-refresh-right" @click="restQueryBtn(2)">重置</el-button>
       </el-form-item>
     </el-form>
     <!--  新建 -->
     <el-form size="small" :inline="true">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-dropdown trigger="click" @command="(command)=>{handleCommand(command)}">
+          <el-button type="primary"> {{ $t('sys_g018') }}
+            <i class="el-icon-arrow-down el-icon--right" />
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
+              <i :class="'el-icon-' + item.icon" />
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -69,11 +82,16 @@
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="operation" label="操作" width="210" show-overflow-tooltip>
+        <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click.stop="detailsOpenFun(scope.row)">详情</el-button>
             <el-button type="primary" size="small" class="bt-l-8" @click.stop="editOpenFun(scope.row)">编辑</el-button>
-            <el-button size="small" class="bt-l-8 del" @click.stop="delDataFun(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,6 +130,9 @@
         </el-form-item>
         <el-form-item label="版本:" prop="version">
           <el-input v-model="addModal.formData.version" placeholder="请输入版本" @input="changeInput" />
+        </el-form-item>
+        <el-form-item label="备注:" prop="remark">
+          <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
         </el-form-item>
 
         <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
@@ -237,6 +258,7 @@ export default {
           cdn_main: '',
           cdn_minor: '',
           version: '',
+          remark: '',
         },
         rules: {
           name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
@@ -265,44 +287,18 @@ export default {
           value: '',
         },
         data: [],
-        statusList: [
-          { label: '全部', value: '0', },
-          // { label: '待绑卡', value: '1', },
-          // { label: '绑卡中', value: '2', },
-          { label: '待上传视频', value: '3', },
-          { label: '视频上传中', value: '4', },
-          { label: '待检查视频', value: '5', },
-          { label: '视频检查中', value: '6', },
-          { label: '待创建标签', value: '7', },
-          { label: '创建标签中', value: '8', },
-          // { label: '待充值', value: '9', },
-          // { label: '充值中', value: '10', },
-          { label: '待下单', value: '11', },
-          { label: '下单中', value: '12', },
-          { label: '任务关闭', value: '13', },
-          { label: '下单成功', value: '14', },
-          { label: '投放中', value: '15', },
-          { label: '投放完成', value: '16', },
-        ],
         selectData: [],
         selectIdData: [],
         stateData: {},
-        batchDetailOption: [
-          { icon: 'lock', label: '批量关闭' },
-        ],
-        launchStatusList: [
-          { label: '全部', value: '0', },
-          { label: '正常', value: '1', },
-          { label: '异常', value: '2', },
-          // { label: '待关闭', value: '3', },
-          // { label: '已关闭', value: '4', },
-        ],
-        isCloseList: [
-          { label: '全部', value: '0', },
-          { label: '否', value: '1', },
-          { label: '是', value: '2', },
-        ],
         statusLoading: false
+      },
+      setBatchData: {
+        show: false,
+        title: '',
+        type: -1,
+        batchOption: [
+          { icon: 'delete', label: '批量删除' },
+        ],
       },
 
     }
@@ -388,11 +384,22 @@ export default {
         cdn_main: '',
         cdn_minor: '',
         version: '',
+        remark: '',
       }
       this.$refs.refAddModal.resetFields();
     },
+    // 批量操作
+    handleCommand(command) {
+      if (!this.selectIdData.length) {
+        return successTips(this, 'error', '请勾选要操作的列表');
+      }
+      this.setBatchData.type = command.idx
+      if (command.item.label === '批量删除') {
+        this.delDataFun()
+      }
+    },
     // 删除
-    delDataFun(form) {
+    delDataFun() {
       this.$confirm(`确认删除吗？`, '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -401,7 +408,7 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
             const formData = {
-              ids: [form.id],// 要删除与的id集合
+              ids: this.selectIdData,// 要删除与的id集合
             }
             delDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -520,9 +527,7 @@ export default {
             value: '',
           }
           this.getDetailsListFun(1)
-
           this.$refs.detailTable.clearSelection();
-
           break;
       }
     },

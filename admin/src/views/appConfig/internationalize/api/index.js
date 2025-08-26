@@ -35,3 +35,13 @@ export const delDataApi = (params) => {
     data: params
   })
 }
+
+// 详情-列表
+export const getDetailsListApi = (params) => {
+  return request({
+    url: '/il8n/getil8ninfolist',
+    method: 'post',
+    data: params
+  })
+}
+

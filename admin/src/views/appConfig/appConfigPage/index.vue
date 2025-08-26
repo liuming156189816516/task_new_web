@@ -4,10 +4,10 @@
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.schema" clearable placeholder="请输入版本" @input="changeInput" />
+        <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
+        <el-input v-model="queryData.schema" clearable placeholder="请输入版本" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
@@ -18,6 +18,19 @@
     <el-form size="small" :inline="true">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-dropdown trigger="click" @command="(command)=>{handleCommand(command)}">
+          <el-button type="primary"> {{ $t('sys_g018') }}
+            <i class="el-icon-arrow-down el-icon--right" />
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
+              <i :class="'el-icon-' + item.icon" />
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -76,7 +89,6 @@
         <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click.stop="editOpenFun(scope.row)">编辑</el-button>
-            <el-button size="small" class="bt-l-8 del" @click.stop="delDataFun(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -114,7 +126,7 @@
           <el-input v-model="addModal.formData.default_lang" placeholder="请输入默认语言" @input="changeInput" />
         </el-form-item>
         <el-form-item label="ttl:" prop="ttl">
-          <el-input v-model="addModal.formData.ttl" placeholder="请输入ttl" @input="changeInput" />
+          <el-input v-model="addModal.formData.ttl" type="number" placeholder="请输入ttl" @input="changeInput" />
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
           <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
@@ -163,13 +175,21 @@ export default {
           schema: [{ required: true, message: '请输入版本！', trigger: 'change' }],
           default_lang: [{ required: true, message: '请输入默认语言！', trigger: 'change' }],
           ttl: [{ required: true, message: '请输入ttl！', trigger: 'change' }],
-          remark: [{ required: true, message: '请输入备注！', trigger: 'change' }],
+          remark: [{ required: false, message: '请输入备注！', trigger: 'change' }],
         },
         isLoading: false,
       },
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
       loading: false,
+      setBatchData: {
+        show: false,
+        title: '',
+        type: -1,
+        batchOption: [
+          { icon: 'delete', label: '批量删除' },
+        ],
+      },
     }
   },
   mounted() {
@@ -256,8 +276,18 @@ export default {
       }
       this.$refs.refAddModal.resetFields();
     },
+    // 批量操作
+    handleCommand(command) {
+      if (!this.selectIdData.length) {
+        return successTips(this, 'error', '请勾选要操作的列表');
+      }
+      this.setBatchData.type = command.idx
+      if (command.item.label === '批量删除') {
+        this.delDataFun()
+      }
+    },
     // 删除
-    delDataFun(form) {
+    delDataFun() {
       this.$confirm(`确认删除吗？`, '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -266,7 +296,7 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
             const formData = {
-              ids: [form.id],// 要删除与的id集合
+              ids: this.selectIdData,// 要删除与的id集合
             }
             delDataApi(formData).then(res => {
               if (res.msg === 'success') {
