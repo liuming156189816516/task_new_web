@@ -93,6 +93,15 @@ export const asyncRoutes = [
           title: 'App主题',
         }
       },
+      {
+        path: '/internationalize',
+        component: () => import('@/views/appConfig/internationalize'),
+        name: 'internationalize',
+        meta: {
+          title: '国际化',
+        }
+      },
+
     ]
   },
   // 权限配置
