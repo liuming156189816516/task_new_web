@@ -53,13 +53,6 @@ export const constantRoutes = [
     children: [
       {
         hidden: true,
-        path: '/user-info',
-        component: () => import('@/views/user/user-info'),
-        name: 'user-info',
-        meta: { title: i18n.t('sys_m020'), icon: 'dashboard' }
-      },
-      {
-        hidden: true,
         path: '/change-password',
         component: () => import('@/views/user/change-password'),
         name: 'change-password',

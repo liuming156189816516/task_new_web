@@ -1,37 +1,19 @@
 <template>
   <div class="navbar">
-    <!-- <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" /> -->
-
-    <!-- <breadcrumb id="breadcrumb-container" class="breadcrumb-container" /> -->
     <div class="right-menu">
       <div class="serveic_img" @click="jumpServeTg" v-if="isServe">
         <span class="icon_img">
-          <img src="../../assets/tg_icon.png" alt="" srcset=""> 
+          <img src="../../assets/tg_icon.png" alt="" srcset="">
         </span>
         <span>
           {{ $t('sys_l107') }}
         </span>
       </div>
-      <div class="sys_use_time">
-        {{ $t('sys_l019') }}：
-        <span :class="{'expire_tips':expireTime}">
-          {{ userInfo.valid_time > 0 ? $baseFun.resetTime(userInfo.valid_time * 1000) : 0 }}
-        </span>
-      </div>
-      <!-- <template v-if="device!=='mobile'"> -->
-      <!-- <search id="header-search" class="right-menu-item" /> -->
+
       <error-log class="errLog-container right-menu-item hover-effect" />
-      <!-- <screenfull id="screenfull" class="right-menu-item hover-effect" /> -->
 
-      <!-- <el-tooltip content="Global Size" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip> -->
-
-      <!-- </template> -->
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <!-- <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar"> -->
-          <!-- <img src="@/assets/login/avatar.png" class="user-avatar"> -->
           <i class="el-icon-user" />
           <span class="user-name">{{ userInfo.account }}</span>
           <i class="el-icon-arrow-down" />
@@ -40,9 +22,6 @@
           <template v-if="userInfo.account_type != 3">
             <router-link to="/change-password">
               <el-dropdown-item>{{ $t('sys_c098') }}</el-dropdown-item>
-            </router-link>
-            <router-link to="/user-info">
-              <el-dropdown-item>{{ $t('sys_l014') }}</el-dropdown-item>
             </router-link>
           </template>
           <el-dropdown-item divided @click.native="logout">

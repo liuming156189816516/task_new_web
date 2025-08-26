@@ -41,20 +41,9 @@
           <el-tag size="small" :type="scope.row.status===1?'success':'warning'"> {{ statusOption[scope.row.status] }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="country_code" label="投放国家" min-width="100">
-        <template slot-scope="scope">
-          {{ getLabelByVal(scope.row.country_code, countryList) || '-' }}
-        </template>
-      </el-table-column>
       <el-table-column prop="remark" show-overflow-tooltip label="备注" min-width="100">
         <template slot-scope="scope">
           {{ scope.row.remark ? scope.row.remark : '-' }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="account" :label="$t('sys_c003')" min-width="100" />
-      <el-table-column prop="valid_time" :label="$t('sys_c020')" min-width="100">
-        <template slot-scope="scope">
-          {{ $baseFun.resetTime(scope.row.valid_time*1000) }}
         </template>
       </el-table-column>
 
@@ -107,16 +96,8 @@
             </template>
           </el-input>
         </el-form-item>
-        <el-form-item label="投放国家：" prop="country_code">
-          <el-select v-model="userForm.country_code" clearable placeholder="请输入投放国家" style="width:100%;" :disabled="userForm.type===2">
-            <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="备注：" prop="remark">
           <el-input v-model="userForm.remark" placeholder="请输入备注" />
-        </el-form-item>
-        <el-form-item :label="$t('sys_c020')+':'" prop="sureTime">
-          <el-date-picker v-model="userForm.sureTime" type="datetime" :placeholder="$t('sys_c021')" />
         </el-form-item>
         <el-form-item :label="$t('sys_c022')+':'" prop="status">
           <el-radio-group v-model="userForm.status">
@@ -159,10 +140,8 @@ export default {
         role_id: '',
         password: '',
         surePwd: '',
-        country_code: '',
-        sureTime: '',
         status: 1,
-        remark:''
+        remark: ''
       },
       countryList: [
         { label: '巴西',value: 'BR' },
@@ -183,8 +162,6 @@ export default {
         role_id: [{ required: true, message: this.$t('sys_c015'), trigger: 'change' }],
         password: [{ required: true, message: this.$t('sys_l007'), trigger: 'blur' }],
         surePwd: [{ required: true, message: this.$t('sys_c018'), trigger: 'blur' }],
-        country_code: [{ required: true, message: '请选择投放国家', trigger: 'change' }],
-        sureTime: [{ required: true, message: this.$t('sys_c021'), trigger: 'change' }],
         status: [{ required: true, message: this.$t('sys_c029'), trigger: 'change' }],
         remark: [{ required: false, message: '请输入备注', trigger: 'change' }],
 
@@ -205,7 +182,6 @@ export default {
     this.initAccount()
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
-
   },
   methods: {
     setPageSize(val) {
@@ -275,9 +251,7 @@ export default {
         this.userForm.status = row.status;
         this.userForm.account = row.account;
         this.userForm.role_id = row.role_id;
-        this.userForm.country_code = row.country_code;
         this.userForm.password = row.pwd_str;
-        this.userForm.sureTime = row.valid_time > 0 ? row.valid_time * 1000 : '';
       })
     },
     creatBtn(formName) {
@@ -291,10 +265,8 @@ export default {
             role_id: this.userForm.role_id,
             pwd: md5(this.userForm.password),
             pwd_str: this.userForm.password,
-            valid_time: Date.parse(this.userForm.sureTime) / 1000,
-            country_code: this.userForm.country_code,
             status: this.userForm.status,
-            remark:this.userForm.remark,
+            remark: this.userForm.remark,
           }
           this.userForm.type === 0 ? delete params.uid : '';
           this.isLoading = true;
