@@ -4,7 +4,7 @@
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
+        <el-input v-model="queryData.Name" clearable placeholder="请输入名称" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-input v-model="queryData.strategy" clearable placeholder="请输入strategy" @input="changeInput" />
@@ -54,6 +54,11 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="60" />
+        <el-table-column label="名称" min-width="120" prop="Name" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="strategy" min-width="120" prop="strategy" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -115,6 +120,9 @@
       @close="closeModal"
     >
       <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="150px" :rules="addModal.rules">
+        <el-form-item label="名称:" prop="Name">
+          <el-input v-model="addModal.formData.Name" placeholder="请输入名称" @input="changeInput" />
+        </el-form-item>
         <el-form-item label="strategy:" prop="strategy">
           <el-input v-model="addModal.formData.strategy" placeholder="请输入strategy" @input="changeInput" />
         </el-form-item>
@@ -243,7 +251,7 @@ export default {
         show: false,
         type: 'add',
         formData: {
-          name: '',
+          Name: '',
           strategy: '',
           version: '',
           default_lang: '',
@@ -251,7 +259,7 @@ export default {
           notes: '',
         },
         rules: {
-          name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
+          Name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
           strategy: [{ required: true, message: '请输入strategy！', trigger: 'change' }],
           version: [{ required: true, message: '请输入版本！', trigger: 'change' }],
           default_lang: [{ required: true, message: '请输入默认语言！', trigger: 'change' }],
@@ -309,7 +317,8 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         strategy: this.queryData.strategy,
-        name: this.queryData.name,
+        Name: this.queryData.Name,
+        version: this.queryData.version,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -367,7 +376,7 @@ export default {
       this.addModal.show = false
       this.addModal.isLoading = false
       this.addModal.formData = {
-        name: '',
+        Name: '',
         strategy: '',
         version: '',
         default_lang: '',
@@ -531,7 +540,7 @@ export default {
             limit: 10,
             total: 0,
             strategy: '',
-            name: '',
+            Name: '',
             version: '',
           }
           this.selectIdData = [];

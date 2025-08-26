@@ -68,7 +68,7 @@
         </el-table-column>
         <el-table-column label="ttl" min-width="120" prop="ttl" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
         <el-table-column label="签名" min-width="120" prop="sig" show-overflow-tooltip>
