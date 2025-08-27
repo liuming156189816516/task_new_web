@@ -108,10 +108,10 @@ export default {
       this.actionModal.show = false
       this.actionModal.isLoading = false
       this.actionModal.formData = {
+        Lang: '',
         category: '',
         Key: '',
         Value: '',
-        remark: '',
       }
     },
     // 处理打开输入框无法输入问题

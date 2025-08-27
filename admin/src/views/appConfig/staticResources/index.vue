@@ -222,7 +222,9 @@
           </el-table-column>
           <el-table-column label="value" min-width="120" prop="value" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              <div v-if="scope.row[scope.column.property]">
+                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
