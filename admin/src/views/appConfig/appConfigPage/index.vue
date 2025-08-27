@@ -86,22 +86,22 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="静态资源" min-width="120" prop="assets_id" show-overflow-tooltip>
+        <el-table-column label="静态资源" min-width="120" prop="assets_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="主题" min-width="120" prop="theme_id" show-overflow-tooltip>
+        <el-table-column label="主题" min-width="120" prop="theme_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="国际化" min-width="120" prop="il8n_id" show-overflow-tooltip>
+        <el-table-column label="国际化" min-width="120" prop="il8n_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="布局配置" min-width="120" prop="layouts_id" show-overflow-tooltip>
+        <el-table-column label="布局配置" min-width="120" prop="layouts_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -173,7 +173,7 @@
         </el-form-item>
         <el-form-item label="布局配置:" prop="layouts_id">
           <el-select v-model="addModal.formData.layouts_id" clearable filterable placeholder="请选择布局配置">
-            <el-option v-for="item in layoutsList" :key="item.id" :label="item.name" :value="item.id" />
+            <el-option v-for="item in layoutsList" :key="item.id" :label="item.Name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
@@ -189,7 +189,12 @@
 import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
-import { getAppThemeDataApi, getInternationalizeDataApi, getStaticResourcesDataApi } from '../api';
+import {
+  getAppThemeDataApi,
+  getInternationalizeDataApi,
+  getLayoutConfigDataApi,
+  getStaticResourcesDataApi
+} from '../api';
 
 export default {
   name: 'AppConfigPage',
@@ -229,7 +234,7 @@ export default {
           assets_id: [{ required: true, message: '请选择静态资源！', trigger: 'change' }],
           theme_id: [{ required: true, message: '请选择主题！', trigger: 'change' }],
           il8n_id: [{ required: true, message: '请选择国际化！', trigger: 'change' }],
-          layouts_id: [{ required: false, message: '请选择布局配置！', trigger: 'change' }],
+          layouts_id: [{ required: true, message: '请选择布局配置！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -256,6 +261,7 @@ export default {
     this.getAppThemeDataFun()
     this.getInternationalizeDataFun()
     this.getStaticResourcesDataFun()
+    this.getLayoutConfigDataFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -304,7 +310,7 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.ttl = formData.ttl ? Number(formData.ttl) : ''
-          console.log('formData',formData)
+          console.log('formData', formData)
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -393,7 +399,6 @@ export default {
           if (res.data.list.length) {
             this.themeList = res.data.list
           }
-          console.log('App主题',res)
         }
       })
     },
@@ -408,7 +413,6 @@ export default {
           if (res.data.list.length) {
             this.il8nList = res.data.list
           }
-          console.log('国际化',res)
         }
       })
     },
@@ -423,10 +427,24 @@ export default {
           if (res.data.list.length) {
             this.assetsList = res.data.list
           }
-          console.log('静态资源',res)
         }
       })
     },
+    // 列表 布局配置
+    getLayoutConfigDataFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getLayoutConfigDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          if (res.data.list.length) {
+            this.layoutsList = res.data.list
+          }
+        }
+      })
+    },
+
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
