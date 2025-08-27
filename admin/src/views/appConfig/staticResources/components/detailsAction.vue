@@ -59,7 +59,7 @@ export default {
           category: [{ required: true, message: '请输入类别！', trigger: 'change' }],
           key: [{ required: true, message: '请输入key！', trigger: 'change' }],
           value: [{ required: true, message: '请选择value！', trigger: 'change' }],
-          remark: [{ required: true, message: '请输入备注！', trigger: 'change' }],
+          remark: [{ required: false, message: '请输入备注！', trigger: 'change' }],
 
         },
         isLoading: false,

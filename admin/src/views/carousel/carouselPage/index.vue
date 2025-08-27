@@ -36,7 +36,7 @@
         ref="serveTable"
         v-loading="loading"
         :data="tableData"
-        row-key="id"
+        row-key="ID"
         use-virtual
         border
         :height="cliHeight"
@@ -45,6 +45,7 @@
         show-body-overflow="title"
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
+
       >
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="60" />
