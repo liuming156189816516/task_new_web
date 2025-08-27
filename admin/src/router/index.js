@@ -62,7 +62,7 @@ export const constantRoutes = [
   }
 ]
 export const asyncRoutes = [
-  // 服务器管理
+  // App配置
   {
     path: '/appConfig',
     component: Layout,
@@ -102,6 +102,23 @@ export const asyncRoutes = [
         }
       },
 
+    ]
+  },
+  // 轮播图
+  {
+    path: '/carousel',
+    component: Layout,
+    name: 'carousel',
+    meta: { title: '轮播图', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/carouselPage',
+        component: () => import('@/views/carousel/carouselPage'),
+        name: 'appConfigPage',
+        meta: {
+          title: '轮播图',
+        }
+      },
     ]
   },
   // 权限配置

@@ -176,6 +176,12 @@
             <el-button icon="el-icon-refresh-right" @click="restQueryBtn(2)">重置</el-button>
           </el-form-item>
         </el-form>
+        <!--  新建 -->
+        <el-form :inline="true" size="small">
+          <el-form-item>
+            <el-button type="primary" @click="addDetailOpenFun">添加</el-button>
+          </el-form-item>
+        </el-form>
         <el-table
           ref="detailTable"
           v-loading="detailModal.loading"
@@ -217,6 +223,12 @@
               {{ formatTimestamp(scope.row.itime) }}
             </template>
           </el-table-column>
+          <el-table-column label="操作" prop="operation" show-overflow-tooltip min-width="100">
+            <template slot-scope="scope">
+              <el-button size="small" type="primary" @click.stop="editDetailOpenFun(scope.row)">编辑</el-button>
+            </template>
+          </el-table-column>
+
         </el-table>
         <div class="layui_page">
           <el-pagination
@@ -232,6 +244,8 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 详情 新建 编辑 -->
+    <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
   </div>
 </template>
 
@@ -239,9 +253,13 @@
 import { getDataApi, addDataApi , editDataApi, delDataApi ,getDetailsListApi } from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
+import detailsAction from './components/detailsAction'
 
 export default {
   name: 'AppConfigPage',
+  components: {
+    detailsAction
+  },
   data() {
     return {
       queryData: {
@@ -484,6 +502,19 @@ export default {
           })
         }
       });
+    },
+    // 详情 新增
+    addDetailOpenFun() {
+      this.$refs.refDetailsAction.open(null,'add',this.detailModal.cloneRow)
+    },
+    // 详情 编辑
+    editDetailOpenFun(form) {
+      this.$refs.refDetailsAction.open(form,'edit',this.detailModal.cloneRow)
+    },
+    // 编辑 保存 详情数据
+    updateDetailDataFun() {
+      this.$refs.refDetailsAction.closeModal()
+      this.getDetailsListFun(1)
     },
     // 详情列 筛选项
     handleSortChange({ column, prop, order }) {

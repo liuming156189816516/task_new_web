@@ -1,21 +1,18 @@
-<!-- App配置 -->
+<!-- 轮播图 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form :inline="true" size="small" style="margin-top: 10px;">
+    <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.schema" clearable placeholder="请输入版本" @input="changeInput" />
-      </el-form-item>
-      <el-form-item>
-        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
+        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
     </el-form>
     <!--  新建 -->
-    <el-form :inline="true" size="small">
+    <el-form size="small" :inline="true">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
       </el-form-item>
@@ -25,12 +22,7 @@
             <i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="(item, idx) in setBatchData.batchOption"
-              v-show="item.label"
-              :key="idx"
-              :command="{item,idx}"
-            >
+            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
               <i :class="'el-icon-' + item.icon" />
               {{ item.label }}
             </el-dropdown-item>
@@ -44,76 +36,57 @@
         ref="serveTable"
         v-loading="loading"
         :data="tableData"
-        :height="cliHeight"
-        border
-        element-loading-spinner="el-icon-loading"
         row-key="id"
-        show-body-overflow="title"
-        style="width: 100%;"
         use-virtual
+        border
+        :height="cliHeight"
+        element-loading-spinner="el-icon-loading"
+        style="width: 100%;"
+        show-body-overflow="title"
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="名称" min-width="120" prop="name" show-overflow-tooltip>
+        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="版本" min-width="120" prop="schema" show-overflow-tooltip>
+        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="跳转类型" min-width="120" prop="deep_type" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], deepTypeList) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="默认语言" min-width="120" prop="default_lang" show-overflow-tooltip>
+        <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="ttl" min-width="120" prop="ttl" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
-          </template>
-        </el-table-column>
-        <el-table-column label="签名" min-width="120" prop="sig" show-overflow-tooltip>
+        <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="静态资源" min-width="120" prop="assets_id" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="主题" min-width="120" prop="theme_id" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="国际化" min-width="120" prop="il8n_id" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="布局配置" min-width="120" prop="layouts_id" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
+
+        <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
+        <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            <el-button type="primary" size="small" @click.stop="editOpenFun(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -133,50 +106,49 @@
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
-      :close-on-click-modal="false"
       :title="addModal.type==='add'?'新建':'编辑'"
-      :visible.sync="addModal.show"
       center
+      :visible.sync="addModal.show"
+      :close-on-click-modal="false"
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
-        <el-form-item label="名称:" prop="name">
-          <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
+      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
+        <el-form-item label="主题:" prop="title">
+          <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
         </el-form-item>
-        <el-form-item v-if="addModal.type ==='add'" label="版本:" prop="schema">
-          <el-input v-model="addModal.formData.schema" placeholder="请输入版本" @input="changeInput" />
-        </el-form-item>
-        <el-form-item v-if="addModal.type ==='add'" label="默认语言:" prop="default_lang">
-          <el-input v-model="addModal.formData.default_lang" placeholder="请输入默认语言" @input="changeInput" />
-        </el-form-item>
-        <el-form-item label="ttl:" prop="ttl">
-          <el-input v-model="addModal.formData.ttl" placeholder="请输入ttl" type="number" @input="changeInput" />
-        </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
-        </el-form-item>
-        <el-form-item label="静态资源:" prop="assets_id">
-          <el-select v-model="addModal.formData.assets_id" clearable filterable placeholder="请选择静态资源">
-            <el-option v-for="item in assetsList" :key="item.id" :label="item.name" :value="item.id" />
+        <el-form-item label="类别:" prop="category">
+          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
+            <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="主题:" prop="theme_id">
-          <el-select v-model="addModal.formData.theme_id" clearable filterable placeholder="请选择主题">
-            <el-option v-for="item in themeList" :key="item.id" :label="item.name" :value="item.id" />
+        <el-form-item label="跳转类型:" prop="deep_type">
+          <el-select v-model="addModal.formData.deep_type" clearable filterable placeholder="请选择跳转类型">
+            <el-option v-for="item in deepTypeList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="国际化:" prop="il8n_id">
-          <el-select v-model="addModal.formData.il8n_id" clearable filterable placeholder="请选择国际化">
-            <el-option v-for="item in il8nList" :key="item.id" :label="item.Name" :value="item.id" />
-          </el-select>
+        <el-form-item label="跳转地址:" prop="deeplink">
+          <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="布局配置:" prop="layouts_id">
-          <el-select v-model="addModal.formData.layouts_id" clearable filterable placeholder="请选择布局配置">
-            <el-option v-for="item in layoutsList" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
+        <el-form-item label="正常展示:" prop="img">
+          <div v-if="addModal.formData.img" class="imgBox">
+            <el-image :src="addModal.formData.img" style="width: 120px;height: 120px" />
+            <i class="el-icon-delete icon_del" @click="delImgFun('img')" />
+          </div>
+          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="img" @uploadSuccess="uploadSuccess" />
         </el-form-item>
-        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
+        <el-form-item label="深色展示:" prop="img_dark">
+          <div v-if="addModal.formData.img_dark" class="imgBox">
+            <el-image :src="addModal.formData.img_dark" style="width: 120px;height: 120px" />
+            <i class="el-icon-delete icon_del" @click="delImgFun('img_dark')" />
+          </div>
+          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="img_dark" @uploadSuccess="uploadSuccess" />
+        </el-form-item>
+        <el-form-item label="排序:" prop="slot">
+          <el-input v-model="addModal.formData.slot" type="number" placeholder="请输入排序" @input="changeInput" />
+        </el-form-item>
+
+        <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
         </el-form-item>
@@ -186,50 +158,48 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
-import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
+import { getDataApi, addDataApi , editDataApi, delDataApi } from './api';
+import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
-import { getAppThemeDataApi, getInternationalizeDataApi, getStaticResourcesDataApi } from '../api';
+import UploadFiles from '@/components/UploadFiles/UploadFiles'
+import { uploadFileApi } from '@/api/common';
 
 export default {
   name: 'AppConfigPage',
+  components: {
+    UploadFiles
+  },
   data() {
     return {
       queryData: {
         page: 1,
         limit: 10,
         total: 0,
-        schema: '',
-        name: '',
+        title: '',
       },
       pageOption: resetPage(),
-      formData: {},
       tableData: [],
       cliHeight: null,
       addModal: {
         show: false,
         type: 'add',
         formData: {
-          name: '',
-          schema: '',
-          default_lang: '',
-          ttl: '',
-          remark: '',
-          assets_id: '',
-          theme_id: '',
-          il8n_id: '',
-          layouts_id: '',
+          title: '',
+          category: '',
+          deep_type: '',
+          deeplink: '',
+          img: '',
+          img_dark: '',
+          slot: '',
         },
         rules: {
-          name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
-          schema: [{ required: true, message: '请输入版本！', trigger: 'change' }],
-          default_lang: [{ required: true, message: '请输入默认语言！', trigger: 'change' }],
-          ttl: [{ required: true, message: '请输入ttl！', trigger: 'change' }],
-          remark: [{ required: false, message: '请输入备注！', trigger: 'change' }],
-          assets_id: [{ required: true, message: '请选择静态资源！', trigger: 'change' }],
-          theme_id: [{ required: true, message: '请选择主题！', trigger: 'change' }],
-          il8n_id: [{ required: true, message: '请选择国际化！', trigger: 'change' }],
-          layouts_id: [{ required: false, message: '请选择布局配置！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
+          deep_type: [{ required: true, message: '请选择跳转类型！', trigger: 'change' }],
+          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+          img: [{ required: true, message: '请上传图片！', trigger: 'change' }],
+          img_dark: [{ required: true, message: '请上传图片！', trigger: 'change' }],
+          slot: [{ required: true, message: '请输入排序！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -244,18 +214,18 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
-      assetsList: [],
-      themeList: [],
-      il8nList: [],
-      layoutsList: [],
+      categoryList: [
+        { label: '首页',value: '1' },
+        { label: '活动',value: '2' },
+      ],
+      deepTypeList: [
+        { label: '内部跳转',value: 'nav' },
+      ],
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
-    this.getAppThemeDataFun()
-    this.getInternationalizeDataFun()
-    this.getStaticResourcesDataFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -269,7 +239,6 @@ export default {
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        schema: this.queryData.schema,
         name: this.queryData.name,
       }
       getDataApi(params).then(res => {
@@ -303,8 +272,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.ttl = formData.ttl ? Number(formData.ttl) : ''
-          console.log('formData',formData)
+          formData.slot = formData.slot ? Number(formData.slot) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -325,20 +293,30 @@ export default {
         }
       })
     },
+    // 上传成功回调
+    uploadSuccess(file,kay) {
+      const formData = new FormData();
+      formData.append('directory', 'carousel');
+      formData.append('file', file);
+      uploadFileApi(formData).then(res => {
+        if (res.msg === 'success') {
+          this.addModal.formData[kay] = res.data.url
+          successTips(this, 'success', '上传成功！')
+        }
+      })
+    },
+    // 删除图片
+    delImgFun(kay) {
+      this.addModal.formData[kay] = ''
+    },
     // 关闭新建
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
       this.addModal.formData = {
         name: '',
-        schema: '',
-        default_lang: '',
-        ttl: '',
+        json_str: '',
         remark: '',
-        assets_id: '',
-        theme_id: '',
-        il8n_id: '',
-        layouts_id: '',
       }
       this.$refs.refAddModal.resetFields();
     },
@@ -381,52 +359,6 @@ export default {
         this.$message({ type: 'info', message: '已取消' });
       })
     },
-
-    // 列表 App主题
-    getAppThemeDataFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-      }
-      getAppThemeDataApi(params).then(res => {
-        if (res.msg === 'success') {
-          if (res.data.list.length) {
-            this.themeList = res.data.list
-          }
-          console.log('App主题',res)
-        }
-      })
-    },
-    // 列表 国际化
-    getInternationalizeDataFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-      }
-      getInternationalizeDataApi(params).then(res => {
-        if (res.msg === 'success') {
-          if (res.data.list.length) {
-            this.il8nList = res.data.list
-          }
-          console.log('国际化',res)
-        }
-      })
-    },
-    // 列表 静态资源
-    getStaticResourcesDataFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-      }
-      getStaticResourcesDataApi(params).then(res => {
-        if (res.msg === 'success') {
-          if (res.data.list.length) {
-            this.assetsList = res.data.list
-          }
-          console.log('静态资源',res)
-        }
-      })
-    },
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
@@ -442,10 +374,10 @@ export default {
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.id)) {
-        tableCell.toggleRowSelection(row, false);
+        tableCell.toggleRowSelection(row,false);
         return;
       }
-      tableCell.toggleRowSelection(row, true);
+      tableCell.toggleRowSelection(row,true);
     },
     // 重置
     restQueryBtn() {
@@ -485,14 +417,24 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.bt-l-8 {
+<style scoped lang="scss">
+.bt-l-8{
   margin-left: 8px
 }
-
-.del:hover {
+.del:hover{
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;
+}
+.imgBox{
+  position: relative;
+  .icon_del{
+    cursor: pointer;
+    color: red;
+    position: absolute;
+    font-size: 22px;
+    left: 130px;
+    top: 38%;
+  }
 }
 </style>

@@ -8,7 +8,7 @@
     width="500px"
     @close="closeModal"
   >
-    <el-form ref="refactionModal" size="small" :model="actionModal.formData" label-width="100px" :rules="actionModal.rules">
+    <el-form ref="refActionModal" size="small" :model="actionModal.formData" label-width="100px" :rules="actionModal.rules">
       <el-form-item label="类别:" prop="category">
         <el-input v-model="actionModal.formData.category" placeholder="请输入类别" @input="changeInput" />
       </el-form-item>
@@ -16,11 +16,11 @@
         <el-input v-model="actionModal.formData.key" placeholder="请输入key" @input="changeInput" />
       </el-form-item>
       <el-form-item label="value:" prop="value">
-        <div class="imgBox" v-if="actionModal.formData.value">
+        <div v-if="actionModal.formData.value" class="imgBox">
           <el-image :src="actionModal.formData.value" style="width: 120px;height: 120px" />
-          <i class="el-icon-delete icon_del" @click="delImgFun"></i>
+          <i class="el-icon-delete icon_del" @click="delImgFun('kay')" />
         </div>
-        <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" @uploadSuccess="uploadSuccess" />
+        <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="value" @uploadSuccess="uploadSuccess" />
       </el-form-item>
       <el-form-item label="备注:" prop="remark">
         <el-input v-model="actionModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
@@ -36,7 +36,7 @@
 <script>
 import { deepClone, successTips } from '@/utils';
 import { addDetailsDataApi, editDetailsDataApi } from '@/views/appConfig/staticResources/api';
-import UploadFiles from './UploadFiles'
+import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import { uploadImgFileApi } from '@/api/common.js'
 
 export default {
@@ -73,13 +73,17 @@ export default {
       this.actionModal.show = true
       this.actionModal.type = type
       this.cloneRow = deepClone(parentForm)
-      if (row) {
-        this.actionModal.formData = deepClone(row)
-      }
+      this.$nextTick(() => {
+        if (row) {
+          this.actionModal.formData = deepClone(row)
+        } else {
+          this.$refs.refActionModal.resetFields()
+        }
+      })
     },
     // 新建 编辑 保存
     submitFormFun() {
-      this.$refs.refactionModal.validate((v) => {
+      this.$refs.refActionModal.validate((v) => {
         if (v) {
           this.actionModal.isLoading = true
           const formData = deepClone(this.actionModal.formData)
@@ -106,21 +110,21 @@ export default {
       })
     },
     // 上传成功回调
-    uploadSuccess(file) {
-      console.log('file',file)
+    uploadSuccess(file,kay) {
       const formData = new FormData();
       formData.append('category', this.actionModal.formData.category);
       formData.append('file', file);
+      formData.append('assets_id', this.cloneRow.id);
       uploadImgFileApi(formData).then(res => {
         if (res.msg === 'success') {
-          this.actionModal.formData.value = res.data.url
+          this.actionModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
         }
       })
     },
     // 删除图片
-    delImgFun(){
-      this.actionModal.formData.value = ''
+    delImgFun(kay) {
+      this.actionModal.formData[kay] = ''
     },
     // 关闭新建
     closeModal() {
