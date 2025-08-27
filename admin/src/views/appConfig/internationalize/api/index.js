@@ -45,7 +45,7 @@ export const getDetailsListApi = (params) => {
   })
 }
 
-// 新增-列表
+// 详情-新增
 export const addDetailsDataApi = (params) => {
   return request({
     url: '/il8n/addil8ninfo',
@@ -54,7 +54,7 @@ export const addDetailsDataApi = (params) => {
   })
 }
 
-// 编辑-列表
+// 详情-编辑
 export const editDetailsDataApi = (params) => {
   return request({
     url: '/il8n/upil8ninfo',
@@ -63,7 +63,7 @@ export const editDetailsDataApi = (params) => {
   })
 }
 
-// 编辑-列表
+// 详情-编辑
 export const delDetailsDataApi = (params) => {
   return request({
     url: '/il8n/delil8ninfo',

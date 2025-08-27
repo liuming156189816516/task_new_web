@@ -101,6 +101,14 @@ export const asyncRoutes = [
           title: '国际化',
         }
       },
+      // {
+      //   path: '/layoutConfig',
+      //   component: () => import('@/views/appConfig/layoutConfig'),
+      //   name: 'layoutConfig',
+      //   meta: {
+      //     title: '布局配置',
+      //   }
+      // },
 
     ]
   },

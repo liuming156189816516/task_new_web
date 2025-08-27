@@ -181,6 +181,24 @@
           <el-form-item>
             <el-button type="primary" @click="addDetailOpenFun">添加</el-button>
           </el-form-item>
+          <el-form-item>
+            <el-dropdown trigger="click" @command="(command)=>{handleDetailCommand(command)}">
+              <el-button type="primary"> {{ $t('sys_g018') }}
+                <i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item, idx) in detailModal.setBatchData.batchOption"
+                  v-show="item.label"
+                  :key="idx"
+                  :command="{item,idx}"
+                >
+                  <i :class="'el-icon-' + item.icon" />
+                  {{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-form-item>
         </el-form>
         <el-table
           ref="detailTable"
@@ -250,7 +268,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi , editDataApi, delDataApi ,getDetailsListApi } from './api';
+import { getDataApi, addDataApi , editDataApi, delDataApi ,getDetailsListApi,delDetailsDataApi } from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import detailsAction from './components/detailsAction'
@@ -315,7 +333,15 @@ export default {
         selectData: [],
         selectIdData: [],
         stateData: {},
-        statusLoading: false
+        statusLoading: false,
+        setBatchData: {
+          show: false,
+          title: '',
+          type: -1,
+          batchOption: [
+            { icon: 'delete', label: '批量删除' },
+          ],
+        },
       },
       setBatchData: {
         show: false,
@@ -477,6 +503,16 @@ export default {
         this.$refs.detailTable.clearSort()
       }
     },
+    // 批量操作
+    handleDetailCommand(command) {
+      if (!this.detailModal.selectIdData.length) {
+        return successTips(this, 'error', '请勾选要操作的列表');
+      }
+      this.detailModal.setBatchData.type = command.idx
+      if (command.item.label === '批量删除') {
+        this.delDetailDataFun()
+      }
+    },
     // 详情列表
     getDetailsListFun(num) {
       this.detailModal.loading = true
@@ -510,6 +546,35 @@ export default {
     // 详情 编辑
     editDetailOpenFun(form) {
       this.$refs.refDetailsAction.open(form,'edit',this.detailModal.cloneRow)
+    },
+    // 详情 删除
+    delDetailDataFun() {
+      this.$confirm(`确认删除吗？`, '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            const formData = {
+              ids: this.detailModal.selectIdData,// 要删除与的id集合
+            }
+            delDetailsDataApi(formData).then(res => {
+              if (res.msg === 'success') {
+                successTips(this)
+                this.getDetailsListFun()
+                done();
+                instance.confirmButtonLoading = false;
+              }
+            })
+          } else {
+            done();
+            instance.confirmButtonLoading = false;
+          }
+        }
+      }).catch(() => {
+        this.$message({ type: 'info', message: '已取消' });
+      })
     },
     // 编辑 保存 详情数据
     updateDetailDataFun() {
