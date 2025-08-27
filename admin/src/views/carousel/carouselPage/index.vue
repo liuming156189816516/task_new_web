@@ -48,6 +48,11 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="60" />
+<!--        <el-table-column label="序号" min-width="60" prop="slot" show-overflow-tooltip>-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ scope.row[scope.column.property] }}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -94,7 +99,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="layui_page">
+      <div v-show="false" class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -162,7 +167,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi , editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi } from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
@@ -178,7 +183,7 @@ export default {
     return {
       queryData: {
         page: 1,
-        limit: 10,
+        limit: 1000,
         total: 0,
         title: '',
       },
@@ -251,9 +256,7 @@ export default {
         if (res.msg === 'success') {
           this.loading = false;
           this.queryData.total = res.data.total;
-          this.tableData = res.data.list.map(item => {
-            return item
-          });
+          this.tableData = res.data.list
           this.$nextTick(() => {
             const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
             tableBodyWrapper.scrollTop = 0
@@ -380,19 +383,26 @@ export default {
       sortablejs.create(el, {
         ghostClass: 'ghostClass', // 定义拖拽的时候接触到的行样式
         setData: (dataTransfer) => {
-          dataTransfer.setData('test', '1');
-          console.log('dataTransfer',dataTransfer)
         },
         onEnd: (e) => {
-          console.log('e',e)
-          // this.$g.array.moveArrayElement(this.tableData, e.oldIndex, e.newIndex); // 修改数组的顺序
-          // console.log(e.originalEvent.dataTransfer.getData('自定义传参字段'));
+          const arr = deepClone(this.tableData)
+          const oldIndexItem = arr[e.oldIndex]
+          arr.splice(e.oldIndex, 1);
+          arr.splice(e.newIndex, 0,oldIndexItem);
+          const arrID = arr.map((item,index) => {
+            return item.id
+          })
+          editSortDataApi({ ids: arrID }).then(res => {
+            if (res.msg === 'success') {
+              this.getDataListFun()
+            }
+          })
         },
       });
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 280;
+      this.cliHeight = document.documentElement.clientHeight - 240;
     },
     // 单行点击
     rowSelectChange(row) {
@@ -459,6 +469,12 @@ export default {
     font-size: 22px;
     left: 130px;
     top: 38%;
+  }
+}
+.ghostClass {
+  background-color: #ecf5ff;
+  td {
+    border-bottom-color: #409eff;
   }
 }
 </style>
