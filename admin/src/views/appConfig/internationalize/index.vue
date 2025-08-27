@@ -166,7 +166,7 @@
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
-            <el-input v-model="detailModal.queryData.lang" clearable placeholder="请输入语言" @input="changeInput" />
+            <el-input v-model="detailModal.queryData.Lang" clearable placeholder="请输入语言" @input="changeInput" />
           </el-form-item>
           <el-form-item>
             <el-input v-model="detailModal.queryData.category" clearable placeholder="请输入类别" @input="changeInput" />

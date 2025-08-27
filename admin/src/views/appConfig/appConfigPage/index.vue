@@ -153,9 +153,6 @@
         <el-form-item label="ttl:" prop="ttl">
           <el-input v-model="addModal.formData.ttl" placeholder="请输入ttl" type="number" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
-        </el-form-item>
         <el-form-item label="静态资源:" prop="assets_id">
           <el-select v-model="addModal.formData.assets_id" clearable filterable placeholder="请选择静态资源">
             <el-option v-for="item in assetsList" :key="item.id" :label="item.name" :value="item.id" />
@@ -175,6 +172,9 @@
           <el-select v-model="addModal.formData.layouts_id" clearable filterable placeholder="请选择布局配置">
             <el-option v-for="item in layoutsList" :key="item.id" :label="item.Name" :value="item.id" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="备注:" prop="remark">
+          <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
         </el-form-item>
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>

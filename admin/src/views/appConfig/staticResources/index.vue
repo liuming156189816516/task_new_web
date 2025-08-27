@@ -166,9 +166,6 @@
             <el-input v-model="detailModal.queryData.key" clearable placeholder="请输入key" @input="changeInput" />
           </el-form-item>
           <el-form-item>
-            <el-input v-model="detailModal.queryData.value" clearable placeholder="请输入value" @input="changeInput" />
-          </el-form-item>
-          <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getDetailsListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restQueryBtn(2)">重置</el-button>
           </el-form-item>
@@ -324,7 +321,6 @@ export default {
           assets_id: '',
           category: '',
           key: '',
-          value: '',
         },
         data: [],
         selectData: [],
@@ -517,7 +513,6 @@ export default {
         assets_id: this.detailModal.cloneRow.id,
         category: this.detailModal.queryData.category,
         key: this.detailModal.queryData.key,
-        value: this.detailModal.queryData.value,
         page: num || this.detailModal.queryData.page,
         limit: this.detailModal.queryData.limit,
 
