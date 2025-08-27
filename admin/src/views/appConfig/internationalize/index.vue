@@ -84,6 +84,11 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="备注" min-width="200" prop="remark" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -138,6 +143,9 @@
         <el-form-item label="Notes:" prop="notes">
           <el-input v-model="addModal.formData.notes" placeholder="请输入Notes" @input="changeInput" />
         </el-form-item>
+        <el-form-item label="备注:" prop="remark">
+          <el-input v-model="addModal.formData.remark" placeholder="请输入remark" @input="changeInput" />
+        </el-form-item>
         <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
@@ -184,7 +192,7 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
-          <el-table-column label="语言:" min-width="120" prop="lang" show-overflow-tooltip>
+          <el-table-column label="语言" min-width="120" prop="Lang" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
@@ -194,12 +202,12 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="key" min-width="120" prop="key" show-overflow-tooltip>
+          <el-table-column label="key" min-width="120" prop="Key" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="value" min-width="120" prop="value" show-overflow-tooltip>
+          <el-table-column label="value" min-width="120" prop="Value" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
@@ -257,6 +265,7 @@ export default {
           default_lang: '',
           fallback_strategy: '',
           notes: '',
+          remark: '',
         },
         rules: {
           Name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
@@ -281,7 +290,7 @@ export default {
           page: 1,
           limit: 10,
           total: 0,
-          lang: '',
+          Lang: '',
           category: '',
         },
         data: [],
@@ -455,7 +464,7 @@ export default {
       this.detailModal.loading = true
       const params = {
         il8n_id: this.detailModal.cloneRow.id,
-        lang: this.detailModal.queryData.lang,
+        Lang: this.detailModal.queryData.Lang,
         category: this.detailModal.queryData.category,
         page: num || this.detailModal.queryData.page,
         limit: this.detailModal.queryData.limit,
@@ -520,7 +529,7 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {

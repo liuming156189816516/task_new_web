@@ -2,7 +2,7 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
       </el-form-item>
@@ -10,12 +10,12 @@
         <el-input v-model="queryData.schema" clearable placeholder="请输入版本" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
     </el-form>
     <!--  新建 -->
-    <el-form size="small" :inline="true">
+    <el-form :inline="true" size="small">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
       </el-form-item>
@@ -25,7 +25,12 @@
             <i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
+            <el-dropdown-item
+              v-for="(item, idx) in setBatchData.batchOption"
+              v-show="item.label"
+              :key="idx"
+              :command="{item,idx}"
+            >
               <i :class="'el-icon-' + item.icon" />
               {{ item.label }}
             </el-dropdown-item>
@@ -39,18 +44,18 @@
         ref="serveTable"
         v-loading="loading"
         :data="tableData"
-        row-key="id"
-        use-virtual
-        border
         :height="cliHeight"
+        border
         element-loading-spinner="el-icon-loading"
-        style="width: 100%;"
+        row-key="id"
         show-body-overflow="title"
+        style="width: 100%;"
+        use-virtual
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="名称" min-width="120" prop="name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -81,14 +86,34 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
+        <el-table-column label="静态资源" min-width="120" prop="assets_id" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="主题" min-width="120" prop="theme_id" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="国际化" min-width="120" prop="il8n_id" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="布局配置" min-width="120" prop="layouts_id" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
+        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <el-button type="primary" size="small" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -108,14 +133,14 @@
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
-      :title="addModal.type==='add'?'新建':'编辑'"
-      center
-      :visible.sync="addModal.show"
       :close-on-click-modal="false"
+      :title="addModal.type==='add'?'新建':'编辑'"
+      :visible.sync="addModal.show"
+      center
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
         <el-form-item label="名称:" prop="name">
           <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
         </el-form-item>
@@ -126,12 +151,32 @@
           <el-input v-model="addModal.formData.default_lang" placeholder="请输入默认语言" @input="changeInput" />
         </el-form-item>
         <el-form-item label="ttl:" prop="ttl">
-          <el-input v-model="addModal.formData.ttl" type="number" placeholder="请输入ttl" @input="changeInput" />
+          <el-input v-model="addModal.formData.ttl" placeholder="请输入ttl" type="number" @input="changeInput" />
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
           <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
         </el-form-item>
-        <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
+        <el-form-item label="静态资源:" prop="assets_id">
+          <el-select v-model="addModal.formData.assets_id" clearable filterable placeholder="请选择静态资源">
+            <el-option v-for="item in assetsList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="主题:" prop="theme_id">
+          <el-select v-model="addModal.formData.theme_id" clearable filterable placeholder="请选择主题">
+            <el-option v-for="item in themeList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="国际化:" prop="il8n_id">
+          <el-select v-model="addModal.formData.il8n_id" clearable filterable placeholder="请选择国际化">
+            <el-option v-for="item in il8nList" :key="item.id" :label="item.Name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="布局配置:" prop="layouts_id">
+          <el-select v-model="addModal.formData.layouts_id" clearable filterable placeholder="请选择布局配置">
+            <el-option v-for="item in layoutsList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
         </el-form-item>
@@ -141,9 +186,10 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi , editDataApi, delDataApi } from './api';
-import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
+import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
+import { getAppThemeDataApi, getInternationalizeDataApi, getStaticResourcesDataApi } from '../api';
 
 export default {
   name: 'AppConfigPage',
@@ -169,6 +215,10 @@ export default {
           default_lang: '',
           ttl: '',
           remark: '',
+          assets_id: '',
+          theme_id: '',
+          il8n_id: '',
+          layouts_id: '',
         },
         rules: {
           name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
@@ -176,6 +226,10 @@ export default {
           default_lang: [{ required: true, message: '请输入默认语言！', trigger: 'change' }],
           ttl: [{ required: true, message: '请输入ttl！', trigger: 'change' }],
           remark: [{ required: false, message: '请输入备注！', trigger: 'change' }],
+          assets_id: [{ required: true, message: '请选择静态资源！', trigger: 'change' }],
+          theme_id: [{ required: true, message: '请选择主题！', trigger: 'change' }],
+          il8n_id: [{ required: true, message: '请选择国际化！', trigger: 'change' }],
+          layouts_id: [{ required: true, message: '请选择布局配置！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -190,11 +244,18 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
+      assetsList: [],
+      themeList: [],
+      il8nList: [],
+      layoutsList: [],
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
+    this.getAppThemeDataFun()
+    this.getInternationalizeDataFun()
+    this.getStaticResourcesDataFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -243,6 +304,7 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.ttl = formData.ttl ? Number(formData.ttl) : ''
+          console.log('formData',formData)
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -273,6 +335,10 @@ export default {
         default_lang: '',
         ttl: '',
         remark: '',
+        assets_id: '',
+        theme_id: '',
+        il8n_id: '',
+        layouts_id: '',
       }
       this.$refs.refAddModal.resetFields();
     },
@@ -315,6 +381,52 @@ export default {
         this.$message({ type: 'info', message: '已取消' });
       })
     },
+
+    // 列表 App主题
+    getAppThemeDataFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getAppThemeDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          if (res.data.list.length) {
+            this.themeList = res.data.list
+          }
+          console.log('App主题',res)
+        }
+      })
+    },
+    // 列表 国际化
+    getInternationalizeDataFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getInternationalizeDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          if (res.data.list.length) {
+            this.il8nList = res.data.list
+          }
+          console.log('国际化',res)
+        }
+      })
+    },
+    // 列表 静态资源
+    getStaticResourcesDataFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getStaticResourcesDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          if (res.data.list.length) {
+            this.assetsList = res.data.list
+          }
+          console.log('静态资源',res)
+        }
+      })
+    },
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
@@ -324,16 +436,16 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.id)) {
-        tableCell.toggleRowSelection(row,false);
+        tableCell.toggleRowSelection(row, false);
         return;
       }
-      tableCell.toggleRowSelection(row,true);
+      tableCell.toggleRowSelection(row, true);
     },
     // 重置
     restQueryBtn() {
@@ -373,11 +485,12 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.bt-l-8{
+<style lang="scss" scoped>
+.bt-l-8 {
   margin-left: 8px
 }
-.del:hover{
+
+.del:hover {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;

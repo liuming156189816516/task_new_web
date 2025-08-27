@@ -2,7 +2,7 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-input v-model="queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
       </el-form-item>
@@ -16,12 +16,12 @@
         <el-input v-model="queryData.version" clearable placeholder="请输入版本" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn(2)">重置</el-button>
       </el-form-item>
     </el-form>
     <!--  新建 -->
-    <el-form size="small" :inline="true">
+    <el-form :inline="true" size="small">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
       </el-form-item>
@@ -31,7 +31,12 @@
             <i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
+            <el-dropdown-item
+              v-for="(item, idx) in setBatchData.batchOption"
+              v-show="item.label"
+              :key="idx"
+              :command="{item,idx}"
+            >
               <i :class="'el-icon-' + item.icon" />
               {{ item.label }}
             </el-dropdown-item>
@@ -45,18 +50,18 @@
         ref="serveTable"
         v-loading="loading"
         :data="tableData"
-        row-key="id"
-        use-virtual
-        border
         :height="cliHeight"
+        border
         element-loading-spinner="el-icon-loading"
-        style="width: 100%;"
+        row-key="id"
         show-body-overflow="title"
+        style="width: 100%;"
+        use-virtual
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" label="序号" width="60" />
+        <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="名称" min-width="120" prop="name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -77,7 +82,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
+        <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
           </template>
@@ -88,10 +93,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
+        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <el-button type="primary" size="small" @click.stop="detailsOpenFun(scope.row)">详情</el-button>
-            <el-button type="primary" size="small" class="bt-l-8" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            <el-button size="small" type="primary" @click.stop="detailsOpenFun(scope.row)">详情</el-button>
+            <el-button class="bt-l-8" size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -111,14 +116,14 @@
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
-      :title="addModal.type==='add'?'新建':'编辑'"
-      center
-      :visible.sync="addModal.show"
       :close-on-click-modal="false"
+      :title="addModal.type==='add'?'新建':'编辑'"
+      :visible.sync="addModal.show"
+      center
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
         <el-form-item label="名称:" prop="name">
           <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
         </el-form-item>
@@ -135,7 +140,7 @@
           <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
         </el-form-item>
 
-        <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
+        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="submitFormFun">确认</el-button>
         </el-form-item>
@@ -166,6 +171,12 @@
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getDetailsListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restQueryBtn(2)">重置</el-button>
+          </el-form-item>
+        </el-form>
+        <!--  新建 -->
+        <el-form :inline="true" size="small">
+          <el-form-item>
+            <el-button type="primary" @click="addDetailOpenFun">添加</el-button>
           </el-form-item>
         </el-form>
         <el-table
@@ -209,6 +220,12 @@
               {{ formatTimestamp(scope.row.itime) }}
             </template>
           </el-table-column>
+          <el-table-column label="操作" prop="operation" show-overflow-tooltip min-width="100">
+            <template slot-scope="scope">
+              <el-button size="small" type="primary" @click.stop="editDetailOpenFun(scope.row)">编辑</el-button>
+            </template>
+          </el-table-column>
+
         </el-table>
         <div class="layui_page">
           <el-pagination
@@ -225,16 +242,21 @@
       </template>
     </el-dialog>
 
+    <!-- 详情 新建 编辑 -->
+    <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
   </div>
 </template>
 
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi, getDetailsListApi } from './api';
-import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
-
+import detailsAction from './components/detailsAction'
 export default {
   name: 'StaticResources',
+  components: {
+    detailsAction
+    },
   data() {
     return {
       queryData: {
@@ -479,6 +501,19 @@ export default {
         }
       });
     },
+    // 详情 新增
+    addDetailOpenFun() {
+      this.$refs.refDetailsAction.open(null,'add',this.detailModal.cloneRow)
+    },
+    // 详情 编辑
+    editDetailOpenFun(form) {
+      this.$refs.refDetailsAction.open(form,'edit',this.detailModal.cloneRow)
+    },
+    // 编辑 保存 详情数据
+    updateDetailDataFun() {
+      this.$refs.refDetailsAction.closeModal()
+      this.getDetailsListFun(1)
+    },
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
@@ -488,16 +523,16 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.id)) {
-        tableCell.toggleRowSelection(row,false);
+        tableCell.toggleRowSelection(row, false);
         return;
       }
-      tableCell.toggleRowSelection(row,true);
+      tableCell.toggleRowSelection(row, true);
     },
     // 重置
     restQueryBtn(type) {
@@ -597,11 +632,12 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.bt-l-8{
+<style lang="scss" scoped>
+.bt-l-8 {
   margin-left: 8px
 }
-.del:hover{
+
+.del:hover {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;

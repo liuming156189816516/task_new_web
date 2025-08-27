@@ -44,3 +44,30 @@ export const getDetailsListApi = (params) => {
     data: params
   })
 }
+
+// 新增-列表
+export const addDetailsDataApi = (params) => {
+  return request({
+    url: '/assets/addassetsinfo',
+    method: 'post',
+    data: params
+  })
+}
+
+// 编辑-列表
+export const editDetailsDataApi = (params) => {
+  return request({
+    url: '/assets/upassetsinfo',
+    method: 'post',
+    data: params
+  })
+}
+
+// 编辑-列表
+export const delDetailsDataApi = (params) => {
+  return request({
+    url: '/assets/delassetsinfo',
+    method: 'post',
+    data: params
+  })
+}
