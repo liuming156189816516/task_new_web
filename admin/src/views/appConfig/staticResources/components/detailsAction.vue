@@ -20,7 +20,7 @@
           <el-image :src="actionModal.formData.value" style="width: 120px;height: 120px" />
           <i class="el-icon-delete icon_del" @click="delImgFun('kay')" />
         </div>
-        <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="value" @uploadSuccess="uploadSuccess" />
+        <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="value" @uploadSuccess="uploadSuccess" />
       </el-form-item>
       <el-form-item label="备注:" prop="remark">
         <el-input v-model="actionModal.formData.remark" placeholder="请输入备注" @input="changeInput" />

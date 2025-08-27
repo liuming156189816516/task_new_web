@@ -45,7 +45,6 @@
         show-body-overflow="title"
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
-
       >
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="60" />
@@ -140,14 +139,14 @@
             <el-image :src="addModal.formData.img" style="width: 120px;height: 120px" />
             <i class="el-icon-delete icon_del" @click="delImgFun('img')" />
           </div>
-          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="img" @uploadSuccess="uploadSuccess" />
+          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="img" @uploadSuccess="uploadSuccess" />
         </el-form-item>
         <el-form-item label="深色展示:" prop="img_dark">
           <div v-if="addModal.formData.img_dark" class="imgBox">
             <el-image :src="addModal.formData.img_dark" style="width: 120px;height: 120px" />
             <i class="el-icon-delete icon_del" @click="delImgFun('img_dark')" />
           </div>
-          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg']" :max-size="100" kay="img_dark" @uploadSuccess="uploadSuccess" />
+          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="img_dark" @uploadSuccess="uploadSuccess" />
         </el-form-item>
         <el-form-item label="排序:" prop="slot">
           <el-input v-model="addModal.formData.slot" type="number" placeholder="请输入排序" @input="changeInput" />
@@ -168,6 +167,7 @@ import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import { uploadFileApi } from '@/api/common';
+import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
@@ -232,6 +232,7 @@ export default {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
+    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -370,6 +371,24 @@ export default {
       this.selectIdData = arr.map(item => {
         return item.id
       })
+    },
+    // 拖拽
+    initDragSortTableRow() {
+      const el = this.$refs.serveTable.$el.querySelectorAll(
+        '.el-table__body-wrapper > table > tbody'
+      )[0];
+      sortablejs.create(el, {
+        ghostClass: 'ghostClass', // 定义拖拽的时候接触到的行样式
+        setData: (dataTransfer) => {
+          dataTransfer.setData('test', '1');
+          console.log('dataTransfer',dataTransfer)
+        },
+        onEnd: (e) => {
+          console.log('e',e)
+          // this.$g.array.moveArrayElement(this.tableData, e.oldIndex, e.newIndex); // 修改数组的顺序
+          // console.log(e.originalEvent.dataTransfer.getData('自定义传参字段'));
+        },
+      });
     },
     // 窗口高度
     setFullHeight() {
