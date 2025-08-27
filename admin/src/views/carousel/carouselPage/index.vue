@@ -70,12 +70,16 @@
         </el-table-column>
         <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <div v-if="scope.row[scope.column.property]">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <div v-if="scope.row[scope.column.property]">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+            </div>
           </template>
         </el-table-column>
 
