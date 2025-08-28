@@ -12,7 +12,7 @@
       <!-- 筛选条件 -->
       <el-form :inline="true" size="small" style="margin-top: 10px;">
         <el-form-item>
-          <el-input v-model="pageModal.queryData.Name" clearable placeholder="请输入名称" @input="changeInput" />
+          <el-input v-model="pageModal.queryData.name" clearable placeholder="请输入名称" @input="changeInput" />
         </el-form-item>
         <el-form-item>
           <el-button icon="el-icon-search" type="primary" @click="getLayoutPlanDataFun(1)">查询</el-button>
@@ -143,7 +143,7 @@ export default {
           page: 1,
           limit: 10,
           total: 0,
-          Name: '',
+          name: '',
         },
         tableData: [],
         selectData: [], // 选择列表
@@ -205,7 +205,7 @@ export default {
     restQueryBtn(type) {
       switch (type) {
         case 1:
-          this.queryData = {
+          this.pageModal.queryData = {
             page: 1,
             limit: 10,
             total: 0,

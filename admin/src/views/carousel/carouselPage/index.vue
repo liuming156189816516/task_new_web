@@ -75,19 +75,18 @@
         </el-table-column>
         <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click="openImageViewFun(scope.row,'img')">
+            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img')">
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
           </template>
         </el-table-column>
         <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click="openImageViewFun(scope.row,'img_dark')">
+            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img_dark')">
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
           </template>
         </el-table-column>
-
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -209,6 +208,7 @@ export default {
       pageOption: resetPage(),
       tableData: [],
       cliHeight: null,
+      tableKey: 0,
       addModal: {
         show: false,
         type: 'add',
@@ -252,6 +252,11 @@ export default {
       ],
     }
   },
+  computed: {
+    // refreshedData() {
+    //   return this.tableData.slice(); // 返回一个新数组的副本，触发更新
+    // }
+  },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
@@ -273,6 +278,7 @@ export default {
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
+          this.tableKey += 1
           this.loading = false;
           this.queryData.total = res.data.total;
           this.tableData = res.data.list
