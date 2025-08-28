@@ -263,6 +263,7 @@ export default {
     // 获取列表
     getDataListFun(num) {
       this.loading = true;
+      this.tableData = []
       this.queryData.page = num || this.queryData.page;
       const params = {
         page: this.queryData.page,
@@ -273,7 +274,7 @@ export default {
         if (res.msg === 'success') {
           this.loading = false;
           this.queryData.total = res.data.total;
-          this.tableData = [...res.data.list]
+          this.tableData = deepClone(res.data.list)
           this.$nextTick(() => {
             const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
             tableBodyWrapper.scrollTop = 0
