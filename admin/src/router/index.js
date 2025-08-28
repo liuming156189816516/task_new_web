@@ -129,6 +129,23 @@ export const asyncRoutes = [
       },
     ]
   },
+  // 轮播图
+  {
+    path: '/userManage',
+    component: Layout,
+    name: 'userManage',
+    meta: { title: '用户管理', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/registerUser',
+        component: () => import('@/views/userManage/registerUser'),
+        name: 'registerUser',
+        meta: {
+          title: '注册用户',
+        }
+      },
+    ]
+  },
   // 权限配置
   {
     path: '/permission',
