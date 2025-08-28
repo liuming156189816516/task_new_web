@@ -110,7 +110,6 @@
           @current-change="changePageCurrent($event,'table')"
         />
       </div>
-
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
@@ -208,7 +207,6 @@ export default {
       pageOption: resetPage(),
       tableData: [],
       cliHeight: null,
-      tableKey: 0,
       addModal: {
         show: false,
         type: 'add',
@@ -252,11 +250,6 @@ export default {
       ],
     }
   },
-  computed: {
-    // refreshedData() {
-    //   return this.tableData.slice(); // 返回一个新数组的副本，触发更新
-    // }
-  },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
@@ -278,10 +271,9 @@ export default {
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
-          this.tableKey += 1
           this.loading = false;
           this.queryData.total = res.data.total;
-          this.tableData = res.data.list
+          this.tableData = [...res.data.list]
           this.$nextTick(() => {
             const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
             tableBodyWrapper.scrollTop = 0
@@ -402,18 +394,21 @@ export default {
     },
     // 拖拽
     initDragSortTableRow() {
-      const el = this.$refs.serveTable.$el.querySelectorAll(
-        '.el-table__body-wrapper > table > tbody'
-      )[0];
+      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
       sortablejs.create(el, {
-        ghostClass: 'ghostClass', // 定义拖拽的时候接触到的行样式
+        animation: 150,
+        ghostClass: 'sortable-ghost',
         setData: (dataTransfer) => {
         },
-        onEnd: (e) => {
-          const arr = deepClone(this.tableData)
-          const oldIndexItem = arr[e.oldIndex]
-          arr.splice(e.oldIndex, 1);
-          arr.splice(e.newIndex, 0, oldIndexItem);
+        onEnd: ({ newIndex, oldIndex }) => {
+          if (newIndex === oldIndex) return;
+          let arr = deepClone(this.tableData)
+          const movedItem = arr.splice(oldIndex, 1)[0];
+          arr.splice(newIndex, 0, movedItem);
+          arr = arr.map((item, index) => ({
+            ...item,
+            sort: index + 1,
+          }));
           const arrID = arr.map((item, index) => {
             return item.id
           })
@@ -466,9 +461,8 @@ export default {
       // }
     },
     // 打开预览图片
-    openImageViewFun(row,kay) {
-      console.log('refImagePreview',row)
-      this.$refs.refImagePreview.open(row,kay)
+    openImageViewFun(row, kay) {
+      this.$refs.refImagePreview.open(row, kay)
     },
     // 处理打开输入框无法输入问题
     changeInput() {
@@ -511,5 +505,10 @@ export default {
   td {
     border-bottom-color: #409eff;
   }
+}
+
+.tableContentLoading {
+  text-align: center;
+  margin: 50px 0;
 }
 </style>

@@ -61,6 +61,11 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="Scroll" min-width="120" prop="scroll" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ?'是':'否' }}
+          </template>
+        </el-table-column>
         <el-table-column label="备注" min-width="200" prop="Remark" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -108,6 +113,9 @@
           <el-select v-model="addModal.formData.layouts_plan_id" clearable filterable placeholder="请选择布局方案">
             <el-option v-for="item in addModal.layoutPlanList" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="scroll:" prop="scroll">
+          <el-checkbox v-model="addModal.formData.scroll" :true-label="1" :false-label="0" />
         </el-form-item>
         <el-form-item label="备注:" prop="Remark">
           <el-input v-model="addModal.formData.Remark" placeholder="请输入备注" @input="changeInput" />
@@ -180,11 +188,6 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
           <el-table-column label="组件名称" min-width="120" prop="page_name" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="scroll" min-width="120" prop="scroll" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
@@ -270,11 +273,13 @@ export default {
         formData: {
           Name: '',
           Remark: '',
-          layouts_plan_id: ''
+          layouts_plan_id: '',
+          scroll: 1
         },
         rules: {
           Name: [{ required: true, message: '请输入页面名称！', trigger: 'change' }],
           layouts_plan_id: [{ required: true, message: '请选择布局方案！', trigger: 'change' }],
+          scroll: [{ required: true, message: '请选择scroll！', trigger: 'change' }],
         },
         isLoading: false,
         layoutPlanList: []
@@ -361,6 +366,7 @@ export default {
       this.addModal.show = true
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
+      this.addModal.formData.scroll = row.scroll ? 1 : 0
     },
     // 新建 编辑 保存
     addSubmit() {
@@ -368,6 +374,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
+          formData.scroll = Boolean(this.addModal.formData.scroll)
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -393,6 +400,7 @@ export default {
       this.addModal.show = false
       this.addModal.isLoading = false
       this.addModal.formData = {
+        scroll: 1,
         layouts_plan_id: '',
         Name: '',
         Remark: '',

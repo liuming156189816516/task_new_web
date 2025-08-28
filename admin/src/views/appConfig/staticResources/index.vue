@@ -222,8 +222,8 @@
           </el-table-column>
           <el-table-column label="value" min-width="120" prop="value" show-overflow-tooltip>
             <template slot-scope="scope">
-              <div v-if="scope.row[scope.column.property]">
-                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+              <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'value')">
+                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
               </div>
             </template>
           </el-table-column>
@@ -261,6 +261,8 @@
 
     <!-- 详情 新建 编辑 -->
     <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
+    <!-- 图片预览 -->
+    <ImagePreview ref="refImagePreview" width="15%" />
   </div>
 </template>
 
@@ -269,10 +271,13 @@ import { getDataApi, addDataApi, editDataApi, delDataApi, getDetailsListApi,delD
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import detailsAction from './components/detailsAction'
+import ImagePreview from '@/components/ImagePreview'
+
 export default {
   name: 'StaticResources',
   components: {
-    detailsAction
+    detailsAction,
+    ImagePreview
     },
   data() {
     return {
@@ -682,6 +687,10 @@ export default {
         return;
       }
       tableCell.toggleRowSelection(row, true);
+    },
+    // 打开预览图片
+    openImageViewFun(row,kay) {
+      this.$refs.refImagePreview.open(row,kay)
     },
     // 处理打开输入框无法输入问题
     changeInput() {

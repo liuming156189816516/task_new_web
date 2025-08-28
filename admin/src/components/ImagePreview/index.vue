@@ -5,6 +5,7 @@
     :visible.sync="modal.show"
     center
     title="图片"
+    :width="width"
   >
     <div class="body">
       <el-image :src="modal.formData[modal.kay]" />
@@ -15,6 +16,12 @@
 <script>
 export default {
   name: 'Index',
+  props:{
+    width: {
+      type: [String],
+      default: 'auto'
+    }
+  },
   data() {
     return {
       modal: {
