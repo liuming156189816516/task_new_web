@@ -262,7 +262,7 @@
     <!-- 详情 新建 编辑 -->
     <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
     <!-- 图片预览 -->
-    <ImagePreview ref="refImagePreview" width="15%" />
+    <ImagePreview ref="refImagePreview" v-model="imgData.show" :src="imgData.scr" />
   </div>
 </template>
 
@@ -351,6 +351,10 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
+      imgData: {
+        show: false,
+        scr: ''
+      }
 
     }
   },
@@ -690,7 +694,8 @@ export default {
     },
     // 打开预览图片
     openImageViewFun(row,kay) {
-      this.$refs.refImagePreview.open(row,kay)
+      this.imgData.show = true
+      this.imgData.scr = row[kay]
     },
     // 处理打开输入框无法输入问题
     changeInput() {
