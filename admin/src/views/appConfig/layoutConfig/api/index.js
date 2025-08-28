@@ -71,3 +71,36 @@ export const delDetailsDataApi = (params) => {
     data: params
   })
 }
+
+// 布局方案-列表
+export const getLayoutPlanDataApi = (params) => {
+  return request({
+    url: '/layouts/getlayoutsplanlist',
+    method: 'post',
+    data: params
+  })
+}
+// 布局方案-新增
+export const addLayoutPlanDataApi = (params) => {
+  return request({
+    url: '/layouts/addlayoutsplan',
+    method: 'post',
+    data: params
+  })
+}
+// 布局方案-编辑
+export const editLayoutPlanDataApi = (params) => {
+  return request({
+    url: '/layouts/uplayoutsplan',
+    method: 'post',
+    data: params
+  })
+}
+// 布局方案-删除
+export const delLayoutPlanDataApi = (params) => {
+  return request({
+    url: '/layouts/dellayoutsplan',
+    method: 'post',
+    data: params
+  })
+}

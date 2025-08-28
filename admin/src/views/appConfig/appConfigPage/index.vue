@@ -101,7 +101,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="布局配置" min-width="120" prop="layouts_name" show-overflow-tooltip>
+        <el-table-column label="布局方案" min-width="120" prop="layouts_plan_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -168,9 +168,9 @@
             <el-option v-for="item in il8nList" :key="item.id" :label="item.Name" :value="item.id" />
           </el-select>
         </el-form-item>
-        <el-form-item label="布局配置:" prop="layouts_id">
-          <el-select v-model="addModal.formData.layouts_id" clearable filterable placeholder="请选择布局配置">
-            <el-option v-for="item in layoutsList" :key="item.id" :label="item.Name" :value="item.id" />
+        <el-form-item label="布局方案:" prop="layouts_plan_id">
+          <el-select v-model="addModal.formData.layouts_plan_id" clearable filterable placeholder="请选择布局方案">
+            <el-option v-for="item in layoutsList" :key="item.id" :label="item.name" :value="item.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="备注:" prop="remark">
@@ -192,7 +192,7 @@ import { formatTimestamp } from '@/filters'
 import {
   getAppThemeDataApi,
   getInternationalizeDataApi,
-  getLayoutConfigDataApi,
+  getLayoutPlanDataApi,
   getStaticResourcesDataApi
 } from '../api';
 
@@ -223,7 +223,7 @@ export default {
           assets_id: '',
           theme_id: '',
           il8n_id: '',
-          layouts_id: '',
+          layouts_plan_id: '',
         },
         rules: {
           name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
@@ -234,7 +234,7 @@ export default {
           assets_id: [{ required: true, message: '请选择静态资源！', trigger: 'change' }],
           theme_id: [{ required: true, message: '请选择主题！', trigger: 'change' }],
           il8n_id: [{ required: true, message: '请选择国际化！', trigger: 'change' }],
-          layouts_id: [{ required: true, message: '请选择布局配置！', trigger: 'change' }],
+          layouts_plan_id: [{ required: true, message: '请选择布局方案！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -344,7 +344,7 @@ export default {
         assets_id: '',
         theme_id: '',
         il8n_id: '',
-        layouts_id: '',
+        layouts_plan_id: '',
       }
       this.$refs.refAddModal.resetFields();
     },
@@ -430,13 +430,13 @@ export default {
         }
       })
     },
-    // 列表 布局配置
+    // 列表 布局方案
     getLayoutConfigDataFun() {
       const params = {
         page: 1,
         limit: 1000,
       }
-      getLayoutConfigDataApi(params).then(res => {
+      getLayoutPlanDataApi(params).then(res => {
         if (res.msg === 'success') {
           if (res.data.list.length) {
             this.layoutsList = res.data.list

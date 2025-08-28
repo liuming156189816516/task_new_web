@@ -4,7 +4,7 @@
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.Name" clearable placeholder="请输入名称" @input="changeInput" />
+        <el-input v-model="queryData.Name" clearable placeholder="请输入页面名称" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
@@ -29,6 +29,9 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="openLayoutPlanFun">布局方案</el-button>
+      </el-form-item>
     </el-form>
     <!-- 列表 -->
     <div class="tableContent">
@@ -48,7 +51,12 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column type="index" label="序号" width="60" />
-        <el-table-column label="名称" min-width="120" prop="Name" show-overflow-tooltip>
+        <el-table-column label="页面名称" min-width="120" prop="Name" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="布局方案" min-width="120" prop="layouts_plan_name" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -82,7 +90,6 @@
           @current-change="changePageCurrent($event,'table')"
         />
       </div>
-
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
@@ -93,9 +100,14 @@
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="80px" :rules="addModal.rules">
-        <el-form-item label="名称:" prop="Name">
-          <el-input v-model="addModal.formData.Name" placeholder="请输入名称" @input="changeInput" />
+      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
+        <el-form-item label="页面名称:" prop="Name">
+          <el-input v-model="addModal.formData.Name" placeholder="请输入页面名称" @input="changeInput" />
+        </el-form-item>
+        <el-form-item label="布局方案:" prop="layouts_plan_id">
+          <el-select v-model="addModal.formData.layouts_plan_id" clearable filterable placeholder="请选择布局方案">
+            <el-option v-for="item in addModal.layoutPlanList" :key="item.id" :label="item.name" :value="item.id" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注:" prop="Remark">
           <el-input v-model="addModal.formData.Remark" placeholder="请输入备注" @input="changeInput" />
@@ -120,7 +132,7 @@
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
-            <el-input v-model="detailModal.queryData.page_name" clearable placeholder="请输入页面名称" @input="changeInput" />
+            <el-input v-model="detailModal.queryData.page_name" clearable placeholder="请输入组件名称" @input="changeInput" />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getDetailsListFun(1)">查询</el-button>
@@ -167,7 +179,7 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
-          <el-table-column label="页面名称" min-width="120" prop="page_name" show-overflow-tooltip>
+          <el-table-column label="组件名称" min-width="120" prop="page_name" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
@@ -215,19 +227,31 @@
     </el-dialog>
     <!-- 详情 新建 编辑 -->
     <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
+    <!-- 布局方案 -->
+    <layoutPlan ref="refLayoutPlan" @updateData="getLayoutPlanDataFun" />
   </div>
 </template>
 
 <script>
-import { getDataApi, addDataApi , editDataApi, delDataApi ,getDetailsListApi,delDetailsDataApi } from './api';
+import {
+  getDataApi,
+  addDataApi,
+  editDataApi,
+  delDataApi,
+  getDetailsListApi,
+  delDetailsDataApi,
+  getLayoutPlanDataApi
+} from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import detailsAction from './components/detailsAction'
+import layoutPlan from './components/layoutPlan'
 
 export default {
   name: 'AppConfigPage',
   components: {
-    detailsAction
+    detailsAction,
+    layoutPlan
   },
   data() {
     return {
@@ -246,11 +270,14 @@ export default {
         formData: {
           Name: '',
           Remark: '',
+          layouts_plan_id: ''
         },
         rules: {
-          Name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
+          Name: [{ required: true, message: '请输入页面名称！', trigger: 'change' }],
+          layouts_plan_id: [{ required: true, message: '请选择布局方案！', trigger: 'change' }],
         },
         isLoading: false,
+        layoutPlanList: []
       },
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
@@ -294,6 +321,7 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
+    this.getLayoutPlanDataFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -365,6 +393,7 @@ export default {
       this.addModal.show = false
       this.addModal.isLoading = false
       this.addModal.formData = {
+        layouts_plan_id: '',
         Name: '',
         Remark: '',
       }
@@ -409,7 +438,10 @@ export default {
         this.$message({ type: 'info', message: '已取消' });
       })
     },
-
+    // 打开 布局方案
+    openLayoutPlanFun() {
+      this.$refs.refLayoutPlan.open()
+    },
     // 打开详情
     detailsOpenFun(row) {
       this.detailModal.show = true
@@ -574,9 +606,7 @@ export default {
             page: 1,
             limit: 10,
             total: 0,
-            strategy: '',
             Name: '',
-            version: '',
           }
           this.selectIdData = [];
           this.getDataListFun(1)
@@ -617,6 +647,18 @@ export default {
         this.detailModal.queryData.page = val;
         this.getDetailsListFun();
       }
+    },
+    // 布局方案 列表
+    getLayoutPlanDataFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getLayoutPlanDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          this.addModal.layoutPlanList = res.data.list
+        }
+      })
     },
     // 处理打开输入框无法输入问题
     changeInput() {

@@ -2,17 +2,17 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
     </el-form>
     <!--  新建 -->
-    <el-form size="small" :inline="true">
+    <el-form :inline="true" size="small">
       <el-form-item>
         <el-button type="primary" @click="addOpenFun">添加</el-button>
       </el-form-item>
@@ -22,7 +22,12 @@
             <i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="(item, idx) in setBatchData.batchOption" v-show="item.label" :key="idx" :command="{item,idx}">
+            <el-dropdown-item
+              v-for="(item, idx) in setBatchData.batchOption"
+              v-show="item.label"
+              :key="idx"
+              :command="{item,idx}"
+            >
               <i :class="'el-icon-' + item.icon" />
               {{ item.label }}
             </el-dropdown-item>
@@ -36,23 +41,18 @@
         ref="serveTable"
         v-loading="loading"
         :data="tableData"
-        row-key="ID"
-        use-virtual
-        border
         :height="cliHeight"
+        border
         element-loading-spinner="el-icon-loading"
-        style="width: 100%;"
+        row-key="ID"
         show-body-overflow="title"
+        style="width: 100%;"
+        use-virtual
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" label="序号" width="60" />
-<!--        <el-table-column label="序号" min-width="60" prop="slot" show-overflow-tooltip>-->
-<!--          <template slot-scope="scope">-->
-<!--            {{ scope.row[scope.column.property] }}-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -75,27 +75,27 @@
         </el-table-column>
         <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+            <div v-if="scope.row[scope.column.property]" @click="openImageViewFun(scope.row,'img')">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
           </template>
         </el-table-column>
         <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px" />
+            <div v-if="scope.row[scope.column.property]" @click="openImageViewFun(scope.row,'img_dark')">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
+        <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
+        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <el-button type="primary" size="small" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,14 +115,14 @@
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
-      :title="addModal.type==='add'?'新建':'编辑'"
-      center
-      :visible.sync="addModal.show"
       :close-on-click-modal="false"
+      :title="addModal.type==='add'?'新建':'编辑'"
+      :visible.sync="addModal.show"
+      center
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" size="small" :model="addModal.formData" label-width="100px" :rules="addModal.rules">
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
         <el-form-item label="主题:" prop="title">
           <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
         </el-form-item>
@@ -144,40 +144,59 @@
             <el-image :src="addModal.formData.img" style="width: 120px;height: 120px" />
             <i class="el-icon-delete icon_del" @click="delImgFun('img')" />
           </div>
-          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="img" @uploadSuccess="uploadSuccess" />
+          <UploadFiles
+            v-else
+            ref="refUploadFiles"
+            :format="['png','jpg','jpeg','webp']"
+            :max-size="100"
+            kay="img"
+            @uploadSuccess="uploadSuccess"
+          />
         </el-form-item>
         <el-form-item label="深色展示:" prop="img_dark">
           <div v-if="addModal.formData.img_dark" class="imgBox">
             <el-image :src="addModal.formData.img_dark" style="width: 120px;height: 120px" />
             <i class="el-icon-delete icon_del" @click="delImgFun('img_dark')" />
           </div>
-          <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="img_dark" @uploadSuccess="uploadSuccess" />
+          <UploadFiles
+            v-else
+            ref="refUploadFiles"
+            :format="['png','jpg','jpeg','webp']"
+            :max-size="100"
+            kay="img_dark"
+            @uploadSuccess="uploadSuccess"
+          />
         </el-form-item>
         <el-form-item label="排序:" prop="slot">
-          <el-input v-model="addModal.formData.slot" type="number" placeholder="请输入排序" @input="changeInput" />
+          <el-input v-model="addModal.formData.slot" placeholder="请输入排序" type="number" @input="changeInput" />
         </el-form-item>
 
-        <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
+        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 图片预览 -->
+    <ImagePreview ref="refImagePreview" />
   </div>
 </template>
 
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi } from './api';
-import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
+import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
   components: {
-    UploadFiles
+    UploadFiles,
+    ImagePreview
   },
   data() {
     return {
@@ -208,7 +227,7 @@ export default {
           deep_type: [{ required: true, message: '请选择跳转类型！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
           img: [{ required: true, message: '请上传图片！', trigger: 'change' }],
-          img_dark: [{ required: true, message: '请上传图片！', trigger: 'change' }],
+          img_dark: [{ required: false, message: '请上传图片！', trigger: 'change' }],
           slot: [{ required: true, message: '请输入排序！', trigger: 'change' }],
         },
         isLoading: false,
@@ -225,11 +244,11 @@ export default {
         ],
       },
       categoryList: [
-        { label: '首页',value: '1' },
-        { label: '活动',value: '2' },
+        { label: '首页', value: '1' },
+        { label: '活动', value: '2' },
       ],
       deepTypeList: [
-        { label: '内部跳转',value: 'nav' },
+        { label: '内部跳转', value: 'nav' },
       ],
     }
   },
@@ -303,7 +322,7 @@ export default {
       })
     },
     // 上传成功回调
-    uploadSuccess(file,kay) {
+    uploadSuccess(file, kay) {
       const formData = new FormData();
       formData.append('directory', 'carousel');
       formData.append('file', file);
@@ -388,8 +407,8 @@ export default {
           const arr = deepClone(this.tableData)
           const oldIndexItem = arr[e.oldIndex]
           arr.splice(e.oldIndex, 1);
-          arr.splice(e.newIndex, 0,oldIndexItem);
-          const arrID = arr.map((item,index) => {
+          arr.splice(e.newIndex, 0, oldIndexItem);
+          const arrID = arr.map((item, index) => {
             return item.id
           })
           editSortDataApi({ ids: arrID }).then(res => {
@@ -408,10 +427,10 @@ export default {
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.id)) {
-        tableCell.toggleRowSelection(row,false);
+        tableCell.toggleRowSelection(row, false);
         return;
       }
-      tableCell.toggleRowSelection(row,true);
+      tableCell.toggleRowSelection(row, true);
     },
     // 重置
     restQueryBtn() {
@@ -440,6 +459,11 @@ export default {
       //
       // }
     },
+    // 打开预览图片
+    openImageViewFun(row,kay) {
+      console.log('refImagePreview',row)
+      this.$refs.refImagePreview.open(row,kay)
+    },
     // 处理打开输入框无法输入问题
     changeInput() {
       this.$forceUpdate()
@@ -451,18 +475,21 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-.bt-l-8{
+<style lang="scss" scoped>
+.bt-l-8 {
   margin-left: 8px
 }
-.del:hover{
+
+.del:hover {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;
 }
-.imgBox{
+
+.imgBox {
   position: relative;
-  .icon_del{
+
+  .icon_del {
     cursor: pointer;
     color: red;
     position: absolute;
@@ -471,8 +498,10 @@ export default {
     top: 38%;
   }
 }
+
 .ghostClass {
   background-color: #ecf5ff;
+
   td {
     border-bottom-color: #409eff;
   }

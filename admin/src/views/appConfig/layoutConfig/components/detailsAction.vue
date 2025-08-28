@@ -9,17 +9,14 @@
     @close="closeModal"
   >
     <el-form ref="refActionModal" size="small" :model="actionModal.formData" label-width="100px" :rules="actionModal.rules">
-      <el-form-item label="页面名称:" prop="page_name">
-        <el-input v-model="actionModal.formData.page_name" placeholder="请输入页面名称" @input="changeInput" />
-      </el-form-item>
-      <el-form-item label="scroll:" prop="scroll">
-        <el-input v-model="actionModal.formData.scroll" placeholder="请输入scroll" @input="changeInput" />
+      <el-form-item label="组件名称:" prop="page_name">
+        <el-input v-model="actionModal.formData.page_name" placeholder="请输入组件名称" @input="changeInput" />
       </el-form-item>
       <el-form-item label="页面配置:" prop="page_conf">
-        <el-input v-model="actionModal.formData.page_conf" placeholder="请输入页面配置" @input="changeInput" />
+        <el-input v-model="actionModal.formData.page_conf" type="textarea" :rows="5" placeholder="请输入页面配置" @input="changeInput" />
       </el-form-item>
       <el-form-item label="API配置:" prop="api_conf">
-        <el-input v-model="actionModal.formData.api_conf" placeholder="请输入API配置" @input="changeInput" />
+        <el-input v-model="actionModal.formData.api_conf" type="textarea" :rows="5" placeholder="请输入API配置" @input="changeInput" />
       </el-form-item>
       <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
         <el-button @click="closeModal">取消</el-button>
@@ -43,14 +40,12 @@ export default {
         show: false,
         type: 'add',
         formData: {
-          page_name:'',
-          scroll:'',
-          page_conf:'',
-          api_conf:'',
+          page_name: '',
+          page_conf: '',
+          api_conf: '',
         },
         rules: {
-          page_name: [{ required: true, message: '请输入页面名称！', trigger: 'change' }],
-          scroll: [{ required: true, message: '请输入scroll！', trigger: 'change' }],
+          page_name: [{ required: true, message: '请输入组件名称！', trigger: 'change' }],
           page_conf: [{ required: true, message: '请输入页面配置！', trigger: 'change' }],
           api_conf: [{ required: true, message: '请输入API配置！', trigger: 'change' }],
 
@@ -108,10 +103,9 @@ export default {
       this.actionModal.show = false
       this.actionModal.isLoading = false
       this.actionModal.formData = {
-        page_name:'',
-        scroll:'',
-        page_conf:'',
-        api_conf:'',
+        page_name: '',
+        page_conf: '',
+        api_conf: '',
       }
     },
     // 处理打开输入框无法输入问题

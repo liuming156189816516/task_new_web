@@ -27,10 +27,10 @@ export const getStaticResourcesDataApi = (params) => {
   })
 }
 
-// 列表 布局配置
-export const getLayoutConfigDataApi = (params) => {
+// 列表 布局方案
+export const getLayoutPlanDataApi = (params) => {
   return request({
-    url: '/layouts/getlayoutslist',
+    url: '/layouts/getlayoutsplanlist',
     method: 'post',
     data: params
   })
