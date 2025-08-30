@@ -55,7 +55,7 @@
         </el-table-column>
         <el-table-column label="配置" min-width="200" prop="json_str" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <el-button type="primary" size="small" @click.stop="openConfigModal(scope.row)">配置</el-button>
           </template>
         </el-table-column>
         <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
@@ -113,6 +113,21 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 配置 -->
+    <el-dialog
+      title="配置"
+      center
+      :visible.sync="configData.show"
+      :close-on-click-modal="false"
+      width="80%"
+      @close="closeConfigModal"
+    >
+      <div style="height: 75vh">
+        <jsonEditorTool v-model="configData.value" :show-footer="true" @callbackJson="submitRowJsonFun" />
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -120,9 +135,11 @@
 import { getDataApi, addDataApi , editDataApi, delDataApi } from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
+import jsonEditorTool from '@/components/jsonEditorTool'
 
 export default {
   name: 'AppConfigPage',
+  components: { jsonEditorTool },
   data() {
     return {
       queryData: {
@@ -159,6 +176,11 @@ export default {
         batchOption: [
           { icon: 'delete', label: '批量删除' },
         ],
+      },
+      configData: {
+        show: false,
+        formData: {},
+        value: null
       },
     }
   },
@@ -241,6 +263,30 @@ export default {
         remark: '',
       }
       this.$refs.refAddModal.resetFields();
+    },
+    // 打开配置
+    openConfigModal(row) {
+      this.configData.show = true
+      this.configData.formData = deepClone(row)
+      this.configData.value = JSON.parse(row.json_str)
+    },
+    // 获取 修改后的json 并且保存
+    submitRowJsonFun(data) {
+      const formData = deepClone(this.configData.formData)
+      formData.json_str = data
+      editDataApi(formData).then(res => {
+        if (res.msg === 'success') {
+          successTips(this, 'success', '编辑成功！')
+          this.closeConfigModal()
+          this.getDataListFun()
+        }
+      })
+    },
+    // 关闭配置
+    closeConfigModal() {
+      this.configData.show = false
+      this.configData.formData = {}
+      this.configData.value = null
     },
     // 批量操作
     handleCommand(command) {

@@ -180,14 +180,6 @@ export const asyncRoutes = [
           title: '菜单管理'
         }
       },
-      {
-        path: '/testPage',
-        component: () => import('@/views/testPage'),
-        name: 'testPage',
-        meta: {
-          title: '测试'
-        }
-      },
     ]
   },
 

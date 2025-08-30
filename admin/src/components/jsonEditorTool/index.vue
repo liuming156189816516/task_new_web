@@ -3,38 +3,35 @@
     <div class="card">
       <div class="card-header">
         <div class="btn-group">
-          <button class="btn" @click="beautify">
-            <i class="fa fa-expand" /> 格式化
-          </button>
-          <button class="btn" @click="minify">
-            <i class="fa fa-compress" /> 压缩
-          </button>
-          <button class="btn" @click="validateJson">验证</button>
-          <button class="btn" @click="jsonTocsv">JSON 转 CSV</button>
+          <el-button type="primary" @click="beautify">格式化</el-button>
+          <el-button type="primary" @click="minify">压缩</el-button>
+          <el-button type="primary" @click="validateJson">验证</el-button>
+          <el-button type="primary" @click="jsonToCsv">JSON 转 CSV</el-button>
         </div>
       </div>
+
       <div class="card-body">
-        <div v-if="warningMsg" class="alert" :class="warningClass">
+        <div v-if="warningMsg" :class="warningClass" class="alert">
           {{ warningMsg }}
         </div>
         <div class="content_box">
           <div class="left_box">
             <div ref="jsonEditor1" class="editor" />
           </div>
-          <div class="left_icon">
-            <el-button class="btn" @click="toTree">
-              》
-            </el-button>
-
-            <el-button class="btn" @click="toCode">
-              《
-            </el-button>
+          <div class="icon_box">
+            <el-button class="icon_btn" icon="el-icon-right" type="primary" @click="toTree" />
+            <el-button class="icon_btn" icon="el-icon-back" type="primary" @click="toCode" />
           </div>
           <div class="right_box">
             <div ref="jsonEditor2" class="editor" />
           </div>
         </div>
       </div>
+
+      <div v-if="showFooter" class="card-footer">
+        <el-button type="primary" @click="submitJsonFun">{{ subTitle }}</el-button>
+      </div>
+
     </div>
   </div>
 </template>
@@ -45,6 +42,25 @@ import 'jsoneditor/dist/jsoneditor.css';
 
 export default {
   name: 'JsonTool',
+  model: {
+    prop: 'jsonData',
+    event: 'input'
+  },
+  props: {
+    jsonData: {
+      type: [Object,String],
+      default: () => null
+    },
+    subTitle: {
+      type: String,
+      default: '确认'
+    },
+    showFooter: {
+      type: Boolean,
+      default: false
+    },
+
+  },
   data() {
     return {
       editor1: null,
@@ -53,21 +69,25 @@ export default {
       warningClass: 'alert-warning'
     };
   },
+  watch: {},
   mounted() {
-    const json = {
+    let json = {
       sites: {
         site: [
-          { id: '1', name: '菜鸟教程', url: 'www.runoob.com' },
-          { id: '2', name: '菜鸟工具', url: 'www.jyshare.com' },
-          { id: '3', name: 'Google', url: 'www.google.com' }
+          { id: '1', name: '示例数据1', },
+          { id: '3', name: '示例数据1', }
         ]
       }
     };
+    if (this.jsonData) {
+      json = this.jsonData
+    }
     this.editor1 = new JSONEditor(this.$refs.jsonEditor1, { mode: 'code' }, json);
     this.editor2 = new JSONEditor(this.$refs.jsonEditor2, { mode: 'tree' }, json);
     this.editor2.expandAll();
   },
   methods: {
+    // 指向向树形预览窗口
     toTree() {
       try {
         const jsonStr = this.editor1.getText();
@@ -78,6 +98,7 @@ export default {
         this.showError(e);
       }
     },
+    // 指向向字符串窗口
     toCode() {
       try {
         const jsonStr = this.editor2.getText();
@@ -88,6 +109,7 @@ export default {
         this.showError(e);
       }
     },
+    // 格式化
     beautify() {
       try {
         const obj = JSON.parse(this.editor1.getText());
@@ -99,6 +121,7 @@ export default {
         this.showError(e);
       }
     },
+    // 压缩
     minify() {
       try {
         const obj = JSON.parse(this.editor1.getText());
@@ -110,6 +133,7 @@ export default {
         this.showError(e);
       }
     },
+    // 校验json合法性
     validateJson() {
       try {
         JSON.parse(this.editor1.getText());
@@ -118,7 +142,8 @@ export default {
         this.showError(e);
       }
     },
-    jsonTocsv() {
+    // json 转 Csv
+    jsonToCsv() {
       try {
         const obj = JSON.parse(this.editor1.getText());
         const keys = Object.keys(obj.sites.site[0]);
@@ -132,40 +157,56 @@ export default {
         this.showError(e);
       }
     },
+    // 校验失败
     showError(e) {
       this.warningMsg = 'JSON 数据错误: ' + e.message;
       this.warningClass = 'alert-danger';
-      setTimeout(() => (this.warningMsg = ''), 5000);
+      setTimeout(() => (this.warningMsg = ''), 3000);
     },
+    // 校验成功
     showSuccess(msg) {
       this.warningMsg = msg;
       this.warningClass = 'alert-success';
-      setTimeout(() => (this.warningMsg = ''), 5000);
+      setTimeout(() => (this.warningMsg = ''), 3000);
+    },
+    // 确认
+    submitJsonFun() {
+      this.$emit('callbackJson',this.editor1.getText())
     }
   }
 };
 </script>
 
-<style scoped lang="scss">
-.content_box{
+<style lang="scss" scoped>
+.card-header{
+  margin-bottom: 12px;
+}
+.content_box {
   display: flex;
-  .left_box{
-    width: 43%;
+
+  .left_box {
+    width: 48%;
   }
-  .left_icon{
-    width: 5%;
+
+  .icon_box {
+    width: 6%;
     text-align: center;
-    .btn{
+
+    .icon_btn {
       margin: 0 0 15px;
+      font-size: 24px;
+      padding: 8px 12px;
     }
   }
-  .right_box{
-    width: 43%;
+
+  .right_box {
+    width: 48%;
   }
 
 }
+
 .editor {
-  height: 60vh;
+  height:  65vh;
   min-height: 450px;
   width: 100%;
   margin-bottom: 20px;
