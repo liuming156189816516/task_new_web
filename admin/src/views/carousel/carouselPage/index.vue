@@ -266,6 +266,10 @@ export default {
   methods: {
     // 获取列表
     getDataListFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
       this.loading = true;
       this.tableData = []
       this.queryData.page = num || this.queryData.page;
@@ -279,10 +283,6 @@ export default {
           this.loading = false;
           this.queryData.total = res.data.total;
           this.tableData = deepClone(res.data.list)
-          this.$nextTick(() => {
-            const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
-            tableBodyWrapper.scrollTop = 0
-          })
         }
       })
     },

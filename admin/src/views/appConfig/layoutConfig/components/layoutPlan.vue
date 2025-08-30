@@ -180,6 +180,10 @@ export default {
     },
     // 列表
     getLayoutPlanDataFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
       this.loading = true;
       this.pageModal.queryData.page = num || this.pageModal.queryData.page;
       const params = {
@@ -194,10 +198,7 @@ export default {
           this.pageModal.tableData = res.data.list.map(item => {
             return item
           });
-          this.$nextTick(() => {
-            const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
-            tableBodyWrapper.scrollTop = 0
-          })
+
         }
       })
     },

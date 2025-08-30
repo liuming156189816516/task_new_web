@@ -118,6 +118,10 @@ export default {
   methods: {
     // 获取列表
     getDataListFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
       this.loading = true;
       this.page = num || this.page;
       const params = {
@@ -134,10 +138,7 @@ export default {
             item.status = item.status ? String(item.status) : ''
             return item
           });
-          this.$nextTick(() => {
-            const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
-            tableBodyWrapper.scrollTop = 0
-          })
+
         }
       })
     },

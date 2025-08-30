@@ -364,6 +364,10 @@ export default {
   methods: {
     // 获取列表
     getDataListFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
       this.loading = true;
       this.queryData.page = num || this.queryData.page;
       const params = {
@@ -380,10 +384,7 @@ export default {
           this.tableData = res.data.list.map(item => {
             return item
           });
-          this.$nextTick(() => {
-            const tableBodyWrapper = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper');
-            tableBodyWrapper.scrollTop = 0
-          })
+
         }
       })
     },
@@ -515,6 +516,10 @@ export default {
     },
     // 详情列表
     getDetailsListFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.detailTable.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
       this.detailModal.loading = true
       const params = {
         il8n_id: this.detailModal.cloneRow.id,
@@ -532,10 +537,7 @@ export default {
             return item
           })
           this.detailModal.queryData.total = res.data.total
-          this.$nextTick(() => {
-            const tableBodyWrapper = this.$refs.detailTable.$el.querySelector('.el-table__body-wrapper');
-            tableBodyWrapper.scrollTop = 0
-          })
+
         }
       });
     },
