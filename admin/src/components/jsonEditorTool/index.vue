@@ -6,7 +6,7 @@
           <el-button type="primary" @click="beautify">格式化</el-button>
           <el-button type="primary" @click="minify">压缩</el-button>
           <el-button type="primary" @click="validateJson">验证</el-button>
-          <el-button type="primary" @click="jsonToCsv">JSON 转 CSV</el-button>
+          <!--          <el-button type="primary" @click="jsonToCsv">JSON 转 CSV</el-button>-->
         </div>
       </div>
 
