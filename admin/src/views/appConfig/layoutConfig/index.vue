@@ -194,12 +194,12 @@
           </el-table-column>
           <el-table-column label="页面配置" min-width="120" prop="page_conf" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              <el-button type="primary" size="small" @click.stop="openConfigModal(scope.row,'page_conf')">配置</el-button>
             </template>
           </el-table-column>
           <el-table-column label="API配置" min-width="120" prop="api_conf" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              <el-button type="primary" size="small" @click.stop="openConfigModal(scope.row,'api_conf')">配置</el-button>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -232,6 +232,19 @@
     <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
     <!-- 布局方案 -->
     <layoutPlan ref="refLayoutPlan" @updateData="getLayoutPlanDataFun" />
+    <!-- JSON 配置 -->
+    <el-dialog
+      title="配置"
+      center
+      :visible.sync="configData.show"
+      :close-on-click-modal="false"
+      width="80%"
+      @close="closeConfigModal"
+    >
+      <div style="height: 75vh">
+        <jsonEditorTool ref="refJsonEditorToo" v-model="configData.value" :show-footer="true" @callbackJson="submitRowJsonFun" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -243,18 +256,21 @@ import {
   delDataApi,
   getDetailsListApi,
   delDetailsDataApi,
-  getLayoutPlanDataApi
+  getLayoutPlanDataApi,
+  editDetailsDataApi
 } from './api';
 import { deepClone, resetPage, successTips,getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import detailsAction from './components/detailsAction'
 import layoutPlan from './components/layoutPlan'
+import jsonEditorTool from '@/components/jsonEditorTool'
 
 export default {
   name: 'AppConfigPage',
   components: {
     detailsAction,
-    layoutPlan
+    layoutPlan,
+    jsonEditorTool
   },
   data() {
     return {
@@ -321,6 +337,12 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
+      configData: {
+        show: false,
+        kay: '',
+        formData: {},
+        value: null
+    },
     }
   },
   mounted() {
@@ -474,6 +496,34 @@ export default {
       if (this.$refs.detailTable) {
         this.$refs.detailTable.clearSort()
       }
+    },
+    // 打开配置
+    openConfigModal(row,kay) {
+      this.configData.show = true
+      this.configData.kay = kay
+      this.configData.formData = deepClone(row)
+      if (row[kay]) {
+        this.configData.value = JSON.parse(row[kay])
+      }
+    },
+    // 获取 修改后的json 并且保存
+    submitRowJsonFun(data) {
+      const formData = deepClone(this.configData.formData)
+      formData[this.configData.kay] = data
+      editDetailsDataApi(formData).then(res => {
+        if (res.msg === 'success') {
+          successTips(this, 'success', '编辑成功！')
+          this.closeConfigModal()
+          this.getDetailsListFun()
+        }
+      })
+    },
+    // 关闭配置
+    closeConfigModal() {
+      this.configData.show = false
+      this.configData.formData = {}
+      this.configData.value = null
+      this.$refs.refJsonEditorToo.closeClearFun()
     },
     // 批量操作
     handleDetailCommand(command) {

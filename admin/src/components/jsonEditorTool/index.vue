@@ -191,6 +191,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.json-page{
+  overflow: hidden;
+}
 .card-header {
   margin-bottom: 12px;
 }
@@ -220,7 +223,7 @@ export default {
 }
 
 .editor {
-  height: 65vh;
+  height: 63vh;
   min-height: 450px;
   width: 100%;
   margin-bottom: 20px;

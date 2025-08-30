@@ -114,7 +114,7 @@
       </el-form>
     </el-dialog>
 
-    <!-- 配置 -->
+    <!-- JSON 配置 -->
     <el-dialog
       title="配置"
       center
@@ -213,7 +213,6 @@ export default {
           this.tableData = res.data.list.map(item => {
             return item
           });
-
         }
       })
     },
