@@ -124,7 +124,7 @@
       @close="closeConfigModal"
     >
       <div style="height: 75vh">
-        <jsonEditorTool v-model="configData.value" :show-footer="true" @callbackJson="submitRowJsonFun" />
+        <jsonEditorTool ref="refJsonEditorToo" v-model="configData.value" :show-footer="true" @callbackJson="submitRowJsonFun" />
       </div>
     </el-dialog>
 
@@ -268,7 +268,9 @@ export default {
     openConfigModal(row) {
       this.configData.show = true
       this.configData.formData = deepClone(row)
-      this.configData.value = JSON.parse(row.json_str)
+      if (row.json_str) {
+        this.configData.value = JSON.parse(row.json_str)
+      }
     },
     // 获取 修改后的json 并且保存
     submitRowJsonFun(data) {
@@ -287,6 +289,7 @@ export default {
       this.configData.show = false
       this.configData.formData = {}
       this.configData.value = null
+      this.$refs.refJsonEditorToo.closeClearFun()
     },
     // 批量操作
     handleCommand(command) {

@@ -6,7 +6,6 @@
           <el-button type="primary" @click="beautify">格式化</el-button>
           <el-button type="primary" @click="minify">压缩</el-button>
           <el-button type="primary" @click="validateJson">验证</el-button>
-          <!--          <el-button type="primary" @click="jsonToCsv">JSON 转 CSV</el-button>-->
         </div>
       </div>
 
@@ -48,7 +47,7 @@ export default {
   },
   props: {
     jsonData: {
-      type: [Object,String],
+      type: [Object, String],
       default: () => null
     },
     subTitle: {
@@ -66,10 +65,28 @@ export default {
       editor1: null,
       editor2: null,
       warningMsg: '',
-      warningClass: 'alert-warning'
+      warningClass: 'alert-warning',
+      defaultJson: {
+        sites: {
+          site: [
+            { id: '1', name: '示例数据1', },
+            { id: '3', name: '示例数据1', }
+          ]
+        }
+      }
     };
   },
-  watch: {},
+  watch: {
+    jsonData: {
+      handler(newVal, oldVal) {
+        if (newVal) {
+          this.UpdateDataFun(newVal)
+        }
+      },
+      deep: true
+    }
+
+  },
   mounted() {
     let json = {
       sites: {
@@ -142,21 +159,6 @@ export default {
         this.showError(e);
       }
     },
-    // json 转 Csv
-    jsonToCsv() {
-      try {
-        const obj = JSON.parse(this.editor1.getText());
-        const keys = Object.keys(obj.sites.site[0]);
-        const header = keys.join(',') + '\n';
-        const rows = obj.sites.site
-          .map(row => keys.map(k => row[k]).join(','))
-          .join('\n');
-        this.editor2.setMode('text');
-        this.editor2.setText(header + rows);
-      } catch (e) {
-        this.showError(e);
-      }
-    },
     // 校验失败
     showError(e) {
       this.warningMsg = 'JSON 数据错误: ' + e.message;
@@ -171,16 +173,28 @@ export default {
     },
     // 确认
     submitJsonFun() {
-      this.$emit('callbackJson',this.editor1.getText())
+      this.$emit('callbackJson', this.editor1.getText())
+    },
+    // 更新数据
+    UpdateDataFun(val) {
+      console.log('  this.editor1', this.editor1)
+      this.editor1.set(val);
+      this.editor2.set(val);
+    },
+    // 关闭
+    closeClearFun() {
+      this.jsonContent = null
+      this.jsonData = null
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.card-header{
+.card-header {
   margin-bottom: 12px;
 }
+
 .content_box {
   display: flex;
 
@@ -206,7 +220,7 @@ export default {
 }
 
 .editor {
-  height:  65vh;
+  height: 65vh;
   min-height: 450px;
   width: 100%;
   margin-bottom: 20px;
