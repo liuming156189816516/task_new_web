@@ -53,7 +53,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="配置" min-width="200" prop="json_str" show-overflow-tooltip>
+        <el-table-column label="配置" min-width="120" prop="json_str" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button type="primary" size="small" @click.stop="openConfigModal(scope.row)">配置</el-button>
           </template>
