@@ -35,6 +35,11 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
+          <el-table-column label="账号ID" min-width="120" prop="account_id" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="账号" min-width="120" prop="account" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -47,7 +52,9 @@
           </el-table-column>
           <el-table-column label="状态" min-width="120" prop="status" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ getLabelByVal(scope.row[scope.column.property], statusList) }}
+              <el-tag :type="getLabelByVal(scope.row[scope.column.property], statusList,{label:'type',value:'value'})">
+                {{ getLabelByVal(scope.row[scope.column.property], statusList) }}
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="余额" min-width="120" prop="balance" show-overflow-tooltip>
@@ -99,8 +106,8 @@ export default {
       selectIdData: [],
       pageOption: resetPage(),
       statusList: [
-        { label: '正常' ,value: '1' },
-        { label: '禁用' ,value: '2' },
+        { label: '正常' ,value: '1' ,type: 'success' },
+        { label: '禁用' ,value: '2' ,type: 'danger' },
       ]
     }
   },
@@ -138,7 +145,6 @@ export default {
             item.status = item.status ? String(item.status) : ''
             return item
           });
-
         }
       })
     },

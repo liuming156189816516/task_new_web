@@ -122,7 +122,7 @@ export const asyncRoutes = [
       {
         path: '/carouselPage',
         component: () => import('@/views/carousel/carouselPage'),
-        name: 'appConfigPage',
+        name: 'carouselPage',
         meta: {
           title: '轮播图',
         }
@@ -152,7 +152,7 @@ export const asyncRoutes = [
     component: Layout,
     name: 'permission',
     meta: {
-      title: i18n.t('sys_m049'),
+      title: '权限配置',
       icon: 'lock',
     },
     children: [

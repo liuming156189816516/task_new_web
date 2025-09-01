@@ -1416,3 +1416,26 @@ export function copyText(value, that){
   document.body.removeChild(aux)
   that.$message.success('复制成功')
 }
+
+
+/**
+ * 获取网络图片地址的文件后缀名
+ * @param {string} url - 图片地址
+ * @returns {string|null} - 返回后缀名（小写，不含.），若无法获取则返回 null
+ */
+export function getImageExtension(url) {
+  if (typeof url !== 'string') return null;
+
+  try {
+    // 去掉 query 参数和 hash
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    // 获取最后一个 . 后的部分
+    const ext = cleanUrl.substring(cleanUrl.lastIndexOf('.') + 1);
+
+    // 校验是否是常见图片格式
+    const validExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff', 'ico', 'avif', 'json', 'js', 'pdf'];
+    return validExts.includes(ext.toLowerCase()) ? ext.toLowerCase() : null;
+  } catch (e) {
+    return null;
+  }
+}

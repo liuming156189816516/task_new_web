@@ -78,6 +78,7 @@
             <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img')">
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
+            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
@@ -85,6 +86,7 @@
             <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img_dark')">
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
+            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>

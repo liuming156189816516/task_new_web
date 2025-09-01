@@ -222,8 +222,13 @@
           </el-table-column>
           <el-table-column label="value" min-width="120" prop="value" show-overflow-tooltip>
             <template slot-scope="scope">
-              <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'value')">
-                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
+              <div v-if="scope.row[scope.column.property]">
+                <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(scope.row[scope.column.property]))">
+                  <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" @click.stop="openImageViewFun(scope.row,'value')" />
+                </div>
+                <div v-else>
+                  <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
+                </div>
               </div>
             </template>
           </el-table-column>
@@ -268,7 +273,7 @@
 
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi, getDetailsListApi,delDetailsDataApi } from './api';
-import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal ,getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import detailsAction from './components/detailsAction'
 import ImagePreview from '@/components/ImagePreview'
@@ -390,7 +395,6 @@ export default {
           this.tableData = res.data.list.map(item => {
             return item
           });
-
         }
       })
     },
@@ -541,7 +545,6 @@ export default {
             return item
           })
           this.detailModal.queryData.total = res.data.total
-
         }
       });
     },
@@ -704,7 +707,8 @@ export default {
       this.$forceUpdate()
     },
     formatTimestamp,
-    getLabelByVal
+    getLabelByVal,
+    getImageExtension
 
   }
 }
@@ -719,5 +723,9 @@ export default {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;
+}
+.aUnderline{
+  color: #00a8ff;
+  text-decoration: underline;
 }
 </style>

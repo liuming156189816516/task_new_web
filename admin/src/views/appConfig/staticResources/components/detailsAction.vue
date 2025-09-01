@@ -1,14 +1,20 @@
 <!-- 静态资源-详情 添加 编辑 -->
 <template>
   <el-dialog
-    :title="actionModal.type==='add'?'新建':'编辑'"
-    center
-    :visible.sync="actionModal.show"
     :close-on-click-modal="false"
+    :title="actionModal.type==='add'?'新建':'编辑'"
+    :visible.sync="actionModal.show"
+    center
     width="500px"
     @close="closeModal"
   >
-    <el-form ref="refActionModal" size="small" :model="actionModal.formData" label-width="100px" :rules="actionModal.rules">
+    <el-form
+      ref="refActionModal"
+      :model="actionModal.formData"
+      :rules="actionModal.rules"
+      label-width="100px"
+      size="small"
+    >
       <el-form-item label="类别:" prop="category">
         <el-input v-model="actionModal.formData.category" placeholder="请输入类别" @input="changeInput" />
       </el-form-item>
@@ -17,15 +23,27 @@
       </el-form-item>
       <el-form-item label="value:" prop="value">
         <div v-if="actionModal.formData.value" class="imgBox">
-          <el-image :src="actionModal.formData.value" style="width: 120px;height: 120px" />
-          <i class="el-icon-delete icon_del" @click="delImgFun('kay')" />
+          <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(actionModal.formData.value))">
+            <el-image :src="actionModal.formData.value" style="width: 120px;height: 120px" />
+          </div>
+          <div v-else>
+            <a :href="actionModal.formData.value" class="aUnderline">文件</a>
+          </div>
+          <i class="el-icon-delete icon_del" @click="delImgFun('value')" />
         </div>
-        <UploadFiles v-else ref="refUploadFiles" :format="['png','jpg','jpeg','webp']" :max-size="100" kay="value" @uploadSuccess="uploadSuccess" />
+        <UploadFiles
+          v-else
+          ref="refUploadFiles"
+          :format="['png','jpg','jpeg','webp','json']"
+          :max-size="100"
+          kay="value"
+          @uploadSuccess="uploadSuccess"
+        />
       </el-form-item>
       <el-form-item label="备注:" prop="remark">
         <el-input v-model="actionModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
       </el-form-item>
-      <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
+      <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
         <el-button @click="closeModal">取消</el-button>
         <el-button :loading="actionModal.isLoading" type="primary" @click="submitFormFun">确认</el-button>
       </el-form-item>
@@ -34,7 +52,7 @@
 </template>
 
 <script>
-import { deepClone, successTips } from '@/utils';
+import { deepClone, successTips, getImageExtension } from '@/utils';
 import { addDetailsDataApi, editDetailsDataApi } from '@/views/appConfig/staticResources/api';
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import { uploadImgFileApi } from '@/api/common.js'
@@ -110,7 +128,7 @@ export default {
       })
     },
     // 上传成功回调
-    uploadSuccess(file,kay) {
+    uploadSuccess(file, kay) {
       const formData = new FormData();
       formData.append('category', this.actionModal.formData.category);
       formData.append('file', file);
@@ -144,22 +162,28 @@ export default {
     changeInput() {
       this.$forceUpdate()
     },
+    getImageExtension
   }
 
 }
 </script>
 
-<style scoped lang="scss">
-.imgBox{
+<style lang="scss" scoped>
+.imgBox {
   position: relative;
-  .icon_del{
+
+  .icon_del {
     cursor: pointer;
     color: red;
     position: absolute;
     font-size: 22px;
     left: 130px;
-    top: 38%;
+    transform: translateY(-50%);
+    top: 50%;
   }
 }
-
+.aUnderline{
+  color: #00a8ff;
+  text-decoration: underline;
+}
 </style>
