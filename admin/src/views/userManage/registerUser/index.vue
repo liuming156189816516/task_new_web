@@ -4,6 +4,9 @@
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
+        <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" />
+      </el-form-item>
+      <el-form-item>
         <el-input v-model="queryData.account" clearable placeholder="请输入账号" />
       </el-form-item>
       <el-form-item>
@@ -98,6 +101,7 @@ export default {
         total: 0,
         account: '',
         country: '',
+        account_id: '',
       },
       tableData: [],
       cliHeight: null,
@@ -136,6 +140,7 @@ export default {
         limit: this.limit,
         account: this.queryData.account,
         country: this.queryData.country,
+        account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1
       }
       getappuserlist(params).then(res => {
         if (res.msg === 'success') {
@@ -156,6 +161,7 @@ export default {
         total: 0,
         account: '',
         country: '',
+        account_id: '',
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
