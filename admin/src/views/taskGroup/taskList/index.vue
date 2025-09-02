@@ -127,7 +127,9 @@
         </el-table-column>
         <el-table-column label="标签" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelArrByVal(scope.row[scope.column.property], tagsList) }}
+            <el-tag >
+              {{ getLabelArrByVal(scope.row[scope.column.property], tagsList) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
