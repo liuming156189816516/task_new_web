@@ -7,7 +7,7 @@
         <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择任务类型">
+        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择任务主题">
           <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
         </el-select>
       </el-form-item>
@@ -68,7 +68,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="任务类型" min-width="120" prop="categories_title" show-overflow-tooltip>
+        <el-table-column label="任务主题" min-width="120" prop="categories_title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -169,7 +169,7 @@
           <el-form-item label="主题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="任务类型:" prop="categories_id">
+          <el-form-item label="任务主题:" prop="categories_id">
             <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择类别">
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
             </el-select>
@@ -513,7 +513,15 @@ export default {
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
-      this.queryData.host = ''
+      this.selectData = [];
+      this.queryData ={
+        page: 1,
+        limit: 20,
+        total: 0,
+        title: '',
+        category: '',
+        categories_id: '',
+      }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },
