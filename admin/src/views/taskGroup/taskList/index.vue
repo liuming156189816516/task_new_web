@@ -170,7 +170,7 @@
             <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
           <el-form-item label="任务主题:" prop="categories_id">
-            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择类别">
+            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择任务主题">
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
             </el-select>
           </el-form-item>
