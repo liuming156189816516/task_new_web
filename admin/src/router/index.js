@@ -134,7 +134,7 @@ export const asyncRoutes = [
     path: '/taskGroup',
     component: Layout,
     name: 'taskGroup',
-    meta: { title: '任务', icon: 'el-icon-office-building' },
+    meta: { title: '任务管理', icon: 'el-icon-office-building' },
     children: [
       {
         path: '/taskType',

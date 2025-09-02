@@ -127,7 +127,7 @@
         </el-table-column>
         <el-table-column label="标签列表" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], tagsList) }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -250,10 +250,12 @@
             />
           </el-form-item>
           <el-form-item label="增加积分:" prop="reward">
-            <el-input v-model="addModal.formData.reward" placeholder="请输入增加积分" @input="changeInput" />
+            <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="标签列表:" prop="tags">
-            <el-input v-model="addModal.formData.tags" placeholder="请输入标签列表" @input="changeInput" />
+          <el-form-item label="类别:" prop="tags">
+            <el-select v-model="addModal.formData.tags" clearable filterable placeholder="请选择类别">
+              <el-option v-for="item in tagsList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -318,7 +320,7 @@ export default {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
           categories_id: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
-          reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
+          reward: [{ type: 'number', required: true, message: '请输入增加积分！', trigger: 'change' }],
           tags: [{ required: true, message: '请输入标签列表！', trigger: 'change' }],
           task_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
           one_icon: [{ required: true, message: '请上传任务图标上的右下角图标！', trigger: 'change' }],
@@ -344,6 +346,11 @@ export default {
         { label: 'Social', value: 'Social' },
         { label: 'Games', value: 'Games' },
         { label: 'Others', value: 'Others' },
+      ],
+      tagsList: [
+        { label: '111', value: '111' },
+        { label: '222', value: '222' },
+        { label: '333', value: '333' },
       ],
       categoriesList: [],
       imgData: {
@@ -514,7 +521,7 @@ export default {
     restQueryBtn() {
       this.selectIdData = [];
       this.selectData = [];
-      this.queryData ={
+      this.queryData = {
         page: 1,
         limit: 20,
         total: 0,
