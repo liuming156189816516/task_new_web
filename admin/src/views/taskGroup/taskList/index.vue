@@ -7,7 +7,7 @@
         <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择任务主题">
+        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择任务类型">
           <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
         </el-select>
       </el-form-item>
@@ -68,7 +68,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="任务主题" min-width="120" prop="categories_title" show-overflow-tooltip>
+        <el-table-column label="任务类型" min-width="120" prop="categories_title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -125,9 +125,9 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="标签列表" min-width="120" prop="tags" show-overflow-tooltip>
+        <el-table-column label="标签" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], tagsList) }}
+            {{ getLabelArrByVal(scope.row[scope.column.property], tagsList) }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -169,8 +169,8 @@
           <el-form-item label="主题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="任务主题:" prop="categories_id">
-            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择任务主题">
+          <el-form-item label="任务类型:" prop="categories_id">
+            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择任务类型">
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
             </el-select>
           </el-form-item>
@@ -252,8 +252,8 @@
           <el-form-item label="增加积分:" prop="reward">
             <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="类别:" prop="tags">
-            <el-select v-model="addModal.formData.tags" clearable filterable placeholder="请选择类别">
+          <el-form-item label="标签:" prop="tags">
+            <el-select v-model="addModal.formData.tags" :multiple="true" clearable filterable placeholder="请选择标签" >
               <el-option v-for="item in tagsList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -276,7 +276,7 @@
 import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
-import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
@@ -309,7 +309,7 @@ export default {
           category: '',
           categories_id: '',
           reward: '',
-          tags: '',
+          tags: [],
           task_icon: '',
           one_icon: '',
           two_icon: '',
@@ -320,8 +320,8 @@ export default {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
           categories_id: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
-          reward: [{ type: 'number', required: true, message: '请输入增加积分！', trigger: 'change' }],
-          tags: [{ required: true, message: '请输入标签列表！', trigger: 'change' }],
+          reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
+          tags: [{ required: true, message: '请选择标签！', trigger: 'change' }],
           task_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
           one_icon: [{ required: true, message: '请上传任务图标上的右下角图标！', trigger: 'change' }],
           two_icon: [{ required: true, message: '请上传任务右上角图标！', trigger: 'change' }],
@@ -574,7 +574,8 @@ export default {
       this.$forceUpdate()
     },
     formatTimestamp,
-    getLabelByVal
+    getLabelByVal,
+    getLabelArrByVal
 
   }
 }
