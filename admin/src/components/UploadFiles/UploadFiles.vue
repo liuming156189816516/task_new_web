@@ -89,6 +89,7 @@ export default {
         if (this.format.includes(file.fileExtension)) {
           this.uploadImgFileFun(file)
         } else {
+          this.uploadIng = false
           this.$message({
             message: '请选择' + this.format.join(',') + '格式文件上传！',
             type: 'warning'

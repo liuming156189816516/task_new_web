@@ -1,10 +1,15 @@
-<!-- 轮播图 -->
+<!-- 任务类型 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
+          <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -63,30 +68,25 @@
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
           </template>
         </el-table-column>
-        <el-table-column label="跳转类型" min-width="120" prop="deep_type" show-overflow-tooltip>
+        <el-table-column label="任务图标" min-width="120" prop="title_icon" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], deepTypeList) }}
+            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'title_icon')">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
+            </div>
+            <div v-else>-</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="右上角图标" min-width="120" prop="one_icon" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'one_icon')">
+              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
+            </div>
+            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img')">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
-            </div>
-            <div v-else>-</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img_dark')">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
-            </div>
-            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -100,7 +100,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div v-show="false" class="layui_page">
+      <div class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -122,7 +122,7 @@
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
         <el-form-item label="主题:" prop="title">
           <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
         </el-form-item>
@@ -131,46 +131,37 @@
             <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="跳转类型:" prop="deep_type">
-          <el-select v-model="addModal.formData.deep_type" clearable filterable placeholder="请选择跳转类型">
-            <el-option v-for="item in deepTypeList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="任务图标:" prop="title_icon">
+          <div v-if="addModal.formData.title_icon" class="imgBox">
+            <el-image :src="addModal.formData.title_icon" style="width: 120px;height: 120px" />
+            <i class="el-icon-delete icon_del" @click="delImgFun('title_icon')" />
+          </div>
+          <UploadFiles
+            v-else
+            ref="refUploadFiles"
+            :format="['png','jpg','jpeg','webp']"
+            :max-size="100"
+            kay="title_icon"
+            @uploadSuccess="uploadSuccess"
+          />
+        </el-form-item>
+        <el-form-item label="右上角图标:" prop="one_icon">
+          <div v-if="addModal.formData.one_icon" class="imgBox">
+            <el-image :src="addModal.formData.one_icon" style="width: 120px;height: 120px" />
+            <i class="el-icon-delete icon_del" @click="delImgFun('one_icon')" />
+          </div>
+          <UploadFiles
+            v-else
+            ref="refUploadFiles"
+            :format="['png','jpg','jpeg','webp']"
+            :max-size="100"
+            kay="one_icon"
+            @uploadSuccess="uploadSuccess"
+          />
         </el-form-item>
         <el-form-item label="跳转地址:" prop="deeplink">
           <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="正常展示:" prop="img">
-          <div v-if="addModal.formData.img" class="imgBox">
-            <el-image :src="addModal.formData.img" style="width: 120px;height: 120px" />
-            <i class="el-icon-delete icon_del" @click="delImgFun('img')" />
-          </div>
-          <UploadFiles
-            v-else
-            ref="refUploadFiles"
-            :format="['png','jpg','jpeg','webp']"
-            :max-size="100"
-            kay="img"
-            @uploadSuccess="uploadSuccess"
-          />
-        </el-form-item>
-        <el-form-item label="深色展示:" prop="img_dark">
-          <div v-if="addModal.formData.img_dark" class="imgBox">
-            <el-image :src="addModal.formData.img_dark" style="width: 120px;height: 120px" />
-            <i class="el-icon-delete icon_del" @click="delImgFun('img_dark')" />
-          </div>
-          <UploadFiles
-            v-else
-            ref="refUploadFiles"
-            :format="['png','jpg','jpeg','webp']"
-            :max-size="100"
-            kay="img_dark"
-            @uploadSuccess="uploadSuccess"
-          />
-        </el-form-item>
-        <el-form-item label="排序:" prop="slot">
-          <el-input v-model="addModal.formData.slot" placeholder="请输入排序" type="number" @input="changeInput" />
-        </el-form-item>
-
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
@@ -184,13 +175,12 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
-import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
@@ -205,6 +195,7 @@ export default {
         limit: 1000,
         total: 0,
         title: '',
+        category: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -215,20 +206,16 @@ export default {
         formData: {
           title: '',
           category: '',
-          deep_type: '',
           deeplink: '',
-          img: '',
-          img_dark: '',
-          slot: '',
+          title_icon: '',
+          one_icon: '',
         },
         rules: {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
-          deep_type: [{ required: true, message: '请选择跳转类型！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
-          img: [{ required: true, message: '请上传图片！', trigger: 'change' }],
-          img_dark: [{ required: false, message: '请上传图片！', trigger: 'change' }],
-          slot: [{ required: true, message: '请输入排序！', trigger: 'change' }],
+          title_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
+          one_icon: [{ required: true, message: '请上传右上角图标！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -244,8 +231,10 @@ export default {
         ],
       },
       categoryList: [
-        { label: '首页', value: '1' },
-        { label: '活动', value: '2' },
+        { label: 'Hot', value: 'Hot' },
+        { label: 'Social', value: 'Social' },
+        { label: 'Games', value: 'Games' },
+        { label: 'Others', value: 'Others' },
       ],
       deepTypeList: [
         { label: '内部跳转', value: 'nav' },
@@ -260,7 +249,6 @@ export default {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
-    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -279,6 +267,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
+        category: this.queryData.category,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -305,7 +294,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.slot = formData.slot ? Number(formData.slot) : 0
+          // formData.slot = formData.slot ? Number(formData.slot) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -329,7 +318,7 @@ export default {
     // 上传成功回调
     uploadSuccess(file, kay) {
       const formData = new FormData();
-      formData.append('directory', 'carousel');
+      formData.append('directory', 'task');
       formData.append('file', file);
       uploadFileApi(formData).then(res => {
         if (res.msg === 'success') {
@@ -399,37 +388,9 @@ export default {
         return item.id
       })
     },
-    // 拖拽
-    initDragSortTableRow() {
-      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
-      sortablejs.create(el, {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        setData: (dataTransfer) => {
-        },
-        onEnd: ({ newIndex, oldIndex }) => {
-          if (newIndex === oldIndex) return;
-          let arr = deepClone(this.tableData)
-          const movedItem = arr.splice(oldIndex, 1)[0];
-          arr.splice(newIndex, 0, movedItem);
-          arr = arr.map((item, index) => ({
-            ...item,
-            sort: index + 1,
-          }));
-          const arrID = arr.map((item, index) => {
-            return item.id
-          })
-          editSortDataApi({ ids: arrID }).then(res => {
-            if (res.msg === 'success') {
-              this.getDataListFun()
-            }
-          })
-        },
-      });
-    },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {

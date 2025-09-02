@@ -129,7 +129,32 @@ export const asyncRoutes = [
       },
     ]
   },
-  // 轮播图
+  // 任务
+  {
+    path: '/taskGroup',
+    component: Layout,
+    name: 'taskGroup',
+    meta: { title: '任务', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/taskType',
+        component: () => import('@/views/taskGroup/taskType'),
+        name: 'taskType',
+        meta: {
+          title: '任务类型',
+        }
+      },
+      {
+        path: '/taskList',
+        component: () => import('@/views/taskGroup/taskList'),
+        name: 'taskList',
+        meta: {
+          title: '任务列表',
+        }
+      },
+    ]
+  },
+  // 用户管理
   {
     path: '/userManage',
     component: Layout,
