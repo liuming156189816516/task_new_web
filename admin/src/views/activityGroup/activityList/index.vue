@@ -4,6 +4,9 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
+        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+      </el-form-item>
+      <el-form-item>
         <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择活动类型">
           <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
         </el-select>
@@ -12,9 +15,6 @@
         <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
           <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -137,6 +137,9 @@
     >
       <div class="content" :style="{maxHeight:cliHeight-100+'px'}">
         <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="0" size="small" label-position="top">
+          <el-form-item label="主题:" prop="title">
+            <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+          </el-form-item>
           <el-form-item label="活动类型:" prop="categories_id">
             <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择活动类型">
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
@@ -155,9 +158,6 @@
               kay="activitie_icon"
               @uploadSuccess="uploadSuccess"
             />
-          </el-form-item>
-          <el-form-item label="主题:" prop="title">
-            <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
           <el-form-item label="描述:" prop="desc">
             <el-input v-model="addModal.formData.desc" placeholder="请输入描述" @input="changeInput" />
@@ -227,7 +227,7 @@ export default {
           categories_id: [{ required: true, message: '请选择活动类型！', trigger: 'change' }],
           activitie_icon: [{ required: true, message: '请上传活动图标！', trigger: 'change' }],
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
-          desc: [{ required: true, message: '请输入主题！', trigger: 'change' }],
+          desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
         },
