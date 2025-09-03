@@ -61,6 +61,11 @@
             {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
+        <el-table-column label="目标积分" min-width="120" prop="tar_points" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] }}
+          </template>
+        </el-table-column>
         <el-table-column label="徽章图标" min-width="120" prop="badge_icon" show-overflow-tooltip>
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'badge_icon')">
@@ -75,11 +80,6 @@
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
             <div v-else>-</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="目标积分" min-width="120" prop="tar_points" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
 
@@ -119,8 +119,11 @@
     >
       <div class="content" :style="{maxHeight:cliHeight-100+'px'}">
         <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="0" size="small" label-position="top">
-          <el-form-item label="增加积分:" prop="level">
+          <el-form-item label="等级:" prop="level">
             <el-input v-model="addModal.formData.level" placeholder="请输入等级" type="number" @input="changeInput" />
+          </el-form-item>
+          <el-form-item label="目标积分:" prop="tar_points">
+            <el-input v-model="addModal.formData.tar_points" placeholder="请输入目标积分" type="number" @input="changeInput" />
           </el-form-item>
           <el-form-item label="徽章图标:" prop="badge_icon">
             <div v-if="addModal.formData.badge_icon" class="imgBox">
@@ -149,9 +152,6 @@
               kay="avatar_coin"
               @uploadSuccess="uploadSuccess"
             />
-          </el-form-item>
-          <el-form-item label="目标积分:" prop="tar_points">
-            <el-input v-model="addModal.formData.tar_points" placeholder="请输入目标积分" type="number" @input="changeInput" />
           </el-form-item>
         </el-form>
       </div>
