@@ -179,6 +179,23 @@ export const asyncRoutes = [
       },
     ]
   },
+  // 徽章管理
+  {
+    path: '/badgeGroup',
+    component: Layout,
+    name: 'badgeGroup',
+    meta: { title: '徽章管理', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/badgePage',
+        component: () => import('@/views/badgeGroup/badgePage'),
+        name: 'BadgePage',
+        meta: {
+          title: '徽章管理',
+        }
+      },
+    ]
+  },
   // 用户管理
   {
     path: '/userManage',
