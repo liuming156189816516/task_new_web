@@ -154,6 +154,31 @@ export const asyncRoutes = [
       },
     ]
   },
+  // 活动管理
+  {
+    path: '/activityGroup',
+    component: Layout,
+    name: 'taskGroup',
+    meta: { title: '活动管理', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/activityType',
+        component: () => import('@/views/activityGroup/activityType'),
+        name: 'ActivityType',
+        meta: {
+          title: '活动类型',
+        }
+      },
+      {
+        path: '/activityList',
+        component: () => import('@/views/activityGroup/activityList'),
+        name: 'ActivityList',
+        meta: {
+          title: '活动列表',
+        }
+      },
+    ]
+  },
   // 用户管理
   {
     path: '/userManage',
