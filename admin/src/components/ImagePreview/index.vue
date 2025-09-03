@@ -129,18 +129,20 @@ export default {
 /* 关闭按钮 */
 .preview-close {
   position: absolute; top: 8px; right: 8px;
-  width: 36px; height: 36px; border-radius: 18px;
+  width: 30px; height: 30px; border-radius: 18px;
   border: none; outline: none; cursor: pointer;
   background: rgba(0,0,0,.5);
   display: flex; align-items: center; justify-content: center;
 }
 .preview-close:hover { background: rgba(0,0,0,.65); }
-.preview-close-x { color: #fff; font-size: 22px; line-height: 1; }
+.preview-close-x { color: #fff; font-size: 18px; line-height: 1; }
 
 /* 图片容器 */
 .preview-body {
   display: flex; align-items: center; justify-content: center;
   max-width: 80vw; max-height: 80vh;
+  padding: 0 25px;
+  margin: 25px 0;
 }
 
 /* 图片等比缩放，自动适应 */
