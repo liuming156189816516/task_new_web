@@ -132,6 +132,16 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div v-if="scope.row[scope.column.property]===1 || scope.row[scope.column.property]===2">
+              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
+            </div>
+            <div v-if="scope.row[scope.column.property]===3">
+              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -270,7 +280,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="跳转地址:" prop="deeplink">
-            <el-input v-model="addModal.formData.title" placeholder="请输入跳转地址" @input="changeInput" />
+            <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
           </el-form-item>
 
         </el-form>
@@ -289,14 +299,14 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi, editReleaseStatusApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
 import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal,getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi, uploadImgFileApi } from '@/api/common';
+import { uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 
 export default {
@@ -422,6 +432,28 @@ export default {
       this.addModal.show = true
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
+    },
+    // 修改发布
+    changeReleaseStatusFun(form,val) {
+      const massage = val === 2 ? '下架' : '发布'
+      this.$confirm('确认' + massage + '吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {
+          id: form.id,
+          type: val
+        }
+        editReleaseStatusApi(params).then(res => {
+          if (res.msg === 'success') {
+            successTips(this, 'success', massage + '成功!')
+            this.getDataListFun()
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     // 新建 编辑 保存
     addSubmit() {
