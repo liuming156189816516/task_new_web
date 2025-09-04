@@ -17,6 +17,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="queryData.release_status" clearable filterable placeholder="请选择发布状态">
+          <el-option v-for="item in releaseStatusList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -324,6 +329,7 @@ export default {
         title: '',
         category: '',
         categories_id: '',
+        release_status: null
       },
       pageOption: resetPage(),
       tableData: [],
@@ -380,6 +386,11 @@ export default {
         { label: 'social', value: 'social' },
         { label: 'easy', value: 'easy' },
       ],
+      releaseStatusList: [
+        { label: '未发布', value: '1' },
+        { label: '已下架', value: '2' },
+        { label: '已发布', value: '3' },
+      ],
       categoriesList: [],
       imgData: {
         show: false,
@@ -413,6 +424,8 @@ export default {
         title: this.queryData.title,
         category: this.queryData.category,
         categories_id: this.queryData.categories_id,
+        release_status: Number(this.queryData.release_status) || -1,
+
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -602,11 +615,12 @@ export default {
       this.selectData = [];
       this.queryData = {
         page: 1,
-        limit: 20,
+        limit: 1000,
         total: 0,
         title: '',
         category: '',
         categories_id: '',
+        release_status: null
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
