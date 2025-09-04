@@ -44,10 +44,11 @@ export const editSortDataApi = (params) => {
     data: params
   })
 }
+
 // 修改发布状态
 export const editReleaseStatusApi = (params) => {
   return request({
-    url: '/activitycategories/uptaskcategoriesreleasestatus',
+    url: '/activitycategories/upactivitycategoriesreleasestatus',
     method: 'post',
     data: params
   })

@@ -136,11 +136,10 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editReleaseStatusApi} from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editReleaseStatusApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import sortablejs from 'sortablejs';
-import {editReleaseStatusApi} from "@/views/taskGroup/taskType/api";
 
 export default {
   name: 'ActivityType',
@@ -154,6 +153,7 @@ export default {
         total: 0,
         title: '',
         category: '',
+        release_status: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -219,6 +219,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: this.queryData.category,
+        release_status: this.queryData.release_status,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -389,7 +390,14 @@ export default {
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
-      this.queryData.host = ''
+      this.queryData = {
+        page: 1,
+        limit: 1000,
+        total: 0,
+        title: '',
+        category: '',
+        release_status: '',
+      }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },
