@@ -84,11 +84,6 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-        <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -100,7 +95,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="layui_page">
+      <div v-if="false" class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -159,9 +154,6 @@
             @uploadSuccess="uploadSuccess"
           />
         </el-form-item>
-        <el-form-item label="跳转地址:" prop="deeplink">
-          <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
-        </el-form-item>
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
@@ -207,14 +199,12 @@ export default {
         formData: {
           title: '',
           category: '',
-          deeplink: '',
           title_icon: '',
           one_icon: '',
         },
         rules: {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
-          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
           title_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
           one_icon: [{ required: true, message: '请上传右上角图标！', trigger: 'change' }],
         },
@@ -421,7 +411,7 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 280;
+      this.cliHeight = document.documentElement.clientHeight - 240;
     },
     // 单行点击
     rowSelectChange(row) {

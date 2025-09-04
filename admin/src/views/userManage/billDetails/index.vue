@@ -48,7 +48,7 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
-                    v-for="(item,index) in typeList"
+                    v-for="(item,index) in taskTypeList"
                     :key="index"
                     :class="{'dropdown_selected':item.value===queryData.task_type}"
                     :command="item.value"
@@ -59,18 +59,18 @@
             </template>
 
             <template slot-scope="scope">
-              {{ getLabelByVal(scope.row[scope.column.property], typeList) }}
+              {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
             </template>
           </el-table-column>
           <el-table-column label="收益类型" min-width="120" prop="type" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'type')">
-                <span :class="[queryData.type?'dropdown_title':'']" style="color:#909399"> 任务类型
+                <span :class="[queryData.type?'dropdown_title':'']" style="color:#909399"> 收益类型
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
-                    v-for="(item,index) in typeList2"
+                    v-for="(item,index) in typeList"
                     :key="index"
                     :class="{'dropdown_selected':item.value===queryData.type}"
                     :command="item.value"
@@ -80,7 +80,7 @@
               </el-dropdown>
             </template>
             <template slot-scope="scope">
-              {{ getLabelByVal(scope.row[scope.column.property], typeList2) }}
+              {{ getLabelByVal(scope.row[scope.column.property], typeList) }}
             </template>
           </el-table-column>
           <el-table-column label="金额" min-width="120" prop="amount" show-overflow-tooltip>

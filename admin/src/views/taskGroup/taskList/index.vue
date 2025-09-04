@@ -132,6 +132,11 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -143,7 +148,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="layui_page">
+      <div v-if="false" class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -211,13 +216,18 @@
           </el-form-item>
           <el-form-item label="任务右上角图标:" prop="two_icon">
             <div v-if="addModal.formData.two_icon" class="imgBox">
-              <el-image :src="addModal.formData.two_icon" style="width: 120px;height: 120px" />
+              <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(addModal.formData.two_icon))">
+                <el-image :src="addModal.formData.two_icon" style="width: 120px;height: 120px" />
+              </div>
+              <div v-else>
+                <a :href="addModal.formData.two_icon" class="aUnderline">文件</a>
+              </div>
               <i class="el-icon-delete icon_del" @click="delImgFun('two_icon')" />
             </div>
             <UploadFiles
               v-else
               ref="refUploadFiles"
-              :format="['png','jpg','jpeg','webp']"
+              :format="['png','jpg','jpeg','webp','json']"
               :max-size="100"
               kay="two_icon"
               @uploadSuccess="uploadSuccess"
@@ -259,6 +269,10 @@
               <el-option v-for="item in tagsList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
+          <el-form-item label="跳转地址:" prop="deeplink">
+            <el-input v-model="addModal.formData.title" placeholder="请输入跳转地址" @input="changeInput" />
+          </el-form-item>
+
         </el-form>
       </div>
       <div slot="footer">
@@ -278,11 +292,11 @@
 import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
-import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal,getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi } from '@/api/common';
+import { uploadFileApi, uploadImgFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 
 export default {
@@ -295,7 +309,7 @@ export default {
     return {
       queryData: {
         page: 1,
-        limit: 20,
+        limit: 1000,
         total: 0,
         title: '',
         category: '',
@@ -318,6 +332,7 @@ export default {
           two_icon: '',
           three_icon: '',
           points_icon: '',
+          deeplink: '',
         },
         rules: {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
@@ -330,6 +345,8 @@ export default {
           two_icon: [{ required: true, message: '请上传任务右上角图标！', trigger: 'change' }],
           three_icon: [{ required: true, message: '请上传任务左下角图标！', trigger: 'change' }],
           points_icon: [{ required: true, message: '请上传任务中间的积分图标！', trigger: 'change' }],
+          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+
         },
         isLoading: false,
       },
@@ -536,7 +553,7 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 280;
+      this.cliHeight = document.documentElement.clientHeight - 240;
     },
     // 单行点击
     rowSelectChange(row) {
@@ -605,7 +622,8 @@ export default {
     },
     formatTimestamp,
     getLabelByVal,
-    getLabelArrByVal
+    getLabelArrByVal,
+    getImageExtension
 
   }
 }
@@ -659,5 +677,9 @@ export default {
     }
 }
 
+}
+.aUnderline{
+  color: #00a8ff;
+  text-decoration: underline;
 }
 </style>

@@ -79,7 +79,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="layui_page">
+      <div v-if="false" class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -332,7 +332,7 @@ export default {
     },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 280;
+      this.cliHeight = document.documentElement.clientHeight - 240;
     },
     // 单行点击
     rowSelectChange(row) {

@@ -27,7 +27,7 @@ export const mergeFragmentFileApi = (params) => {
   })
 }
 
-// 上传整个文件
+// 上传文件
 export const uploadImgFileApi = (params) => {
   return request({
     url: '/material/uploadassets',
