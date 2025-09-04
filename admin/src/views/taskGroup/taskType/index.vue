@@ -12,6 +12,11 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-select v-model="queryData.release_status" clearable filterable placeholder="请选择发布状态">
+          <el-option v-for="item in releaseStatusList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -82,6 +87,16 @@
               <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
             </div>
             <div v-else>-</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div v-if="scope.row[scope.column.property]===1 || scope.row[scope.column.property]===2">
+              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
+            </div>
+            <div v-if="scope.row[scope.column.property]===3">
+              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -167,7 +182,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editReleaseStatusApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
@@ -189,6 +204,7 @@ export default {
         total: 0,
         title: '',
         category: '',
+        release_status: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -227,8 +243,10 @@ export default {
         { label: 'Games', value: 'Games' },
         { label: 'Others', value: 'Others' },
       ],
-      deepTypeList: [
-        { label: '内部跳转', value: 'nav' },
+      releaseStatusList: [
+        { label: '未发布', value: '1' },
+        { label: '已下架', value: '2' },
+        { label: '已发布', value: '3' },
       ],
       imgData: {
         show: false,
@@ -260,6 +278,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: this.queryData.category,
+        release_status: this.queryData.release_status,
         sort: ''
       }
       getDataApi(params).then(res => {
@@ -280,6 +299,28 @@ export default {
       this.addModal.show = true
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
+    },
+    // 修改发布
+    changeReleaseStatusFun(form,val) {
+      const massage = val === 2 ? '下架' : '发布'
+      this.$confirm('确认' + massage + '吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {
+          id: form.id,
+          type: val
+        }
+        editReleaseStatusApi(params).then(res => {
+          if (res.msg === 'success') {
+            successTips(this, 'success', massage + '成功!')
+            this.getDataListFun()
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     // 新建 编辑 保存
     addSubmit() {
@@ -425,7 +466,14 @@ export default {
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
-      this.queryData.host = ''
+      this.queryData = {
+        page: 1,
+        limit: 1000,
+        total: 0,
+        title: '',
+        category: '',
+        release_status: '',
+      }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },

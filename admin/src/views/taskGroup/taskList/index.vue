@@ -147,7 +147,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
+        <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>

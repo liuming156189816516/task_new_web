@@ -45,7 +45,7 @@ export const editSortDataApi = (params) => {
   })
 }
 
-// 拖拽排序
+// 修改发布状态
 export const editReleaseStatusApi = (params) => {
   return request({
     url: '/task/uptaskreleasestatus',
