@@ -211,6 +211,14 @@ export const asyncRoutes = [
           title: '注册用户',
         }
       },
+      {
+        path: '/billDetails',
+        component: () => import('@/views/userManage/billDetails'),
+        name: 'billDetails',
+        meta: {
+          title: '账单明细',
+        }
+      },
     ]
   },
   // 权限配置
