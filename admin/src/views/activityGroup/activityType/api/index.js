@@ -35,3 +35,12 @@ export const delDataApi = (params) => {
     data: params
   })
 }
+
+// 拖拽排序
+export const editSortDataApi = (params) => {
+  return request({
+    url: '/activitycategories/sortactivitycategories',
+    method: 'post',
+    data: params
+  })
+}

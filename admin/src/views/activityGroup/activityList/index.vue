@@ -131,12 +131,19 @@
       :title="addModal.type==='add'?'新建':'编辑'"
       :visible.sync="addModal.show"
       center
-      width="1000px"
       class="actionModal"
+      width="1000px"
       @close="closeModal"
     >
-      <div class="content" :style="{maxHeight:cliHeight-100+'px'}">
-        <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="0" size="small" label-position="top">
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <el-form
+          ref="refAddModal"
+          :model="addModal.formData"
+          :rules="addModal.rules"
+          label-position="top"
+          label-width="0"
+          size="small"
+        >
           <el-form-item label="主题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
@@ -184,14 +191,15 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/activityGroup/activityType/api/index.js';
 
-import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
+import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
@@ -267,6 +275,7 @@ export default {
     this.setFullHeight();
     this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
+    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -406,6 +415,34 @@ export default {
         return item.id
       })
     },
+    // 拖拽
+    initDragSortTableRow() {
+      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
+      sortablejs.create(el, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        setData: (dataTransfer) => {
+        },
+        onEnd: ({ newIndex, oldIndex }) => {
+          if (newIndex === oldIndex) return;
+          let arr = deepClone(this.tableData)
+          const movedItem = arr.splice(oldIndex, 1)[0];
+          arr.splice(newIndex, 0, movedItem);
+          arr = arr.map((item, index) => ({
+            ...item,
+            sort: index + 1,
+          }));
+          const arrID = arr.map((item, index) => {
+            return item.id
+          })
+          editSortDataApi({ ids: arrID }).then(res => {
+            if (res.msg === 'success') {
+              this.getDataListFun()
+            }
+          })
+        },
+      });
+    },
     // 窗口高度
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 280;
@@ -507,29 +544,33 @@ export default {
   }
 }
 
-.actionModal{
- ::v-deep .el-dialog__body{
+.actionModal {
+  ::v-deep .el-dialog__body {
     padding: 0;
   }
-.content{
-  overflow: hidden;
-  overflow-y: auto;
-  padding: 16px;
 
-}
-  .el-form{
+  .content {
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 16px;
+
+  }
+
+  .el-form {
     display: flex;
     align-items: self-start;
-    justify-content:space-between;
+    justify-content: space-between;
     flex-wrap: wrap;
-    .el-form-item{
+
+    .el-form-item {
       width: 48%;
     }
-    .item_100{
+
+    .item_100 {
       width: 100%;
       margin-top: 20px;
     }
-}
+  }
 
 }
 </style>

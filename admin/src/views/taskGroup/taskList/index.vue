@@ -127,7 +127,7 @@
         </el-table-column>
         <el-table-column label="标签" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-tag >
+            <el-tag>
               {{ getLabelArrByVal(scope.row[scope.column.property], tagsList) }}
             </el-tag>
           </template>
@@ -255,7 +255,7 @@
             <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
           </el-form-item>
           <el-form-item label="标签:" prop="tags">
-            <el-select v-model="addModal.formData.tags" :multiple="true" clearable filterable placeholder="请选择标签" >
+            <el-select v-model="addModal.formData.tags" :multiple="true" clearable filterable placeholder="请选择标签">
               <el-option v-for="item in tagsList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -275,7 +275,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
 import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal } from '@/utils';
@@ -283,6 +283,7 @@ import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
+import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
@@ -366,6 +367,7 @@ export default {
     this.setFullHeight();
     this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
+    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -505,6 +507,34 @@ export default {
       this.selectIdData = arr.map(item => {
         return item.id
       })
+    },
+    // 拖拽
+    initDragSortTableRow() {
+      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
+      sortablejs.create(el, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        setData: (dataTransfer) => {
+        },
+        onEnd: ({ newIndex, oldIndex }) => {
+          if (newIndex === oldIndex) return;
+          let arr = deepClone(this.tableData)
+          const movedItem = arr.splice(oldIndex, 1)[0];
+          arr.splice(newIndex, 0, movedItem);
+          arr = arr.map((item, index) => ({
+            ...item,
+            sort: index + 1,
+          }));
+          const arrID = arr.map((item, index) => {
+            return item.id
+          })
+          editSortDataApi({ ids: arrID }).then(res => {
+            if (res.msg === 'success') {
+              this.getDataListFun()
+            }
+          })
+        },
+      });
     },
     // 窗口高度
     setFullHeight() {

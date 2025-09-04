@@ -121,9 +121,10 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
+import sortablejs from 'sortablejs';
 
 export default {
   name: 'ActivityType',
@@ -177,6 +178,7 @@ export default {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
+    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -299,6 +301,34 @@ export default {
       this.selectIdData = arr.map(item => {
         return item.id
       })
+    },
+    // 拖拽
+    initDragSortTableRow() {
+      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
+      sortablejs.create(el, {
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        setData: (dataTransfer) => {
+        },
+        onEnd: ({ newIndex, oldIndex }) => {
+          if (newIndex === oldIndex) return;
+          let arr = deepClone(this.tableData)
+          const movedItem = arr.splice(oldIndex, 1)[0];
+          arr.splice(newIndex, 0, movedItem);
+          arr = arr.map((item, index) => ({
+            ...item,
+            sort: index + 1,
+          }));
+          const arrID = arr.map((item, index) => {
+            return item.id
+          })
+          editSortDataApi({ ids: arrID }).then(res => {
+            if (res.msg === 'success') {
+              this.getDataListFun()
+            }
+          })
+        },
+      });
     },
     // 窗口高度
     setFullHeight() {
