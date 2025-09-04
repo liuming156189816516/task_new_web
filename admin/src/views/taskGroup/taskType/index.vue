@@ -278,7 +278,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: this.queryData.category,
-        release_status: this.queryData.release_status,
+        release_status: Number(this.queryData.release_status) || -1,
         sort: ''
       }
       getDataApi(params).then(res => {

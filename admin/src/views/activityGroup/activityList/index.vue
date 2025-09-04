@@ -312,7 +312,7 @@ export default {
         title: this.queryData.title,
         category: this.queryData.category,
         categories_id: this.queryData.categories_id,
-        release_status: this.queryData.release_status,
+        release_status:  Number(this.queryData.release_status) || -1,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
