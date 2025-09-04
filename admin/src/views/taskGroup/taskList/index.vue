@@ -345,15 +345,13 @@ export default {
         ],
       },
       categoryList: [
-        { label: 'Hot', value: 'Hot' },
-        { label: 'Social', value: 'Social' },
-        { label: 'Games', value: 'Games' },
-        { label: 'Others', value: 'Others' },
+        { label: 'tiktok', value: 'tiktok' },
+        { label: 'whatsapp', value: 'whatsapp' },
+        { label: 'instagram', value: 'instagram' },
       ],
       tagsList: [
-        { label: '111', value: '111' },
-        { label: '222', value: '222' },
-        { label: '333', value: '333' },
+        { label: 'social', value: 'social' },
+        { label: 'easy', value: 'easy' },
       ],
       categoriesList: [],
       imgData: {

@@ -4,16 +4,6 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
-          <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="queryData.type" clearable filterable placeholder="请选择收益类型">
-          <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
       </el-form-item>
       <el-form-item>
@@ -51,11 +41,44 @@
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
           <el-table-column label="任务类型" min-width="120" prop="task_type" show-overflow-tooltip>
+            <template slot="header">
+              <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'task_type')">
+                <span :class="[queryData.task_type?'dropdown_title':'']" style="color:#909399"> 任务类型
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item,index) in typeList"
+                    :key="index"
+                    :class="{'dropdown_selected':item.value===queryData.task_type}"
+                    :command="item.value"
+                  >{{ item.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+
             <template slot-scope="scope">
               {{ getLabelByVal(scope.row[scope.column.property], typeList) }}
             </template>
           </el-table-column>
-          <el-table-column label="收益类型" min-width="120" prop="status" show-overflow-tooltip>
+          <el-table-column label="收益类型" min-width="120" prop="type" show-overflow-tooltip>
+            <template slot="header">
+              <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'type')">
+                <span :class="[queryData.type?'dropdown_title':'']" style="color:#909399"> 任务类型
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item,index) in typeList2"
+                    :key="index"
+                    :class="{'dropdown_selected':item.value===queryData.type}"
+                    :command="item.value"
+                  >{{ item.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
             <template slot-scope="scope">
               {{ getLabelByVal(scope.row[scope.column.property], typeList2) }}
             </template>
@@ -95,7 +118,7 @@
 
 <script>
 import { resetPage, getLabelByVal, } from '@/utils/index'
-import { formatTimestamp,formatDateTime } from '@/filters'
+import { formatTimestamp, formatDateTime } from '@/filters'
 import { getBillRecordListApi } from './api'
 
 export default {
@@ -131,9 +154,9 @@ export default {
   computed: {},
   watch: {},
   mounted() {
-    const startTime = formatDateTime(new Date(),'YYYY-MM-DD') + ' 00:00:00'
-    const endTime = formatDateTime(new Date(),'YYYY-MM-DD') + ' 23:59:59'
-    this.queryData.time = [Number(new Date(startTime)),Number(new Date(endTime))]
+    const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+    const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+    this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
     this.getDataListFun();
   },
   created() {
@@ -152,8 +175,8 @@ export default {
       })
       this.loading = true;
       this.page = num || this.page;
-      const startTime = formatDateTime(new Date(this.queryData.time[0]) ,'YYYY-MM-DD') + ' 00:00:00'
-      const endTime = formatDateTime(new Date(this.queryData.time[1]),'YYYY-MM-DD') + ' 23:59:59'
+      const startTime = formatDateTime(new Date(this.queryData.time[0]), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(this.queryData.time[1]), 'YYYY-MM-DD') + ' 23:59:59'
       const params = {
         page: num || this.page,
         limit: this.limit,
@@ -186,11 +209,15 @@ export default {
         l_account: '',
         time: [],
       };
-      const startTime = formatDateTime(new Date(),'YYYY-MM-DD') + ' 00:00:00'
-      const endTime = formatDateTime(new Date(),'YYYY-MM-DD') + ' 23:59:59'
-      this.queryData.time = [Number(new Date(startTime)),Number(new Date(endTime))]
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
+    },
+    handleRowQueryFun(val,kay) {
+      this.queryData[kay] = val;
+      this.getDataListFun(1)
     },
     // 分页 切换
     changePageSize(val, type) {
