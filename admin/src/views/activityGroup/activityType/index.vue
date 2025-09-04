@@ -153,7 +153,7 @@ export default {
         total: 0,
         title: '',
         category: '',
-        release_status: '',
+        release_status: null,
       },
       pageOption: resetPage(),
       tableData: [],
@@ -219,7 +219,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: this.queryData.category,
-        release_status: Number(this.queryData.release_status) || -1,
+        release_status: Number(this.queryData.release_status) || 0,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -396,7 +396,7 @@ export default {
         total: 0,
         title: '',
         category: '',
-        release_status: '',
+        release_status: null,
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();

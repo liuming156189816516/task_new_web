@@ -329,7 +329,7 @@ export default {
         title: '',
         category: '',
         categories_id: '',
-        release_status: null
+        release_status: null,
       },
       pageOption: resetPage(),
       tableData: [],
@@ -424,7 +424,7 @@ export default {
         title: this.queryData.title,
         category: this.queryData.category,
         categories_id: this.queryData.categories_id,
-        release_status: Number(this.queryData.release_status) || -1,
+        release_status: Number(this.queryData.release_status) || 0,
 
       }
       getDataApi(params).then(res => {
@@ -620,7 +620,7 @@ export default {
         title: '',
         category: '',
         categories_id: '',
-        release_status: null
+        release_status: null,
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
