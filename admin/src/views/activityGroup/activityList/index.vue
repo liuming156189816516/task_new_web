@@ -98,7 +98,7 @@
         </el-table-column>
         <el-table-column label="增加积分" min-width="120" prop="reward" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
         <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
@@ -108,12 +108,7 @@
         </el-table-column>
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]===1 || scope.row[scope.column.property]===2">
-              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
-            </div>
-            <div v-if="scope.row[scope.column.property]===3">
-              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
-            </div>
+            {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList) }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -123,7 +118,15 @@
         </el-table-column>
         <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
+              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
+            </div>
+            <div v-if="scope.row.release_status==='3'" class="action-btn">
+              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
+            </div>
+            <div class="action-btn">
+              <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -185,7 +188,7 @@
             <el-input v-model="addModal.formData.desc" placeholder="请输入描述" @input="changeInput" />
           </el-form-item>
           <el-form-item label="增加积分:" prop="reward">
-            <el-input v-model="addModal.formData.reward" placeholder="请输入增加积分" @input="changeInput" />
+            <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
           </el-form-item>
           <el-form-item label="跳转地址:" prop="deeplink">
             <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
@@ -275,9 +278,9 @@ export default {
         { label: 'hot', value: 'hot' },
       ],
       releaseStatusList: [
-        { label: '未发布', value: '1' },
-        { label: '已下架', value: '2' },
-        { label: '已发布', value: '3' },
+        { label: '未发布', value: '1' ,type: 'primary' },
+        { label: '已下架', value: '2' ,type: 'primary' },
+        { label: '已发布', value: '3' ,type: 'success' },
       ],
       categoriesList: [],
       imgData: {
@@ -318,7 +321,11 @@ export default {
         if (res.msg === 'success') {
           this.loading = false;
           this.queryData.total = res.data.total;
-          this.tableData = deepClone(res.data.list)
+          const data = deepClone(res.data.list)
+          this.tableData = data.map(item => {
+            item.release_status = item.release_status ? String(item.release_status) : ''
+            return item
+          })
         }
       })
     },

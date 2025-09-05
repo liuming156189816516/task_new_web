@@ -172,9 +172,6 @@
             @uploadSuccess="uploadSuccess"
           />
         </el-form-item>
-        <el-form-item label="排序:" prop="sort">
-          <el-input v-model="addModal.formData.sort" placeholder="请输入排序" type="number" @input="changeInput" />
-        </el-form-item>
 
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
@@ -234,7 +231,6 @@ export default {
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
           img: [{ required: true, message: '请上传图片！', trigger: 'change' }],
           img_dark: [{ required: false, message: '请上传图片！', trigger: 'change' }],
-          sort: [{ required: true, message: '请输入排序！', trigger: 'change' }],
         },
         isLoading: false,
       },

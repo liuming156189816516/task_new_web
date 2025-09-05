@@ -451,3 +451,15 @@ input[aria-hidden=true]{
 //     left: 30px !important;
 //   }
 // }
+.action-btn{
+  display: inline-block;
+  margin-right: 8px;
+  &:last-of-type{
+    margin-right: 0;
+  }
+}
+
+.aUnderline{
+  color: #00a8ff;
+  text-decoration: underline;
+}
