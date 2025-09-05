@@ -44,3 +44,12 @@ export const editSortDataApi = (params) => {
     data: params
   })
 }
+
+// 修改发布状态
+export const editReleaseStatusApi = (params) => {
+  return request({
+    url: '/carousel/upcarouselreleasestatus',
+    method: 'post',
+    data: params
+  })
+}

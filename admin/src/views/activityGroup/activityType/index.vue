@@ -12,11 +12,6 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.release_status" clearable filterable placeholder="请选择发布状态">
-          <el-option v-for="item in releaseStatusList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -74,6 +69,22 @@
           </template>
         </el-table-column>
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
+              <span :class="[Number(queryData.release_status)?'dropdown_title':'']" style="color:#909399"> 发布状态
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in releaseStatusList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.release_status}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList) }}
           </template>
@@ -192,6 +203,7 @@ export default {
         { label: 'hot', value: 'hot' },
       ],
       releaseStatusList: [
+        { label: '全部', value: '0' ,type: 'primary' },
         { label: '未发布', value: '1' ,type: 'primary' },
         { label: '已下架', value: '2' ,type: 'primary' },
         { label: '已发布', value: '3' ,type: 'success' },
@@ -222,7 +234,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: this.queryData.category,
-        release_status: Number(this.queryData.release_status) || 0,
+        release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -406,6 +418,11 @@ export default {
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
+    },
+    // 表头筛选
+    handleRowQueryFun(val,kay) {
+      this.queryData[kay] = val;
+      this.getDataListFun(1)
     },
     // 分页 切换
     changePageSize(val, type) {
