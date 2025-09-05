@@ -257,12 +257,12 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
         name: '',
         json_str: '',
         remark: '',
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 打开配置
     openConfigModal(row) {

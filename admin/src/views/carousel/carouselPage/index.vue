@@ -222,7 +222,6 @@ export default {
           deeplink: '',
           img: '',
           img_dark: '',
-          sort: '',
         },
         rules: {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
@@ -308,7 +307,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.sort = formData.sort ? Number(formData.sort) : 0
+          // formData.sort = formData.sort ? Number(formData.sort) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -331,6 +330,8 @@ export default {
     },
     // 上传成功回调
     uploadSuccess(file, kay) {
+      console.log('file',file)
+      console.log('kay',kay)
       const formData = new FormData();
       formData.append('directory', 'carousel');
       formData.append('file', file);
@@ -338,6 +339,9 @@ export default {
         if (res.msg === 'success') {
           this.addModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
+          if (this.$refs.refUploadFiles) {
+            this.$refs.refUploadFiles.resetFileFun()
+          }
         }
       })
     },
@@ -349,12 +353,15 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
-      this.addModal.formData = {
-        name: '',
-        json_str: '',
-        remark: '',
-      }
       this.$refs.refAddModal.resetFields();
+      this.addModal.formData = {
+        title: '',
+        category: '',
+        deep_type: '',
+        deeplink: '',
+        img: '',
+        img_dark: '',
+      }
     },
     // 批量操作
     handleCommand(command) {

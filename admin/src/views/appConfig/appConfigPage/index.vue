@@ -336,6 +336,7 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
         name: '',
         schema: '',
@@ -347,7 +348,6 @@ export default {
         il8n_id: '',
         layouts_plan_id: '',
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 批量操作
     handleCommand(command) {

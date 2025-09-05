@@ -439,6 +439,7 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
         name: '',
         cdn_main: '',
@@ -446,7 +447,6 @@ export default {
         version: '',
         remark: '',
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 批量操作
     handleCommand(command) {

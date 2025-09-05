@@ -312,6 +312,9 @@ export default {
         if (res.msg === 'success') {
           this.addModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
+          if (this.$refs.refUploadFiles) {
+            this.$refs.refUploadFiles.resetFileFun()
+          }
         }
       })
     },
@@ -323,13 +326,13 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
         level: null,
         badge_icon: '',
         avatar_coin: '',
         tar_points: null,
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 批量操作
     handleCommand(command) {

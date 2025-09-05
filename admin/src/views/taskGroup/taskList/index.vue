@@ -516,6 +516,9 @@ export default {
         if (res.msg === 'success') {
           this.addModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
+          if (this.$refs.refUploadFiles) {
+            this.$refs.refUploadFiles.resetFileFun()
+          }
         }
       })
     },
@@ -527,12 +530,20 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
-      this.addModal.formData = {
-        name: '',
-        json_str: '',
-        remark: '',
-      }
       this.$refs.refAddModal.resetFields();
+      this.addModal.formData = {
+        title: '',
+        category: '',
+        categories_id: '',
+        reward: '',
+        tags: [],
+        task_icon: '',
+        one_icon: '',
+        two_icon: '',
+        three_icon: '',
+        points_icon: '',
+        deeplink: '',
+      }
     },
     // 批量操作
     handleCommand(command) {

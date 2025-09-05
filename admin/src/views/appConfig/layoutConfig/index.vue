@@ -421,13 +421,13 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        scroll: 1,
-        layouts_plan_id: '',
         Name: '',
         Remark: '',
+        layouts_plan_id: '',
+        scroll: 1
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 批量操作
     handleCommand(command) {

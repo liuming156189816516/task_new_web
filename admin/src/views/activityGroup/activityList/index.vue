@@ -368,6 +368,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
+          formData.reward = formData.reward ? Number(formData.reward) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -397,6 +398,9 @@ export default {
         if (res.msg === 'success') {
           this.addModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
+          if (this.$refs.refUploadFiles) {
+            this.$refs.refUploadFiles.resetFileFun()
+          }
         }
       })
     },
@@ -408,12 +412,15 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
-      this.addModal.formData = {
-        name: '',
-        json_str: '',
-        remark: '',
-      }
       this.$refs.refAddModal.resetFields();
+      this.addModal.formData = {
+        categories_id: '',
+        activitie_icon: '',
+        title: '',
+        desc: '',
+        reward: '',
+        deeplink: '',
+      }
     },
     // 批量操作
     handleCommand(command) {

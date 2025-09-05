@@ -137,6 +137,9 @@ export default {
         if (res.msg === 'success') {
           this.actionModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
+          if (this.$refs.refUploadFiles) {
+            this.$refs.refUploadFiles.resetFileFun()
+          }
         }
       })
     },

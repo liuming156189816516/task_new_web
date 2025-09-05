@@ -316,13 +316,13 @@ export default {
     },
     // 关闭新建编辑弹窗
     closeModal() {
+      this.addModal.show = false
+      this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields()
       this.addModal.formData = {
         name: '',
         remark: '',
       }
-      this.$refs.refAddModal.resetFields()
-      this.addModal.show = false
-      this.addModal.isLoading = false
     },
     // 分页 切换
     changePageSize(val, type) {

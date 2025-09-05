@@ -429,6 +429,7 @@ export default {
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
         Name: '',
         strategy: '',
@@ -436,8 +437,8 @@ export default {
         default_lang: '',
         fallback_strategy: '',
         notes: '',
+        remark: '',
       }
-      this.$refs.refAddModal.resetFields();
     },
     // 批量操作
     handleCommand(command) {
