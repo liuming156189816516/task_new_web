@@ -183,8 +183,8 @@ export default {
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
         task_type: this.queryData.task_type ? Number(this.queryData.task_type) : -1,
-        start_time: Number(new Date(startTime)),
-        end_time: Number(new Date(endTime))
+        start_time: Number(new Date(startTime)) / 1000,
+        end_time: Number(new Date(endTime)) / 1000,
       }
 
       getBillRecordListApi(params).then(res => {
