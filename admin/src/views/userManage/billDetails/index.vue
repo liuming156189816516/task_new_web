@@ -59,7 +59,10 @@
             </template>
 
             <template slot-scope="scope">
+              <span v-if="scope.row[scope.column.property]!=='0'">
               {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
+              </span>
+              <span v-else>-</span>
             </template>
           </el-table-column>
           <el-table-column label="收益类型" min-width="120" prop="type" show-overflow-tooltip>
@@ -192,7 +195,8 @@ export default {
           this.loading = false;
           this.queryData.total = res.data.total;
           this.tableData = res.data.list.map(item => {
-            item.status = item.status ? String(item.status) : ''
+            item.task_type = item.task_type ? String(item.task_type) : '0'
+            item.type = item.type ? String(item.type) : '0'
             return item
           });
         }
