@@ -38,6 +38,16 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
+          <el-table-column label="头像" min-width="120" prop="picture" show-overflow-tooltip>
+            <template slot-scope="scope">
+              <div v-if="scope.row[scope.column.property]">
+                <el-avatar :src="scope.row[scope.column.property]"></el-avatar>
+              </div>
+              <div v-else>
+                <el-avatar icon="el-icon-user-solid"></el-avatar>
+              </div>
+            </template>
+          </el-table-column>
           <el-table-column label="账号ID" min-width="120" prop="account_id" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
