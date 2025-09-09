@@ -2,13 +2,16 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form :inline="true" size="small" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px" class="formGroup">
       <el-form-item>
         <el-input v-model="queryData.app_account_id" type="number" clearable placeholder="请输入app用户账号id" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="openEditAmountFun('调整积分')">金额调整</el-button>
       </el-form-item>
     </el-form>
     <!-- 列表 -->
@@ -65,11 +68,11 @@
               {{ formatTimestamp(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
-            <template slot-scope="scope">
-              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>
-            </template>
-          </el-table-column>
+<!--          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">-->
+<!--            <template slot-scope="scope">-->
+<!--              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>-->
+<!--            </template>-->
+<!--          </el-table-column>-->
         </el-table>
         <div class="layui_page">
           <el-pagination
@@ -194,11 +197,11 @@ export default {
       })
     },
     // 调整积分
-    openEditAmountFun(row,title) {
+    openEditAmountFun(title) {
       this.addModal.title = title
       this.addModal.show = true
       this.addModal.type = 'edit'
-      this.addModal.formData = deepClone(row)
+      // this.addModal.formData = deepClone(row)
     },
     // 新建 编辑 保存
     addSubmit() {
@@ -476,10 +479,6 @@ export default {
   }
 }
 
-::v-deep .el-form-item {
-  margin-bottom: 10px;
-}
-
 ::v-deep .el-radio-group {
   margin-top: -2px;
 }
@@ -742,5 +741,14 @@ export default {
 
 .loading_icon {
   margin-top: 10px;
+}
+.formGroup{
+  content: "";
+  display: table;
+  clear: both;
+  width: 100%;
+  .el-form-item:last-of-type{
+    float: right;
+  }
 }
 </style>
