@@ -211,9 +211,18 @@ export const asyncRoutes = [
           title: '注册用户',
         }
       },
+    ]
+  },
+  // 财务管理
+  {
+    path: '/financeManage',
+    component: Layout,
+    name: 'financeManage',
+    meta: { title: '财务管理', icon: 'el-icon-office-building' },
+    children: [
       {
         path: '/billDetails',
-        component: () => import('@/views/userManage/billDetails'),
+        component: () => import('@/views/financeManage/billDetails'),
         name: 'billDetails',
         meta: {
           title: '账单明细',

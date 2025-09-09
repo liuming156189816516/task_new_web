@@ -13,6 +13,9 @@
         <el-input v-model="queryData.country" clearable placeholder="请输入国家" />
       </el-form-item>
       <el-form-item>
+        <el-input v-model="queryData.level" clearable type="number" placeholder="请输入等级" />
+      </el-form-item>
+      <el-form-item>
         <el-button type="warning" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(2)">批量拉黑</el-button>
         <el-button type="success" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(1)">批量启用</el-button>
         <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
@@ -41,10 +44,10 @@
           <el-table-column label="头像" min-width="120" prop="picture" show-overflow-tooltip>
             <template slot-scope="scope">
               <div v-if="scope.row[scope.column.property]">
-                <el-avatar :src="scope.row[scope.column.property]"></el-avatar>
+                <el-avatar :src="scope.row[scope.column.property]" />
               </div>
               <div v-else>
-                <el-avatar icon="el-icon-user-solid"></el-avatar>
+                <el-avatar icon="el-icon-user-solid" />
               </div>
             </template>
           </el-table-column>
@@ -71,6 +74,11 @@
             </template>
           </el-table-column>
           <el-table-column label="余额" min-width="120" prop="balance" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="等级" min-width="120" prop="level" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
             </template>
@@ -112,6 +120,7 @@ export default {
         account: '',
         country: '',
         account_id: '',
+        level: null,
       },
       tableData: [],
       cliHeight: null,
@@ -150,7 +159,8 @@ export default {
         limit: this.limit,
         account: this.queryData.account,
         country: this.queryData.country,
-        account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1
+        account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
+        level: this.queryData.level
       }
       getappuserlist(params).then(res => {
         if (res.msg === 'success') {
@@ -172,6 +182,7 @@ export default {
         account: '',
         country: '',
         account_id: '',
+        level: null,
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
