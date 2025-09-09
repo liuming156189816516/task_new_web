@@ -57,10 +57,9 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
-
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
-              {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
+                {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
               </span>
               <span v-else>-</span>
             </template>
@@ -143,11 +142,12 @@ export default {
       selectIdData: [],
       pageOption: resetPage(),
       taskTypeList: [
-        { label: '全部', value: '0' },
+        { label: '全部', value: '0' }
       ],
       typeList: [
         { label: '全部', value: '0' },
         { label: '签到', value: '1' },
+        { label: '人工修正', value: '2' },
       ],
       typeList2: [
         { label: '签到', value: '1' },
