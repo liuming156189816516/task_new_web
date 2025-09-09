@@ -4,7 +4,7 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px" class="formGroup">
       <el-form-item>
-        <el-input v-model="queryData.app_account_id" type="number" clearable placeholder="请输入app用户账号id" @input="changeInput" />
+        <el-input v-model="queryData.app_account_id" type="number" clearable placeholder="请输入用户账号ID" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -38,7 +38,7 @@
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
-          <el-table-column label="app用户账号id" min-width="120" prop="app_account_id" show-overflow-tooltip>
+          <el-table-column label="用户账号ID" min-width="120" prop="app_account_id" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
             </template>
@@ -100,8 +100,8 @@
     >
       <template v-if="addModal.title==='调整积分'">
         <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
-          <el-form-item label="app用户账号id:" prop="app_account_id">
-            <el-input v-model="addModal.formData.app_account_id" placeholder="请输入app用户账号id" type="number" @input="changeInput" />
+          <el-form-item label="用户账号ID:" prop="app_account_id">
+            <el-input v-model="addModal.formData.app_account_id" placeholder="请输入用户账号ID" type="number" @input="changeInput" />
           </el-form-item>
           <el-form-item label="调整金额:" prop="amount">
             <el-input v-model="addModal.formData.amount" placeholder="请输入调整金额" @input="changeInput" />
