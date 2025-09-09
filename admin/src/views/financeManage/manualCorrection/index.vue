@@ -1,24 +1,13 @@
-<!-- 注册用户 -->
+<!-- 人工修正 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" />
+        <el-input v-model="queryData.app_account_id" type="number" clearable placeholder="请输入app用户账号id" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.account" clearable placeholder="请输入账号" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.country" clearable placeholder="请输入国家" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.level" clearable type="number" placeholder="请输入等级" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="warning" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(2)">批量拉黑</el-button>
-        <el-button type="success" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(1)">批量启用</el-button>
-        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
     </el-form>
@@ -41,51 +30,44 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
-          <el-table-column label="头像" min-width="120" prop="picture" show-overflow-tooltip>
-            <template slot-scope="scope">
-              <div v-if="scope.row[scope.column.property]">
-                <el-avatar :src="scope.row[scope.column.property]" />
-              </div>
-              <div v-else>
-                <el-avatar icon="el-icon-user-solid" />
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="账号ID" min-width="120" prop="account_id" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="账号" min-width="120" prop="account" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="国家" min-width="120" prop="country" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" min-width="120" prop="status" show-overflow-tooltip>
-            <template slot-scope="scope">
-              <el-tag :type="getLabelByVal(scope.row[scope.column.property], statusList,{label:'type',value:'value'})">
-                {{ getLabelByVal(scope.row[scope.column.property], statusList) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="余额" min-width="120" prop="balance" show-overflow-tooltip>
+          <el-table-column label="订单号" min-width="120" prop="id" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
-          <el-table-column label="等级" min-width="120" prop="level" show-overflow-tooltip>
+          <el-table-column label="app用户账号id" min-width="120" prop="app_account_id" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
-          <el-table-column label="注册时间" min-width="120" prop="itime" show-overflow-tooltip>
+          <el-table-column label="调整前余额" min-width="120" prop="front_balance" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ formatTimestamp(scope.row.itime) }}
+              {{ scope.row[scope.column.property] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="调整金额" min-width="120" prop="amount" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="调整后余额" min-width="120" prop="before_balance" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ formatTimestamp(scope.row[scope.column.property]) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
+            <template slot-scope="scope">
+              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -103,24 +85,53 @@
         </div>
       </div>
     </div>
+
+    <!-- 调整积分 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="addModal.type==='add'?'新建':'编辑'"
+      :visible.sync="addModal.show"
+      center
+      width="500px"
+      @close="closeModal"
+    >
+      <template v-if="addModal.title==='调整积分'">
+        <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
+          <el-form-item label="app用户账号id:" prop="app_account_id">
+            <el-input v-model="addModal.formData.app_account_id" placeholder="请输入app用户账号id" type="number" @input="changeInput" />
+          </el-form-item>
+          <el-form-item label="调整金额:" prop="amount">
+            <el-input v-model="addModal.formData.amount" placeholder="请输入调整金额" @input="changeInput" />
+          </el-form-item>
+          <el-form-item label="备注:" prop="remark">
+            <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
+          </el-form-item>
+        </el-form>
+      </template>
+      <template v-slot:footer>
+        <div style="text-align:center;">
+          <el-button @click="closeModal">取消</el-button>
+          <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { successTips, resetPage, getLabelByVal } from '@/utils/index'
+import { resetPage, getLabelByVal, deepClone, successTips, } from '@/utils/index'
 import { formatTimestamp } from '@/filters'
-import { getappuserlist,blacklist } from './api'
+import { getRecordReviseListApi, editAmountApi } from './api'
+
 export default {
+  name: 'ManualCorrection',
   data() {
     return {
       queryData: {
         page: 1,
         limit: 20,
         total: 0,
-        account: '',
-        country: '',
-        account_id: '',
-        level: null,
+        app_account_id: null,
       },
       tableData: [],
       cliHeight: null,
@@ -128,17 +139,30 @@ export default {
       selectData: [],
       selectIdData: [],
       pageOption: resetPage(),
-      statusList: [
-        { label: '正常' ,value: '1' ,type: 'success' },
-        { label: '禁用' ,value: '2' ,type: 'danger' },
-      ]
+      addModal: {
+        show: false,
+        type: 'add',
+        title: '',
+        formData: {
+          app_account_id: null,
+          amount: null,
+          remark: '',
+        },
+        rules: {
+          app_account_id: [{ required: true, message: '请输入app用户账号id！', trigger: 'change' }],
+          amount: [{ required: true, message: '请输入调整金额！', trigger: 'change' }],
+          remark: [{ required: true, message: '请输入备注！', trigger: 'change' }],
+        },
+        isLoading: false,
+      },
     }
   },
   computed: {},
-  watch: {
+  watch: {},
+  mounted() {
+    this.getDataListFun();
   },
   created() {
-    this.getDataListFun();
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
   },
@@ -155,23 +179,59 @@ export default {
       this.loading = true;
       this.page = num || this.page;
       const params = {
-        page: this.page,
+        page: num || this.page,
         limit: this.limit,
-        account: this.queryData.account,
-        country: this.queryData.country,
-        account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
-        level: Number(this.queryData.level)
+        app_account_id: Number(this.queryData.app_account_id) ,
       }
-      getappuserlist(params).then(res => {
+      getRecordReviseListApi(params).then(res => {
         if (res.msg === 'success') {
           this.loading = false;
           this.queryData.total = res.data.total;
           this.tableData = res.data.list.map(item => {
-            item.status = item.status ? String(item.status) : ''
+            // item.task_type = item.task_type ? String(item.task_type) : '0'
             return item
           });
         }
       })
+    },
+    // 调整积分
+    openEditAmountFun(row,title) {
+      this.addModal.title = title
+      this.addModal.show = true
+      this.addModal.type = 'edit'
+      this.addModal.formData = deepClone(row)
+    },
+    // 新建 编辑 保存
+    addSubmit() {
+      this.$refs.refAddModal.validate((v) => {
+        if (v) {
+          this.addModal.isLoading = true
+          const formData = deepClone(this.addModal.formData)
+          formData.app_account_id = formData.app_account_id ? Number(formData.app_account_id) : 0
+          formData.amount = formData.amount ? Number(formData.amount) : 0
+          console.log('formData', formData)
+          if (this.addModal.title === '调整积分') {
+            editAmountApi(formData).then(res => {
+              if (res.msg === 'success') {
+                successTips(this, 'success', '編輯成功！')
+                this.closeModal()
+                this.getDataListFun()
+              }
+            })
+          }
+        }
+      })
+    },
+    // 关闭新建
+    closeModal() {
+      this.addModal.show = false
+      this.addModal.isLoading = false
+      this.$refs.refAddModal.resetFields();
+      this.addModal.formData = {
+        app_account_id: null,
+        amount: null,
+        remark: '',
+      }
     },
     // 重置
     restQueryBtn() {
@@ -179,13 +239,14 @@ export default {
         page: 1,
         limit: 20,
         total: 0,
-        account: '',
-        country: '',
-        account_id: '',
-        level: null,
+        app_account_id: null,
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
+    },
+    handleRowQueryFun(val,kay) {
+      this.queryData[kay] = val;
+      this.getDataListFun(1)
     },
     // 分页 切换
     changePageSize(val, type) {
@@ -210,46 +271,26 @@ export default {
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
-      this.selectIdData = arr.map(item => { return item.uid })
+      this.selectIdData = arr.map(item => {
+        return item.uid
+      })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.uid)) {
-        tableCell.toggleRowSelection(row,false);
+        tableCell.toggleRowSelection(row, false);
         return;
       }
-      tableCell.toggleRowSelection(row,true);
-    },
-    // 操作
-    pullBlackBtn(val) {
-      const that = this;
-      this.$confirm(`确认${val === 2 ? '拉黑' : '启用'}吗？`, '提示', {
-        type: 'warning',
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: function(action, instance, done) {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true;
-            blacklist({ ptype: val,ids: that.selectIdData }).then(res => {
-              instance.confirmButtonLoading = false;
-              if (res.code !== 0) return;
-              that.getDataListFun();
-              successTips(that)
-              done();
-            })
-          } else {
-            done();
-            instance.confirmButtonLoading = false;
-          }
-        }
-      }).catch(() => {
-        that.$message({ type: 'info', message: '已取消' });
-      })
+      tableCell.toggleRowSelection(row, true);
     },
     // 窗口高度
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 240;
+    },
+    // 处理打开输入框无法输入问题
+    changeInput() {
+      this.$forceUpdate()
     },
     formatTimestamp,
     getLabelByVal
@@ -257,7 +298,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 ::v-deep .el-card__body {
   width: 100%;
   height: 118px;
@@ -269,7 +310,7 @@ export default {
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
 
-  &>div {
+  & > div {
     flex: 1;
   }
 
@@ -299,7 +340,8 @@ export default {
     }
   }
 }
-.level_01{
+
+.level_01 {
   display: flex;
   color: #C0C4CC;
   align-items: center;
@@ -309,12 +351,14 @@ export default {
   position: relative;
   border-radius: 4px;
   border: 1px solid #DCDFE6;
-  .level_01_1{
+
+  .level_01_1 {
     color: #606266;
     font-size: 13px;
     margin-left: 10px;
   }
-  .screen_t_02{
+
+  .screen_t_02 {
     width: 20px;
     height: 20px;
     color: #fff;
@@ -326,7 +370,8 @@ export default {
     margin-left: 5px;
     background-color: #409eff;
   }
-  .down_01{
+
+  .down_01 {
     width: 500px;
     height: 40px;
     position: absolute;
@@ -337,7 +382,8 @@ export default {
     background-color: #FFFFFF;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    .down_01_01{
+
+    .down_01_01 {
       position: absolute;
       display: block;
       width: 0;
@@ -354,7 +400,8 @@ export default {
       -webkit-filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03));
       filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03));
     }
-    .down_01_01::after{
+
+    .down_01_01::after {
       position: absolute;
       display: block;
       width: 0;
@@ -364,31 +411,38 @@ export default {
     }
   }
 }
-.level_01:hover{
+
+.level_01:hover {
   border-color: #C0C4CC;
 }
-.custom_popover{
-  .screen_01{
+
+.custom_popover {
+  .screen_01 {
     color: #209cdf;
     display: flex;
-    .screen_t_01{
+
+    .screen_t_01 {
       display: flex;
       opacity: .7;
       align-items: center;
       cursor: pointer;
-      i{
+
+      i {
         margin-right: 5px;
       }
     }
-    .screen_t_01:nth-child(1){
+
+    .screen_t_01:nth-child(1) {
       margin-right: 20px;
     }
-    .screen_t_01:hover{
+
+    .screen_t_01:hover {
       opacity: 1;
     }
   }
-  .select_02{
-    .el-icon-close{
+
+  .select_02 {
+    .el-icon-close {
       font-size: 14px;
       color: #f56c6c;
       font-weight: bold;
@@ -396,12 +450,14 @@ export default {
     }
   }
 }
-.level_01_01{
+
+.level_01_01 {
   width: 100%;
   display: flex;
   font-size: 12px;
   margin-bottom: 10px;
-  .level_01_02{
+
+  .level_01_02 {
     color: #409eff;
     display: flex;
     align-items: center;
@@ -411,7 +467,8 @@ export default {
     width: max-content;
     margin-right: 10px;
     background-color: #ecf5ff;
-    .el-icon-error{
+
+    .el-icon-error {
       color: #409eff;
       font-size: 17px;
       cursor: pointer;
@@ -419,9 +476,11 @@ export default {
     }
   }
 }
-::v-deep .el-form-item{
+
+::v-deep .el-form-item {
   margin-bottom: 10px;
 }
+
 ::v-deep .el-radio-group {
   margin-top: -2px;
 }
@@ -464,12 +523,14 @@ export default {
   display: flex;
   width: 100%;
   justify-content: space-between;
+
   .group_content {
     width: 100%;
     overflow-x: auto;
   }
 }
-.group_tips{
+
+.group_tips {
   display: flex;
   color: #f56c6c;
   font-size: 12px;
@@ -529,6 +590,7 @@ export default {
   overflow-y: auto;
   flex-shrink: 0;
   flex-wrap: wrap;
+
   .group_item {
     display: flex;
     width: 100%;
@@ -540,13 +602,16 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0 8px 0 12px;
+
     .group_name {
       width: 80%;
       display: flex;
       align-items: center;
+
       .left_icon {
         margin-right: 6px;
       }
+
       .group_text {
         max-width: 90%;
         overflow: hidden;
@@ -573,8 +638,7 @@ export default {
         align-items: center;
         justify-content: center;
         // background-color: darkgreen;
-        border: 1px solid #ebeef5;
-      ;
+        border: 1px solid #ebeef5;;
         -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
 
@@ -612,11 +676,13 @@ export default {
   color: #67c23a;
   background-color: #f0f9eb;
 }
-.close_inherit, .add_inherit{
+
+.close_inherit, .add_inherit {
   display: flex;
   width: 100%;
   justify-content: center;
-  .close_desc{
+
+  .close_desc {
     display: flex;
     height: max-content;
     color: #606266;
@@ -628,35 +694,42 @@ export default {
     flex-direction: column;
     border: 1px solid #dcdcdc;
   }
-  .footer_btn{
+
+  .footer_btn {
     display: flex;
     margin-top: 20px;
     justify-content: center;
   }
 }
-.add_inherit{
-  justify-content:space-between;
-  .table_group{
+
+.add_inherit {
+  justify-content: space-between;
+
+  .table_group {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
   }
-  .table_ele{
+
+  .table_ele {
     width: 100%;
     height: 100%;
     // display: flex;
     flex-grow: 2;
     flex-direction: column;
-    .tab_check_warp{
+
+    .tab_check_warp {
       margin: 12px 0 20px 10px;
     }
   }
 }
-.seat_class{
-  border:1px solid #e0e0e0;
+
+.seat_class {
+  border: 1px solid #e0e0e0;
   padding: 10px;
   border-radius: 10px;
-  .seat_item{
+
+  .seat_item {
     display: flex;
     align-items: center;
     height: 28px;
@@ -664,10 +737,11 @@ export default {
     color: #409eff;
     background: #ecf5ff;
     border-radius: 4px;
-    border:1px solid #b3d8ff;
+    border: 1px solid #b3d8ff;
   }
 }
-.loading_icon{
+
+.loading_icon {
   margin-top: 10px;
 }
 </style>

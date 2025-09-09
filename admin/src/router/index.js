@@ -228,6 +228,14 @@ export const asyncRoutes = [
           title: '账单明细',
         }
       },
+      {
+        path: '/manualCorrection',
+        component: () => import('@/views/financeManage/manualCorrection'),
+        name: 'manualCorrection',
+        meta: {
+          title: '人工修正',
+        }
+      },
     ]
   },
   // 权限配置
