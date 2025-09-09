@@ -177,12 +177,11 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      this.page = num || this.page;
       const startTime = formatDateTime(new Date(this.queryData.time[0]), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(this.queryData.time[1]), 'YYYY-MM-DD') + ' 23:59:59'
       const params = {
-        page: num || this.page,
-        limit: this.limit,
+        page: num || this.queryData.page,
+        limit: this.queryData.limit,
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
         task_type: this.queryData.task_type ? Number(this.queryData.task_type) : -1,

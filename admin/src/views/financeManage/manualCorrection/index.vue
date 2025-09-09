@@ -177,10 +177,9 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      this.page = num || this.page;
       const params = {
-        page: num || this.page,
-        limit: this.limit,
+        page: num || this.queryData.page,
+        limit: this.queryData.limit,
         app_account_id: Number(this.queryData.app_account_id) ,
       }
       getRecordReviseListApi(params).then(res => {
