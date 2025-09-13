@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择平台">
           <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -73,7 +73,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="平台" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
           </template>
@@ -213,8 +213,8 @@
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="类别:" prop="category">
-            <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
+          <el-form-item label="平台:" prop="category">
+            <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择平台">
               <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -369,7 +369,7 @@ export default {
         },
         rules: {
           title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择平台！', trigger: 'change' }],
           categories_id: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           tags: [{ required: true, message: '请选择标签！', trigger: 'change' }],
