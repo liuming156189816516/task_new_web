@@ -141,7 +141,7 @@ export const asyncRoutes = [
         component: () => import('@/views/taskGroup/taskType'),
         name: 'taskType',
         meta: {
-          title: '任务类型',
+          title: '任务分类',
         }
       },
       {

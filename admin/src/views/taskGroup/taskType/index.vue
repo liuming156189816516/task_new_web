@@ -1,13 +1,13 @@
-<!-- 任务类型 -->
+<!-- 任务分类 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择分类">
           <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -58,12 +58,12 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
           </template>
@@ -147,11 +147,11 @@
       @close="closeModal"
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
-        <el-form-item label="主题:" prop="title">
-          <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+        <el-form-item label="标题:" prop="title">
+          <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="类别:" prop="category">
-          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
+        <el-form-item label="分类:" prop="category">
+          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择分类">
             <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -233,8 +233,8 @@ export default {
           one_icon: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择分类！', trigger: 'change' }],
           title_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
           one_icon: [{ required: true, message: '请上传右上角图标！', trigger: 'change' }],
         },
@@ -252,10 +252,10 @@ export default {
         ],
       },
       categoryList: [
-        { label: 'Hot', value: 'Hot' },
-        { label: 'Social', value: 'Social' },
-        { label: 'Games', value: 'Games' },
-        { label: 'Others', value: 'Others' },
+        { label: 'Hot', value: '1' },
+        { label: 'Social', value: '2' },
+        { label: 'Games', value: '3' },
+        { label: 'Others', value: '4' },
       ],
       releaseStatusList: [
         { label: '全部', value: '0' ,type: 'primary' },
@@ -303,6 +303,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.release_status = item.release_status ? String(item.release_status) : ''
+            item.category = item.category ? String(item.category) : ''
             return item
           })
         }

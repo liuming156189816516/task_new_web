@@ -4,10 +4,10 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择任务类型">
+        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择 任务分类">
           <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
         </el-select>
       </el-form-item>
@@ -63,12 +63,12 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="任务类型" min-width="120" prop="categories_title" show-overflow-tooltip>
+        <el-table-column label=" 任务分类" min-width="120" prop="categories_title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -205,11 +205,11 @@
     >
       <div class="content" :style="{maxHeight:cliHeight-100+'px'}">
         <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="0" size="small" label-position="top">
-          <el-form-item label="主题:" prop="title">
-            <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+          <el-form-item label="标题:" prop="title">
+            <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="任务类型:" prop="categories_id">
-            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择任务类型">
+          <el-form-item label=" 任务分类:" prop="categories_id">
+            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择 任务分类">
               <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
             </el-select>
           </el-form-item>
@@ -368,9 +368,9 @@ export default {
           deeplink: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择平台！', trigger: 'change' }],
-          categories_id: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
+          categories_id: [{ required: true, message: '请选择 任务分类！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           tags: [{ required: true, message: '请选择标签！', trigger: 'change' }],
           task_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
@@ -683,7 +683,7 @@ export default {
       //
       // }
     },
-    // 获取任务类型
+    // 获取 任务分类
     getCategoriesListFun() {
       const params = {
         page: 1,
