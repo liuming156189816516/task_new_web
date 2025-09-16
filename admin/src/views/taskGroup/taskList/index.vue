@@ -7,13 +7,18 @@
         <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择 任务分类">
-          <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择任务分类">
+          <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择平台">
-          <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select v-model="queryData.platform" clearable filterable placeholder="请选择平台">
+          <el-option v-for="item in platformList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
+          <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -68,14 +73,19 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label=" 任务分类" min-width="120" prop="categories_title" show-overflow-tooltip>
+        <el-table-column label="任务分类" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList) || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="平台" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="平台" min-width="120" prop="platform" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+            {{ getLabelByVal(scope.row[scope.column.property], platformList) || '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="任务类型" min-width="150" prop="task_type" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="任务图标" min-width="120" prop="task_icon" show-overflow-tooltip>
@@ -98,7 +108,11 @@
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]">
               <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(scope.row[scope.column.property]))">
-                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" @click.stop="openImageViewFun(scope.row,'two_icon')" />
+                <el-image
+                  :src="scope.row[scope.column.property]"
+                  style="width: 80px;height: 30px;cursor: pointer;"
+                  @click.stop="openImageViewFun(scope.row,'two_icon')"
+                />
               </div>
               <div v-else>
                 <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
@@ -166,7 +180,7 @@
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180" fixed="right">
+        <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
             <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
               <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
@@ -199,23 +213,35 @@
       :title="addModal.type==='add'?'新建':'编辑'"
       :visible.sync="addModal.show"
       center
-      width="1000px"
       class="actionModal"
+      width="1000px"
       @close="closeModal"
     >
-      <div class="content" :style="{maxHeight:cliHeight-100+'px'}">
-        <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="0" size="small" label-position="top">
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <el-form
+          ref="refAddModal"
+          :model="addModal.formData"
+          :rules="addModal.rules"
+          label-position="top"
+          label-width="0"
+          size="small"
+        >
           <el-form-item label="标题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
           </el-form-item>
-          <el-form-item label=" 任务分类:" prop="categories_id">
-            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择 任务分类">
-              <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
+          <el-form-item label="任务分类:" prop="category">
+            <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择任务分类">
+              <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="平台:" prop="category">
-            <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择平台">
-              <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+          <el-form-item label="平台:" prop="platform">
+            <el-select v-model="addModal.formData.platform" clearable filterable placeholder="请选择平台">
+              <el-option v-for="item in platformList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="任务类型:" prop="task_type">
+            <el-select v-model="addModal.formData.task_type" clearable filterable placeholder="请选择任务类型">
+              <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="任务图标:" prop="task_icon">
@@ -294,7 +320,7 @@
             />
           </el-form-item>
           <el-form-item label="增加积分:" prop="reward">
-            <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
+            <el-input v-model="addModal.formData.reward" placeholder="请输入增加积分" type="number" @input="changeInput" />
           </el-form-item>
           <el-form-item label="标签:" prop="tags">
             <el-select v-model="addModal.formData.tags" :multiple="true" clearable filterable placeholder="请选择标签">
@@ -324,7 +350,7 @@
 import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi, editReleaseStatusApi } from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
-import { deepClone, resetPage, successTips, getLabelByVal,getLabelArrByVal,getImageExtension } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
@@ -345,8 +371,9 @@ export default {
         total: 0,
         title: '',
         category: '',
-        categories_id: '',
         release_status: null,
+        task_type: null,
+        platform: ''
       },
       pageOption: resetPage(),
       tableData: [],
@@ -357,7 +384,6 @@ export default {
         formData: {
           title: '',
           category: '',
-          categories_id: '',
           reward: '',
           tags: [],
           task_icon: '',
@@ -366,11 +392,14 @@ export default {
           three_icon: '',
           points_icon: '',
           deeplink: '',
+          task_type: '',
+          platform: ''
         },
         rules: {
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择平台！', trigger: 'change' }],
-          categories_id: [{ required: true, message: '请选择 任务分类！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择任务分类！', trigger: 'change' }],
+          platform: [{ required: true, message: '请选择平台！', trigger: 'change' }],
+          task_type: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           tags: [{ required: true, message: '请选择标签！', trigger: 'change' }],
           task_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
@@ -395,21 +424,31 @@ export default {
         ],
       },
       categoryList: [
-        { label: 'tiktok', value: 'tiktok' },
-        { label: 'whatsapp', value: 'whatsapp' },
-        { label: 'instagram', value: 'instagram' },
+        { label: 'Hot', value: '1' },
+        { label: 'Social', value: '2' },
+        { label: 'Games', value: '3' },
+        { label: 'Others', value: '4' },
+      ],
+      taskTypeList: [
+        { label: 'Tiktok-Like', value: '1' },
+        { label: 'Tiktok-Follow', value: '2' },
+        { label: 'Whatsapp-SendMessage', value: '3' },
+      ],
+      platformList: [
+        { label: 'Tiktok', value: '1' },
+        { label: 'Whatsapp', value: '2' },
+        { label: 'Instagram', value: '3' },
       ],
       tagsList: [
         { label: 'social', value: 'social' },
         { label: 'easy', value: 'easy' },
       ],
       releaseStatusList: [
-        { label: '全部', value: '0' ,type: 'primary' },
-        { label: '未发布', value: '1' ,type: 'primary' },
-        { label: '已下架', value: '2' ,type: 'primary' },
-        { label: '已发布', value: '3' ,type: 'success' },
+        { label: '全部', value: '0', type: 'primary' },
+        { label: '未发布', value: '1', type: 'primary' },
+        { label: '已下架', value: '2', type: 'primary' },
+        { label: '已发布', value: '3', type: 'success' },
       ],
-      categoriesList: [],
       imgData: {
         show: false,
         scr: ''
@@ -419,7 +458,7 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
-    this.getCategoriesListFun()
+    // this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
   },
@@ -440,9 +479,10 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
-        category: this.queryData.category,
-        categories_id: this.queryData.categories_id,
         release_status: Number(this.queryData.release_status),
+        category: Number(this.queryData.category),
+        platform: Number(this.queryData.platform),
+        task_type: Number(this.queryData.task_type),
 
       }
       getDataApi(params).then(res => {
@@ -452,6 +492,9 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.release_status = item.release_status ? String(item.release_status) : ''
+            item.task_type = item.task_type ? String(item.task_type) : ''
+            item.category = item.category ? String(item.category) : ''
+            item.platform = item.platform ? String(item.platform) : ''
             return item
           })
         }
@@ -469,7 +512,7 @@ export default {
       this.addModal.formData = deepClone(row)
     },
     // 修改发布
-    changeReleaseStatusFun(form,val) {
+    changeReleaseStatusFun(form, val) {
       const massage = val === 2 ? '下架' : '发布'
       this.$confirm('确认' + massage + '吗?', '提示', {
         confirmButtonText: '确定',
@@ -544,7 +587,6 @@ export default {
       this.addModal.formData = {
         title: '',
         category: '',
-        categories_id: '',
         reward: '',
         tags: [],
         task_icon: '',
@@ -553,6 +595,8 @@ export default {
         three_icon: '',
         points_icon: '',
         deeplink: '',
+        task_type: '',
+        platform: ''
       }
     },
     // 批量操作
@@ -652,14 +696,15 @@ export default {
         total: 0,
         title: '',
         category: '',
-        categories_id: '',
         release_status: null,
+        task_type: null,
+        platform: ''
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },
     // 表头筛选
-    handleRowQueryFun(val,kay) {
+    handleRowQueryFun(val, kay) {
       this.queryData[kay] = val;
       this.getDataListFun(1)
     },
@@ -737,32 +782,37 @@ export default {
   }
 }
 
-.actionModal{
- ::v-deep .el-dialog__body{
+.actionModal {
+  ::v-deep .el-dialog__body {
     padding: 0;
   }
-.content{
-  overflow: hidden;
-  overflow-y: auto;
-  padding: 16px;
 
-}
-  .el-form{
+  .content {
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 16px;
+
+  }
+
+  .el-form {
     display: flex;
     align-items: self-start;
-    justify-content:space-between;
+    justify-content: space-between;
     flex-wrap: wrap;
-    .el-form-item{
+
+    .el-form-item {
       width: 48%;
     }
-    .item_100{
+
+    .item_100 {
       width: 100%;
       margin-top: 20px;
     }
-}
+  }
 
 }
-.aUnderline{
+
+.aUnderline {
   color: #00a8ff;
   text-decoration: underline;
 }
