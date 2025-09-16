@@ -4,7 +4,7 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
@@ -58,7 +58,7 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -157,8 +157,8 @@
       @close="closeModal"
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
-        <el-form-item label="主题:" prop="title">
-          <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+        <el-form-item label="标题:" prop="title">
+          <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
         </el-form-item>
         <el-form-item label="类别:" prop="category">
           <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
@@ -254,7 +254,7 @@ export default {
           img_dark: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
           deep_type: [{ required: true, message: '请选择跳转类型！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],

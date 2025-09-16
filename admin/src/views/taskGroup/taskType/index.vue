@@ -235,8 +235,8 @@ export default {
         rules: {
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           category: [{ required: true, message: '请选择分类！', trigger: 'change' }],
-          title_icon: [{ required: true, message: '请上传任务图标！', trigger: 'change' }],
-          one_icon: [{ required: true, message: '请上传右上角图标！', trigger: 'change' }],
+          title_icon: [{ required: false, message: '请上传任务图标！', trigger: 'change' }],
+          one_icon: [{ required: false, message: '请上传右上角图标！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -292,7 +292,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
-        category: this.queryData.category,
+        category: Number(this.queryData.category),
         release_status: Number(this.queryData.release_status),
         sort: ''
       }
@@ -348,7 +348,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          // formData.slot = formData.slot ? Number(formData.slot) : 0
+          formData.category = formData.category ? Number(formData.category) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
