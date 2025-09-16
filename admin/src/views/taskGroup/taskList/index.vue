@@ -540,6 +540,9 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.reward = formData.reward ? Number(formData.reward) : 0
+          formData.category = formData.category ? Number(formData.category) : 0
+          formData.task_type = formData.task_type ? Number(formData.task_type) : 0
+          formData.platform = formData.platform ? Number(formData.platform) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
