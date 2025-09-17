@@ -4,10 +4,10 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择分类">
           <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -132,10 +132,10 @@
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
         <el-form-item label="标题:" prop="title">
-          <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+          <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
         </el-form-item>
         <el-form-item label="分类:" prop="category">
-          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
+          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择分类">
             <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
@@ -180,8 +180,8 @@ export default {
           category: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择分类！', trigger: 'change' }],
         },
         isLoading: false,
       },

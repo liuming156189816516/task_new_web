@@ -4,7 +4,7 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入主题" @input="changeInput" />
+        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择活动类型">
@@ -174,7 +174,7 @@
           size="small"
         >
           <el-form-item label="标题:" prop="title">
-            <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
+            <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
           </el-form-item>
           <el-form-item label="活动类型:" prop="categories_id">
             <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择活动类型">
@@ -264,7 +264,7 @@ export default {
         rules: {
           categories_id: [{ required: true, message: '请选择活动类型！', trigger: 'change' }],
           activitie_icon: [{ required: true, message: '请上传活动图标！', trigger: 'change' }],
-          title: [{ required: true, message: '请输入主题！', trigger: 'change' }],
+          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],

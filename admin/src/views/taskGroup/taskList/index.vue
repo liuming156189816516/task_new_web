@@ -526,6 +526,7 @@ export default {
             item.task_type = item.task_type ? String(item.task_type) : ''
             item.category = item.category ? String(item.category) : ''
             item.platform = item.platform ? String(item.platform) : ''
+            item.is_recommend = item.is_recommend ? String(item.is_recommend) : '0'
             return item
           })
         }
