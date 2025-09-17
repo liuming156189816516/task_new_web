@@ -226,8 +226,6 @@
 
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi ,editReleaseStatusApi } from './api';
-import { getDataApi as getCategoriesListApi } from '@/views/activityGroup/activityType/api/index.js';
-
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
