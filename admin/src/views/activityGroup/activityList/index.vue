@@ -68,9 +68,9 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="活动类型" min-width="120" prop="categories_title" show-overflow-tooltip>
+        <el-table-column label="活动类型" min-width="120" prop="activity_type" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], categoriesList) ||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="活动分类" min-width="120" prop="category" show-overflow-tooltip>
@@ -344,6 +344,7 @@ export default {
             item.release_status = item.release_status ? String(item.release_status) : ''
             item.category = item.category ? String(item.category) : ''
             item.activity_type = item.activity_type ? String(item.activity_type) : ''
+            console.log('item',item)
             return item
           })
         }
