@@ -1,4 +1,4 @@
-<!-- 活动类型 -->
+<!-- 活动分类 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
@@ -58,12 +58,12 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
           </template>
@@ -131,10 +131,10 @@
       @close="closeModal"
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
-        <el-form-item label="主题:" prop="title">
+        <el-form-item label="标题:" prop="title">
           <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="类别:" prop="category">
+        <el-form-item label="分类:" prop="category">
           <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
             <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>

@@ -63,7 +63,7 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="主题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -173,7 +173,7 @@
           label-width="0"
           size="small"
         >
-          <el-form-item label="主题:" prop="title">
+          <el-form-item label="标题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入主题" @input="changeInput" />
           </el-form-item>
           <el-form-item label="活动类型:" prop="categories_id">

@@ -142,6 +142,16 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="是否推荐" min-width="120" prop="is_recommend" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], isRecommendList)|| '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="任务限制" min-width="120" prop="task_limit" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="标签" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-tag>
@@ -322,6 +332,18 @@
           <el-form-item label="增加积分:" prop="reward">
             <el-input v-model="addModal.formData.reward" placeholder="请输入增加积分" type="number" @input="changeInput" />
           </el-form-item>
+          <el-form-item label="是否推荐:" prop="is_recommend">
+            <el-switch
+              v-model="addModal.formData.is_recommend"
+              active-value="1"
+              inactive-value="0"
+              active-text="是"
+              inactive-text="否"
+            />
+          </el-form-item>
+          <el-form-item label="任务限制:" prop="task_limit">
+            <el-input v-model="addModal.formData.task_limit" placeholder="请输入任务限制" type="number" @input="changeInput" />
+          </el-form-item>
           <el-form-item label="标签:" prop="tags">
             <el-select v-model="addModal.formData.tags" :multiple="true" clearable filterable placeholder="请选择标签">
               <el-option v-for="item in tagsList" :key="item.value" :label="item.label" :value="item.value" />
@@ -393,7 +415,9 @@ export default {
           points_icon: '',
           deeplink: '',
           task_type: '',
-          platform: ''
+          platform: '',
+          is_recommend: '0',
+          task_limit: '',
         },
         rules: {
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
@@ -408,6 +432,8 @@ export default {
           three_icon: [{ required: true, message: '请上传任务左下角图标！', trigger: 'change' }],
           points_icon: [{ required: true, message: '请上传任务中间的积分图标！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+          is_recommend: [{ required: true, message: '请选择是否推荐！', trigger: 'change' }],
+          task_limit: [{ required: true, message: '请输入任务限制！', trigger: 'change' }],
 
         },
         isLoading: false,
@@ -452,7 +478,12 @@ export default {
       imgData: {
         show: false,
         scr: ''
-      }
+      },
+      isRecommendList: [
+        { label: '否', value: '0' },
+        { label: '是', value: '1' },
+
+      ]
     }
   },
   mounted() {
@@ -543,6 +574,8 @@ export default {
           formData.category = formData.category ? Number(formData.category) : 0
           formData.task_type = formData.task_type ? Number(formData.task_type) : 0
           formData.platform = formData.platform ? Number(formData.platform) : 0
+          formData.is_recommend = formData.is_recommend ? Number(formData.is_recommend) : 0
+          formData.task_limit = formData.task_limit ? Number(formData.task_limit) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -800,11 +833,15 @@ export default {
   .el-form {
     display: flex;
     align-items: self-start;
-    justify-content: space-between;
+    //justify-content: space-between;
     flex-wrap: wrap;
 
     .el-form-item {
-      width: 48%;
+      width: 31%;
+      margin-right: 20px;
+      &:nth-of-type(3n){
+        margin-right: 0;
+      }
     }
 
     .item_100 {

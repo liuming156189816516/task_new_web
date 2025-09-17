@@ -166,7 +166,7 @@ export const asyncRoutes = [
         component: () => import('@/views/activityGroup/activityType'),
         name: 'ActivityType',
         meta: {
-          title: '活动类型',
+          title: '活动分类',
         }
       },
       {
