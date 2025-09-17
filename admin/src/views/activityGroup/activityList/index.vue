@@ -392,6 +392,7 @@ export default {
           const formData = deepClone(this.addModal.formData)
           formData.reward = formData.reward ? Number(formData.reward) : 0
           formData.category = formData.category ? Number(formData.category) : 0
+          formData.activity_type = formData.activity_type ? Number(formData.activity_type) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
