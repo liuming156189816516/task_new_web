@@ -633,7 +633,9 @@ export default {
         points_icon: '',
         deeplink: '',
         task_type: '',
-        platform: ''
+        platform: '',
+        is_recommend: '0',
+        task_limit: '',
       }
     },
     // 批量操作
