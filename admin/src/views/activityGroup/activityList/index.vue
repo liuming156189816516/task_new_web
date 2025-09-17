@@ -7,8 +7,8 @@
         <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.categories_id" clearable filterable placeholder="请选择活动类型">
-          <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
+        <el-select v-model="queryData.activity_type" clearable filterable placeholder="请选择活动类型">
+          <el-option v-for="item in categoriesList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -176,9 +176,9 @@
           <el-form-item label="标题:" prop="title">
             <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="活动类型:" prop="categories_id">
-            <el-select v-model="addModal.formData.categories_id" clearable filterable placeholder="请选择活动类型">
-              <el-option v-for="item in categoriesList" :key="item.id" :label="item.title" :value="item.id" />
+          <el-form-item label="活动类型:" prop="activity_type">
+            <el-select v-model="addModal.formData.activity_type" clearable filterable placeholder="请选择活动类型">
+              <el-option v-for="item in categoriesList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="活动图标:" prop="activitie_icon">
@@ -249,7 +249,7 @@ export default {
         total: 0,
         title: '',
         category: '',
-        categories_id: '',
+        activity_type: '',
         release_status: null,
       },
       pageOption: resetPage(),
@@ -259,7 +259,7 @@ export default {
         show: false,
         type: 'add',
         formData: {
-          categories_id: '',
+          activity_type: '',
           activitie_icon: '',
           title: '',
           desc: '',
@@ -268,7 +268,7 @@ export default {
           category: '',
         },
         rules: {
-          categories_id: [{ required: true, message: '请选择活动类型！', trigger: 'change' }],
+          activity_type: [{ required: true, message: '请选择活动类型！', trigger: 'change' }],
           activitie_icon: [{ required: true, message: '请上传活动图标！', trigger: 'change' }],
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
@@ -301,7 +301,9 @@ export default {
         { label: '已下架', value: '2' ,type: 'primary' },
         { label: '已发布', value: '3' ,type: 'success' },
       ],
-      categoriesList: [],
+      categoriesList: [
+        { label: 'Sign-In', value: '1' },
+      ],
       imgData: {
         show: false,
         scr: ''
@@ -311,7 +313,6 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
-    this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
   },
@@ -333,7 +334,7 @@ export default {
         limit: this.queryData.limit,
         title: this.queryData.title,
         category: Number(this.queryData.category),
-        categories_id: this.queryData.categories_id,
+        activity_type: Number(this.queryData.activity_type),
         release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
@@ -344,6 +345,7 @@ export default {
           this.tableData = data.map(item => {
             item.release_status = item.release_status ? String(item.release_status) : ''
             item.category = item.category ? String(item.category) : ''
+            item.activity_type = item.activity_type ? String(item.activity_type) : ''
             return item
           })
         }
@@ -439,7 +441,7 @@ export default {
       this.addModal.isLoading = false
       this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        categories_id: '',
+        activity_type: '',
         activitie_icon: '',
         title: '',
         desc: '',
@@ -545,7 +547,7 @@ export default {
         total: 0,
         title: '',
         category: '',
-        categories_id: '',
+        activity_type: '',
         release_status: null,
       }
       this.getDataListFun(1)
@@ -575,18 +577,6 @@ export default {
       // else if (type === 'modal') {
       //
       // }
-    },
-    // 获取活动类型
-    getCategoriesListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-      }
-      getCategoriesListApi(params).then(res => {
-        if (res.msg === 'success') {
-          this.categoriesList = res.data.list
-        }
-      })
     },
     // 打开预览图片
     openImageViewFun(row, kay) {
