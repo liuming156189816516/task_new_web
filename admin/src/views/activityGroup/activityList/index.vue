@@ -12,7 +12,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
+        <el-select v-model="queryData.category" clearable filterable placeholder="请选择活动分类">
           <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -73,9 +73,9 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="活动分类" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList) ||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="活动图标" min-width="120" prop="activitie_icon" show-overflow-tooltip>
@@ -195,6 +195,11 @@
               @uploadSuccess="uploadSuccess"
             />
           </el-form-item>
+          <el-form-item label="活动分类:" prop="category">
+            <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择活动类型">
+              <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="描述:" prop="desc">
             <el-input v-model="addModal.formData.desc" placeholder="请输入描述" @input="changeInput" />
           </el-form-item>
@@ -260,6 +265,7 @@ export default {
           desc: '',
           reward: '',
           deeplink: '',
+          category: '',
         },
         rules: {
           categories_id: [{ required: true, message: '请选择活动类型！', trigger: 'change' }],
@@ -268,6 +274,7 @@ export default {
           desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
           reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择活动分类！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -283,10 +290,10 @@ export default {
         ],
       },
       categoryList: [
-        { label: 'all', value: 'all' },
-        { label: 'limited', value: 'limited' },
-        { label: 'newbie', value: 'newbie' },
-        { label: 'hot', value: 'hot' },
+        { label: 'All', value: '1' },
+        { label: 'Limited', value: '2' },
+        { label: 'Newbie', value: '3' },
+        { label: 'Hot', value: '4' },
       ],
       releaseStatusList: [
         { label: '全部', value: '0' ,type: 'primary' },
@@ -325,7 +332,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
-        category: this.queryData.category,
+        category: Number(this.queryData.category),
         categories_id: this.queryData.categories_id,
         release_status: Number(this.queryData.release_status),
       }
@@ -336,6 +343,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.release_status = item.release_status ? String(item.release_status) : ''
+            item.category = item.category ? String(item.category) : ''
             return item
           })
         }
@@ -381,12 +389,15 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.reward = formData.reward ? Number(formData.reward) : 0
+          formData.category = formData.category ? Number(formData.category) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
                 successTips(this, 'success', '保存成功！')
                 this.closeModal()
                 this.getDataListFun()
+              } else {
+                this.addModal.isLoading = true
               }
             })
           } else if (this.addModal.type === 'edit') {
@@ -395,6 +406,8 @@ export default {
                 successTips(this, 'success', '編輯成功！')
                 this.closeModal()
                 this.getDataListFun()
+              } else {
+                this.addModal.isLoading = true
               }
             })
           }
@@ -432,6 +445,7 @@ export default {
         desc: '',
         reward: '',
         deeplink: '',
+        category: '',
       }
     },
     // 批量操作

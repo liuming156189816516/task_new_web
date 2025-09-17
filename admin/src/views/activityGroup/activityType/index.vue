@@ -65,7 +65,7 @@
         </el-table-column>
         <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList)||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
@@ -197,10 +197,10 @@ export default {
         ],
       },
       categoryList: [
-        { label: 'all', value: 'all' },
-        { label: 'limited', value: 'limited' },
-        { label: 'newbie', value: 'newbie' },
-        { label: 'hot', value: 'hot' },
+        { label: 'All', value: '1' },
+        { label: 'Limited', value: '2' },
+        { label: 'Newbie', value: '3' },
+        { label: 'Hot', value: '4' },
       ],
       releaseStatusList: [
         { label: '全部', value: '0' ,type: 'primary' },
@@ -233,7 +233,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
-        category: this.queryData.category,
+        category: Number(this.queryData.category),
         release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
@@ -243,6 +243,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.release_status = item.release_status ? String(item.release_status) : ''
+            item.category = item.category ? String(item.category) : ''
             return item
           })
         }
@@ -287,7 +288,7 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          // formData.slot = formData.slot ? Number(formData.slot) : 0
+          formData.category = formData.category ? Number(formData.category) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
