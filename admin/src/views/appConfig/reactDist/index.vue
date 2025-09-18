@@ -164,7 +164,7 @@
           <UploadFiles
             v-else
             ref="refUploadFiles"
-            :format="['bundle','android.bundle']"
+            :format="['zip']"
             :max-size="100"
             kay="packageUrl"
             @uploadSuccess="uploadSuccess"
