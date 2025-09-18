@@ -73,6 +73,11 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="最小支持版本" min-width="120" prop="min_version" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="渠道" min-width="120" prop="channel" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], channelList) }}
@@ -146,6 +151,10 @@
         <el-form-item label="版本:" prop="version">
           <el-input v-model="addModal.formData.version" placeholder="请输入版本" @input="changeInput" />
         </el-form-item>
+        <el-form-item label="最小支持版本:" prop="min_version">
+          <el-input v-model="addModal.formData.min_version" placeholder="请输入最小支持版本" @input="changeInput" />
+        </el-form-item>
+
         <el-form-item label="渠道:" prop="channel">
           <el-select v-model="addModal.formData.channel" clearable filterable placeholder="请选择渠道">
             <el-option v-for="item in channelList" :key="item.value" :label="item.label" :value="item.value" />
@@ -217,10 +226,12 @@ export default {
           version: '',
           channel: '',
           packageUrl: '',
+          min_version: '',
         },
         rules: {
           os: [{ required: true, message: '请选择Os！', trigger: 'change' }],
           version: [{ required: true, message: '请输入版本！', trigger: 'change' }],
+          min_version: [{ required: true, message: '请输入最小支持版本！', trigger: 'change' }],
           channel: [{ required: true, message: '请选择渠道！', trigger: 'change' }],
           packageUrl: [{ required: true, message: '请上传资源包！' }],
         },
@@ -357,6 +368,7 @@ export default {
         version: '',
         channel: '',
         packageUrl: '',
+        min_version: '',
       }
     },
     // 批量操作
