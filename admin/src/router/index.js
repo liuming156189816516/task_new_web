@@ -109,6 +109,14 @@ export const asyncRoutes = [
           title: '布局配置',
         }
       },
+      {
+        path: '/reactDist',
+        component: () => import('@/views/appConfig/reactDist'),
+        name: 'reactDist',
+        meta: {
+          title: 'React资源包',
+        }
+      },
 
     ]
   },

@@ -86,6 +86,7 @@ export default {
           return item
         })
         const file = files[0]
+        console.log('file',file)
         if (this.format.includes(file.fileExtension)) {
           this.uploadImgFileFun(file)
         } else {
