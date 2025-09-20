@@ -202,7 +202,7 @@
           />
         </el-form-item>
         <el-form-item label="补丁版本:" prop="patch_version">
-          <el-input v-model="addModal.formData.version" placeholder="请输入补丁版本" @input="changeInput" />
+          <el-input v-model="addModal.formData.patch_version" placeholder="请输入补丁版本" @input="changeInput" />
         </el-form-item>
         <el-form-item label="补丁包:" prop="patch_url">
           <div v-if="addModal.formData.patch_url" class="imgBox">
