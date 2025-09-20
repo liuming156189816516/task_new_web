@@ -100,6 +100,29 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="补丁版本" min-width="120" prop="patch_version" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="补丁包" min-width="120" prop="patch_url" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div v-if="scope.row[scope.column.property]">
+              <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(scope.row[scope.column.property]))">
+                <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" @click.stop="openImageViewFun(scope.row,'patch_url')" />
+              </div>
+              <div v-else>
+                <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
+              </div>
+            </div>
+            <div v-else>-</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="补丁包的md5" min-width="150" prop="patch_md5" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -154,7 +177,6 @@
         <el-form-item label="最小支持版本:" prop="min_version">
           <el-input v-model="addModal.formData.min_version" placeholder="请输入最小支持版本" @input="changeInput" />
         </el-form-item>
-
         <el-form-item label="渠道:" prop="channel">
           <el-select v-model="addModal.formData.channel" clearable filterable placeholder="请选择渠道">
             <el-option v-for="item in channelList" :key="item.value" :label="item.label" :value="item.value" />
@@ -179,6 +201,29 @@
             @uploadSuccess="uploadSuccess"
           />
         </el-form-item>
+        <el-form-item label="补丁版本:" prop="patch_version">
+          <el-input v-model="addModal.formData.version" placeholder="请输入补丁版本" @input="changeInput" />
+        </el-form-item>
+        <el-form-item label="补丁包:" prop="patch_url">
+          <div v-if="addModal.formData.patch_url" class="imgBox">
+            <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(addModal.formData.patch_url))">
+              <el-image :src="addModal.formData.patch_url" style="width: 120px;height: 120px" />
+            </div>
+            <div v-else>
+              <a :href="addModal.formData.patch_url" class="aUnderline">文件</a>
+            </div>
+            <i class="el-icon-delete icon_del" @click="delImgFun('patch_url')" />
+          </div>
+          <UploadFiles
+            v-else
+            ref="refUploadFiles"
+            :format="['zip']"
+            :max-size="100"
+            kay="patch_url"
+            @uploadSuccess="uploadSuccess"
+          />
+        </el-form-item>
+
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
           <el-button :loading="addModal.isLoading" type="primary" @click="addSubmit">确认</el-button>
@@ -227,6 +272,8 @@ export default {
           channel: '',
           packageUrl: '',
           min_version: '',
+          patch_version: '',
+          patch_url: '',
         },
         rules: {
           os: [{ required: true, message: '请选择Os！', trigger: 'change' }],
@@ -234,6 +281,8 @@ export default {
           min_version: [{ required: true, message: '请输入最小支持版本！', trigger: 'change' }],
           channel: [{ required: true, message: '请选择渠道！', trigger: 'change' }],
           packageUrl: [{ required: true, message: '请上传资源包！' }],
+          patch_version: [{ required: false, message: '请输入补丁版本！', trigger: 'change' }],
+          patch_url: [{ required: false, message: '请上补丁包！' }],
         },
         isLoading: false,
       },
@@ -369,6 +418,8 @@ export default {
         channel: '',
         packageUrl: '',
         min_version: '',
+        patch_version: '',
+        patch_url: '',
       }
     },
     // 批量操作
