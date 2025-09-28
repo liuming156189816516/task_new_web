@@ -246,6 +246,23 @@ export const asyncRoutes = [
       },
     ]
   },
+  // 发布任务
+  {
+    path: '/releaseTask',
+    component: Layout,
+    name: 'financeManage',
+    meta: { title: '发布任务', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/platform',
+        component: () => import('@/views/releaseTask/platform'),
+        name: 'platform',
+        meta: {
+          title: '发布平台',
+        }
+      },
+    ]
+  },
   // 权限配置
   {
     path: '/permission',
