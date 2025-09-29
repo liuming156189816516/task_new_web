@@ -494,10 +494,9 @@ export default {
       this.addModal.isLoading = false
       this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        Name: '',
-        Remark: '',
-        layouts_plan_id: '',
-        scroll: 1
+        title: '',
+        platform: '',
+        icon: ''
       }
     },
     // 批量操作
@@ -835,5 +834,18 @@ export default {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;
+}
+
+.imgBox {
+  position: relative;
+
+  .icon_del {
+    cursor: pointer;
+    color: red;
+    position: absolute;
+    font-size: 22px;
+    left: 130px;
+    top: 38%;
+  }
 }
 </style>
