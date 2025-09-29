@@ -12,11 +12,6 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.release_status" clearable filterable placeholder="请选择发布状态">
-          <el-option v-for="item in releaseStatusList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn(1)">重置</el-button>
       </el-form-item>
@@ -81,12 +76,24 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-        <el-table-column label="排序" min-width="120" prop="sort" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
-          </template>
-        </el-table-column>
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
+              <span :class="[Number(queryData.release_status)?'dropdown_title':'']" style="color:#909399"> 发布状态
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in releaseStatusList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.release_status}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList)||'-' }}
           </template>
@@ -108,7 +115,7 @@
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
             <div class="action-btn">
-              <el-button size="small" type="primary" @click.stop="detailsOpenFun(scope.row)">详情</el-button>
+              <el-button size="small" type="primary" @click.stop="detailsOpenFun(scope.row)">套餐</el-button>
             </div>
           </template>
         </el-table-column>
@@ -166,7 +173,7 @@
       </el-form>
     </el-dialog>
 
-    <!-- 详情列表 -->
+    <!-- 套餐列表 -->
     <el-dialog
       :close-on-click-modal="false"
       :title="detailModal.title"
@@ -175,7 +182,7 @@
       center
       @close="closeDetailModal"
     >
-      <template v-if="detailModal.title ==='详情'">
+      <template v-if="detailModal.title ==='套餐'">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
@@ -279,7 +286,7 @@
       </template>
     </el-dialog>
 
-    <!-- 详情 新建 编辑 -->
+    <!-- 套餐 新建 编辑 -->
     <detailsAction ref="refDetailsAction" @updateDetailDataFun="updateDetailDataFun" />
 
     <!-- 图片预览 -->
@@ -389,6 +396,7 @@ export default {
         { label: 'Instagram', value: '3' },
       ],
       releaseStatusList: [
+        { label: '全部', value: '0' },
         { label: '未发布', value: '1' },
         { label: '已下架', value: '2' },
         { label: '已发布', value: '3' },
@@ -436,6 +444,11 @@ export default {
           });
         }
       })
+    },
+    // 表头筛选
+    handleRowQueryFun(val,kay) {
+      this.queryData[kay] = val;
+      this.getDataListFun(1)
     },
     // 新建
     addOpenFun() {
@@ -529,7 +542,7 @@ export default {
     // 上传成功回调
     uploadSuccess(file, kay) {
       const formData = new FormData();
-      formData.append('directory', 'task');
+      formData.append('directory', 'publier');
       formData.append('file', file);
       uploadFileApi(formData).then(res => {
         if (res.msg === 'success') {
@@ -600,15 +613,15 @@ export default {
 
       });
     },
-    // 打开详情
+    // 打开套餐
     detailsOpenFun(row) {
       this.detailModal.show = true
-      this.detailModal.title = '详情'
+      this.detailModal.title = '套餐'
       this.detailModal.cloneRow = deepClone(row)
       this.detailModal.width = '60%'
       this.getDetailsListFun(1)
     },
-    // 关闭详情列表
+    // 关闭套餐列表
     closeDetailModal() {
       this.detailModal.show = false
       this.detailModal.queryData = {
@@ -632,7 +645,7 @@ export default {
         this.delDetailDataFun()
       }
     },
-    // 详情列表
+    // 套餐列表
     getDetailsListFun(num) {
       this.$nextTick(() => {
         const tableBodyWrapper = this.$refs.detailTable.$el.querySelector('.el-table__body-wrapper');
@@ -656,15 +669,15 @@ export default {
         }
       });
     },
-    // 详情 新增
+    // 套餐 新增
     addDetailOpenFun() {
       this.$refs.refDetailsAction.open(null, 'add', this.detailModal.cloneRow)
     },
-    // 详情 编辑
+    // 套餐 编辑
     editDetailOpenFun(form) {
       this.$refs.refDetailsAction.open(form, 'edit', this.detailModal.cloneRow)
     },
-    // 详情 删除
+    // 套餐 删除
     delDetailDataFun() {
       this.$confirm(`确认删除吗？`, '提示', {
         type: 'warning',
@@ -693,12 +706,12 @@ export default {
         this.$message({ type: 'info', message: '已取消' });
       })
     },
-    // 编辑 保存 详情数据
+    // 编辑 保存 套餐数据
     updateDetailDataFun() {
       this.$refs.refDetailsAction.closeModal()
       this.getDetailsListFun(1)
     },
-    // 详情列 筛选项
+    // 套餐列 筛选项
     handleSortChange({ column, prop, order }) {
       if (order === 'descending') { // 下降 倒序
         switch (prop) {
@@ -717,14 +730,14 @@ export default {
       }
       this.getDetailsListFun()
     },
-    // 详情列 选择
+    // 套餐列 选择
     handleModalSelectionChange(arr) {
       this.detailModal.selectData = arr
       this.detailModal.selectIdData = arr.map(item => {
         return item.id
       })
     },
-    // 详情 单行 点击勾选
+    // 套餐 单行 点击勾选
     rowModalSelectChange(row, column, event) {
       const tableCell = this.$refs.detailTable;
       if (this.detailModal.selectIdData.includes(row.id)) {
