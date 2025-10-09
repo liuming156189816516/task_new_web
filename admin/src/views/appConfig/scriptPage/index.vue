@@ -90,6 +90,27 @@
             {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
+        <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
+              <span :class="[Number(queryData.release_status)?'dropdown_title':'']" style="color:#909399"> 发布状态
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in releaseStatusList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.release_status}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList) }}
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row.itime) }}
@@ -97,6 +118,12 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
+            <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
+              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
+            </div>
+            <div v-if="scope.row.release_status==='3'" class="action-btn">
+              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
+            </div>
             <div class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
@@ -178,7 +205,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi ,editReleaseStatusApi } from './api';
 
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
@@ -199,6 +226,7 @@ export default {
         limit: 10,
         total: 0,
         task_type: null,
+        release_status: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -233,6 +261,12 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
+      releaseStatusList: [
+        { label: '全部', value: '0', type: 'primary' },
+        { label: '未发布', value: '1', type: 'primary' },
+        { label: '已下架', value: '2', type: 'primary' },
+        { label: '已发布', value: '3', type: 'success' },
+      ],
       imgData: {
         show: false,
         scr: ''
@@ -261,7 +295,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         task_type: Number(this.queryData.task_type),
-        // version: Number(this.queryData.version),
+        release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -271,6 +305,7 @@ export default {
           this.tableData = data.map(item => {
             item.version = item.version ? String(item.version) : ''
             item.task_type = item.task_type ? String(item.task_type) : ''
+            item.release_status = item.release_status ? String(item.release_status) : ''
             return item
           })
         }
@@ -286,6 +321,28 @@ export default {
       this.addModal.show = true
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
+    },
+    // 修改发布
+    changeReleaseStatusFun(form, val) {
+      const massage = val === 2 ? '下架' : '发布'
+      this.$confirm('确认' + massage + '吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {
+          id: form.id,
+          type: val
+        }
+        editReleaseStatusApi(params).then(res => {
+          if (res.msg === 'success') {
+            successTips(this, 'success', massage + '成功!')
+            this.getDataListFun()
+          }
+        })
+      }).catch(() => {
+
+      });
     },
     // 新建 编辑 保存
     addSubmit() {
