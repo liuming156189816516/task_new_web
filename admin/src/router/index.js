@@ -117,6 +117,22 @@ export const asyncRoutes = [
           title: 'React资源包',
         }
       },
+      {
+        path: '/pluginPage',
+        component: () => import('@/views/appConfig/pluginPage'),
+        name: 'pluginPage',
+        meta: {
+          title: '插件',
+        }
+      },
+      {
+        path: '/scriptPage',
+        component: () => import('@/views/appConfig/scriptPage'),
+        name: 'scriptPage',
+        meta: {
+          title: '脚本',
+        }
+      },
 
     ]
   },

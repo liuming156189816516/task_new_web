@@ -456,14 +456,16 @@ export default {
         { label: 'Others', value: '4' },
       ],
       taskTypeList: [
-        { label: 'Tiktok-Like', value: '1' },
-        { label: 'Tiktok-Follow', value: '2' },
+        { label: 'tiktok-Like', value: '1' },
+        { label: 'tiktok-follow', value: '2' },
         { label: 'Whatsapp-SendMessage', value: '3' },
+        { label: 'Sms-SendMessage', value: '4' },
       ],
       platformList: [
-        { label: 'Tiktok', value: '1' },
-        { label: 'Whatsapp', value: '2' },
-        { label: 'Instagram', value: '3' },
+        { label: 'tiktok', value: '1' },
+        { label: 'whatsapp', value: '2' },
+        { label: 'instagram', value: '3' },
+        { label: 'Sms*', value: '4' },
       ],
       tagsList: [
         { label: 'social', value: 'social' },
