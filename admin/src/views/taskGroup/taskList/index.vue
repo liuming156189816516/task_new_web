@@ -465,7 +465,7 @@ export default {
         { label: 'tiktok', value: '1' },
         { label: 'whatsapp', value: '2' },
         { label: 'instagram', value: '3' },
-        { label: 'Sms*', value: '4' },
+        { label: 'Sms', value: '4' },
       ],
       tagsList: [
         { label: 'social', value: 'social' },
