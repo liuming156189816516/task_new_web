@@ -183,7 +183,7 @@
             <UploadFiles
               v-else
               ref="refUploadFiles"
-              :format="['png','jpg','jpeg','webp','zip']"
+              :format="['zip']"
               :max-size="100"
               kay="url"
               @uploadSuccess="uploadSuccess"

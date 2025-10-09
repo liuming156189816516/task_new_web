@@ -163,7 +163,7 @@
             <UploadFiles
               v-else
               ref="refUploadFiles"
-              :format="['png','jpg','jpeg','webp','apk']"
+              :format="['apk']"
               :max-size="100"
               kay="url"
               @uploadSuccess="uploadSuccess"
