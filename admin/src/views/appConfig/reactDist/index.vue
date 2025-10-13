@@ -75,7 +75,7 @@
         </el-table-column>
         <el-table-column label="最小支持版本" min-width="120" prop="min_version" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
         <el-table-column label="渠道" min-width="120" prop="channel" show-overflow-tooltip>
@@ -100,11 +100,13 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <!--
         <el-table-column label="补丁版本" min-width="120" prop="patch_version" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        -->
         <el-table-column label="补丁包" min-width="120" prop="patch_url" show-overflow-tooltip>
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]">
@@ -175,7 +177,7 @@
           <el-input v-model="addModal.formData.version" placeholder="请输入版本" @input="changeInput" />
         </el-form-item>
         <el-form-item label="最小支持版本:" prop="min_version">
-          <el-input v-model="addModal.formData.min_version" placeholder="请输入最小支持版本" @input="changeInput" />
+          <el-input v-model="addModal.formData.min_version" type="number" placeholder="请输入最小支持版本" @input="changeInput" />
         </el-form-item>
         <el-form-item label="渠道:" prop="channel">
           <el-select v-model="addModal.formData.channel" clearable filterable placeholder="请选择渠道">
@@ -201,9 +203,11 @@
             @uploadSuccess="uploadSuccess"
           />
         </el-form-item>
+        <!--
         <el-form-item label="补丁版本:" prop="patch_version">
           <el-input v-model="addModal.formData.patch_version" placeholder="请输入补丁版本" @input="changeInput" />
         </el-form-item>
+        -->
         <el-form-item label="补丁包:" prop="patch_url">
           <div v-if="addModal.formData.patch_url" class="imgBox">
             <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(addModal.formData.patch_url))">

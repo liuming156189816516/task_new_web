@@ -7,7 +7,7 @@
       <!--        <el-input v-model="queryData.version" clearable type="number" placeholder="请输入版本" @input="changeInput" />-->
       <!--      </el-form-item>-->
       <el-form-item>
-        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
+        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择脚本类型">
           <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -58,7 +58,7 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="任务类型" min-width="150" prop="task_type" show-overflow-tooltip>
+        <el-table-column label="脚本类型" min-width="150" prop="task_type" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
           </template>
@@ -162,8 +162,8 @@
           label-width="0"
           size="small"
         >
-          <el-form-item label="任务类型:" prop="task_type">
-            <el-select v-model="addModal.formData.task_type" clearable filterable placeholder="请选择任务类型">
+          <el-form-item label="脚本类型:" prop="task_type">
+            <el-select v-model="addModal.formData.task_type" clearable filterable placeholder="请选择脚本类型">
               <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -240,7 +240,7 @@ export default {
           task_type: null,
         },
         rules: {
-          task_type: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
+          task_type: [{ required: true, message: '请选择脚本类型！', trigger: 'change' }],
           version: [{ required: true, message: '请输入版本！', trigger: 'change' }],
           url: [{ required: true, message: '请上传插件！', trigger: 'change' }],
         },
