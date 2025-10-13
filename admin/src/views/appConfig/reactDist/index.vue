@@ -371,7 +371,7 @@ export default {
           const formData = deepClone(this.addModal.formData)
           formData.os = formData.os ? Number(formData.os) : 0
           formData.channel = formData.channel ? Number(formData.channel) : 0
-
+          formData.min_version = formData.min_version ? Number(formData.min_version) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
