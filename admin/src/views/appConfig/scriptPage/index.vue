@@ -7,8 +7,8 @@
       <!--        <el-input v-model="queryData.version" clearable type="number" placeholder="请输入版本" @input="changeInput" />-->
       <!--      </el-form-item>-->
       <el-form-item>
-        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择脚本类型">
-          <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select v-model="queryData.script_type" clearable filterable placeholder="请选择脚本类型">
+          <el-option v-for="item in scriptTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
@@ -58,9 +58,9 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="脚本类型" min-width="150" prop="task_type" show-overflow-tooltip>
+        <el-table-column label="脚本类型" min-width="150" prop="script_type" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], scriptTypeList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="版本" min-width="120" prop="version" show-overflow-tooltip>
@@ -162,9 +162,9 @@
           label-width="0"
           size="small"
         >
-          <el-form-item label="脚本类型:" prop="task_type">
-            <el-select v-model="addModal.formData.task_type" clearable filterable placeholder="请选择脚本类型">
-              <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
+          <el-form-item label="脚本类型:" prop="script_type">
+            <el-select v-model="addModal.formData.script_type" clearable filterable placeholder="请选择脚本类型">
+              <el-option v-for="item in scriptTypeList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item label="版本:" prop="version">
@@ -225,7 +225,7 @@ export default {
         page: 1,
         limit: 10,
         total: 0,
-        task_type: null,
+        script_type: null,
         release_status: '',
       },
       pageOption: resetPage(),
@@ -237,10 +237,10 @@ export default {
         formData: {
           version: '',
           url: '',
-          task_type: null,
+          script_type: null,
         },
         rules: {
-          task_type: [{ required: true, message: '请选择脚本类型！', trigger: 'change' }],
+          script_type: [{ required: true, message: '请选择脚本类型！', trigger: 'change' }],
           version: [{ required: true, message: '请输入版本！', trigger: 'change' }],
           url: [{ required: true, message: '请上传插件！', trigger: 'change' }],
         },
@@ -249,9 +249,9 @@ export default {
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
       loading: false,
-      taskTypeList: [
-        { label: 'Whatsapp-SendMessage', value: '3' },
-        { label: 'Sms-SendMessage', value: '4' },
+      scriptTypeList: [
+        { label: 'Whatsapp', value: '1' },
+        { label: 'Sms', value: '2' },
       ],
       setBatchData: {
         show: false,
@@ -294,7 +294,7 @@ export default {
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        task_type: Number(this.queryData.task_type),
+        script_type: Number(this.queryData.script_type),
         release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
@@ -304,7 +304,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.version = item.version ? String(item.version) : ''
-            item.task_type = item.task_type ? String(item.task_type) : ''
+            item.script_type = item.script_type ? String(item.script_type) : ''
             item.release_status = item.release_status ? String(item.release_status) : ''
             return item
           })
@@ -351,7 +351,7 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.version = formData.version ? Number(formData.version) : 0
-          formData.task_type = formData.task_type ? Number(formData.task_type) : 0
+          formData.script_type = formData.script_type ? Number(formData.script_type) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -399,7 +399,7 @@ export default {
       this.addModal.formData = {
         version: '',
         url: '',
-        task_type: null,
+        script_type: null,
       }
     },
     // 批量操作
@@ -472,7 +472,7 @@ export default {
         title: '',
         category: '',
         release_status: null,
-        task_type: null,
+        script_type: null,
         platform: ''
       }
       this.getDataListFun(1)

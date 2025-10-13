@@ -279,6 +279,23 @@ export const asyncRoutes = [
       },
     ]
   },
+  // // 数据管理
+  // {
+  //   path: '/dataManagement',
+  //   component: Layout,
+  //   name: 'dataManagement',
+  //   meta: { title: '数据管理', icon: 'el-icon-office-building' },
+  //   children: [
+  //     {
+  //       path: '/dataManagementPage',
+  //       component: () => import('@/views/dataManagement/dataManagementPage'),
+  //       name: 'platform',
+  //       meta: {
+  //         title: '数据管理',
+  //       }
+  //     },
+  //   ]
+  // },
   // 权限配置
   {
     path: '/permission',
