@@ -190,7 +190,7 @@
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="180">
+        <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="240">
           <template slot-scope="scope">
             <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
               <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
@@ -200,6 +200,9 @@
             </div>
             <div class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
+            </div>
+            <div class="action-btn">
+              <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>
             </div>
           </template>
         </el-table-column>
@@ -363,13 +366,54 @@
       </div>
     </el-dialog>
 
+    <!-- 配置 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="配置"
+      :visible.sync="confModal.show"
+      center
+      class="actionConfModal"
+      width="500px"
+      @close="closeConfModal"
+    >
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <el-form
+          ref="refConfModal"
+          :model="confModal.formData"
+          :rules="confModal.rules"
+          label-position="top"
+          label-width="0"
+          size="small"
+        >
+          <el-form-item label="配置:" prop="conf">
+            <el-input v-model="confModal.formData.conf" type="textarea" style="width: 100%" :autosize="{ minRows: 4, maxRows: 10}" placeholder="请输入配置" @input="changeInput" />
+          </el-form-item>
+
+        </el-form>
+      </div>
+      <div slot="footer">
+        <div class="el-item-bottom" style="text-align:center;">
+          <el-button @click="closeConfModal">取消</el-button>
+          <el-button :loading="confModal.isLoading" type="primary" @click="confSubmit">确认</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
     <!-- 图片预览 -->
     <ImagePreview ref="refImagePreview" v-model="imgData.show" :src="imgData.scr" />
   </div>
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi, editReleaseStatusApi } from './api';
+import {
+  getDataApi,
+  addDataApi,
+  editDataApi,
+  delDataApi,
+  editSortDataApi,
+  editReleaseStatusApi,
+  editConfDataApi
+} from './api';
 import { getDataApi as getCategoriesListApi } from '@/views/taskGroup/taskType/api/index.js';
 
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
@@ -487,7 +531,18 @@ export default {
         { label: '否', value: '0' },
         { label: '是', value: '1' },
 
-      ]
+      ],
+      confModal: {
+        show: false,
+        cloneRow: {},
+        formData: {
+          conf: '',
+        },
+        rules: {
+          conf: [{ required: true, message: '请输入配置！', trigger: 'change' }],
+        },
+        isLoading: false,
+      },
     }
   },
   mounted() {
@@ -547,6 +602,15 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
+    // 打开配置
+    confOpenFun(row) {
+      this.confModal.show = true
+      this.confModal.type = 'edit'
+      this.confModal.cloneRow = deepClone(row)
+      if (deepClone(row).conf && deepClone(row).conf.message) {
+        this.confModal.formData.conf = deepClone(row).conf.message
+      }
+    },
     // 修改发布
     changeReleaseStatusFun(form, val) {
       const massage = val === 2 ? '下架' : '发布'
@@ -587,6 +651,8 @@ export default {
                 successTips(this, 'success', '保存成功！')
                 this.closeModal()
                 this.getDataListFun()
+              } else {
+                this.addModal.isLoading = false
               }
             })
           } else if (this.addModal.type === 'edit') {
@@ -595,12 +661,45 @@ export default {
                 successTips(this, 'success', '編輯成功！')
                 this.closeModal()
                 this.getDataListFun()
+              } else {
+                this.addModal.isLoading = false
               }
             })
           }
         }
       })
     },
+    // 保存 配置
+    confSubmit() {
+      this.$refs.refConfModal.validate((v) => {
+        if (v) {
+          this.confModal.isLoading = true
+          const formData = {
+            id: this.confModal.cloneRow.id,
+            conf: {
+              message: this.confModal.formData.conf
+            }
+          }
+            editConfDataApi(formData).then(res => {
+              if (res.msg === 'success') {
+                successTips(this, 'success', '編輯成功！')
+                this.closeConfModal()
+                this.getDataListFun()
+              }
+            })
+        }
+      })
+    },
+    // 关闭 配置
+    closeConfModal() {
+      this.confModal.show = false
+      this.confModal.isLoading = false
+      this.$refs.refConfModal.resetFields();
+      this.confModal.formData = {
+        conf: '',
+      }
+    },
+
     // 上传成功回调
     uploadSuccess(file, kay) {
       const formData = new FormData();

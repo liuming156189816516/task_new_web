@@ -53,3 +53,11 @@ export const editReleaseStatusApi = (params) => {
     data: params
   })
 }
+// 编辑 配置
+export const editConfDataApi = (params) => {
+  return request({
+    url: '/task/uptaskconf',
+    method: 'post',
+    data: params
+  })
+}

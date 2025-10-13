@@ -1,7 +1,7 @@
 <!-- 数据管理 -->
 <template>
   <div style="width:100%;height: 100%; float: left;">
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-button :disabled="checkIdArry.length==0" type="danger" @click="changeIpBtn">{{ $t('sys_g047') }}</el-button>
         <el-button type="primary" @click="pushDatabtn(0,1)">{{ $t('sys_c135') }}</el-button>
@@ -10,9 +10,10 @@
         <el-input v-model="model1.task_name" :placeholder="$t('sys_mat026')" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" @click="initDatalist(1)">{{ $t('sys_c002') }}</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="initDatalist(1)">{{ $t('sys_c002') }}</el-button>
       </el-form-item>
     </el-form>
+
     <div class="group_main">
       <div class="tab_check_warp">
         <i slot="reference" class="el-icon-info" />
@@ -22,49 +23,67 @@
         <el-table
           ref="serveTable"
           v-loading="loading"
+          :cell-style="{ textAlign: 'center' }"
           :data="dataList"
-          border
+          :header-cell-style="{ color: '#909399', textAlign: 'center' }"
           :height="cliHeight"
           :summary-method="getSummaries"
-          show-summary
-          element-loading-spinner="el-icon-loading"
+          border
           element-loading-background="rgba(255, 255, 255,1)"
+          element-loading-spinner="el-icon-loading"
+          show-summary
           style="width: 100%;"
-          :header-cell-style="{ color: '#909399', textAlign: 'center' }"
-          :cell-style="{ textAlign: 'center' }"
           @selection-change="handleSelectionChange"
           @row-click="rowSelectChange"
         >
           <el-table-column type="selection" width="55" />
-          <el-table-column prop="name" :label="$t('sys_mat027')" min-width="140" />
-          <el-table-column prop="invalid_num" :label="$t('sys_mat042')" min-width="100" />
-          <el-table-column prop="up_num" :label="$t('sys_mat028')" min-width="100" />
-          <el-table-column prop="source_repeat_num" :label="$t('sys_mat029')" min-width="100" />
-          <el-table-column prop="repeat_num" :label="$t('sys_mat030')" min-width="100" />
-          <el-table-column prop="into_num" :label="$t('sys_mat031')" min-width="100" />
-          <el-table-column prop="residue_num" :label="$t('sys_mat032')" min-width="100" />
-          <el-table-column prop="err_num" :label="$t('sys_mat106')" min-width="100" />
-          <el-table-column prop="up_status" :label="$t('sys_l059')" min-width="100">
+          <el-table-column :label="$t('sys_mat027')" min-width="140" prop="name" />
+          <el-table-column label="数据类型" min-width="120" prop="data_type" show-overflow-tooltip>
             <template slot-scope="scope">
-              <el-tag :type="scope.row.up_status==1?'warning':'success'" size="small"> {{ taskOption[scope.row.up_status] }}</el-tag>
+              {{ getLabelByVal(scope.row[scope.column.property], dataTypeList) || '-' }}
             </template>
           </el-table-column>
-          <el-table-column prop="expire_time" :label="$t('sys_c008')" min-width="148">
+          <el-table-column label="国家" min-width="120" prop="country" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.itime>0?$baseFun.resetTime(scope.row.itime * 1000):0 }}
+              {{ getLabelByVal(scope.row[scope.column.property], countryList) || '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('sys_mat042')" min-width="100" prop="invalid_num" />
+          <el-table-column :label="$t('sys_mat028')" min-width="100" prop="up_num" />
+          <el-table-column :label="$t('sys_mat029')" min-width="100" prop="source_repeat_num" />
+          <el-table-column :label="$t('sys_mat030')" min-width="100" prop="repeat_num" />
+          <el-table-column :label="$t('sys_mat031')" min-width="100" prop="into_num" />
+          <el-table-column :label="$t('sys_mat032')" min-width="100" prop="residue_num" />
+          <el-table-column :label="$t('sys_mat106')" min-width="100" prop="err_num" />
+          <el-table-column :label="$t('sys_l059')" min-width="100" prop="up_status">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.up_status==1?'warning':'success'" size="small">
+                {{ taskOption[scope.row.up_status] }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('sys_c008')" min-width="148" prop="expire_time">
+            <template slot-scope="scope">
+              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : 0 }}
             </template>
           </el-table-column>
           <el-table-column :label="$t('sys_c010')" width="268">
             <template slot-scope="scope">
-              <el-popover placement="left" width="200" trigger="click">
+              <el-popover placement="left" trigger="click" width="200">
                 <div>{{ $t('sys_mat037') }}</div>
                 <div style="display: flex;justify-content: flex-end;">
-                  {{ $t('sys_mat038',{value:residueList.length}) }}
+                  {{ $t('sys_mat038', {value: residueList.length}) }}
                 </div>
                 <div>
                   <template v-if="residueList.length>0">
                     <div ref="lazyEle" class="residue_less" @scroll="lazyScroll">
-                      <el-button v-if="moreLoading" class="loading_icon" style="margin-top: 10px;" type="primary" :loading="true" />
+                      <el-button
+                        v-if="moreLoading"
+                        :loading="true"
+                        class="loading_icon"
+                        style="margin-top: 10px;"
+                        type="primary"
+                      />
                       <template v-else>
                         <div v-for="(item,idx) in residueList" :key="idx">{{ item }}</div>
                         <div v-if="isMore" style="font-size: 12px;margin-top: 5px;">{{ $t('sys_mat014') }}</div>
@@ -73,10 +92,24 @@
                   </template>
                   <p v-else>{{ $t('sys_mat013') }}</p>
                 </div>
-                <el-button slot="reference" :disabled="checkIdArry.length>0" size="small" type="warning" @click.stop="showLeaveNum(scope.row)">{{ $t('sys_mat032') }}</el-button>
+                <el-button
+                  slot="reference"
+                  :disabled="checkIdArry.length>0"
+                  size="small"
+                  type="warning"
+                  @click.stop="showLeaveNum(scope.row)"
+                >{{ $t('sys_mat032') }}
+                </el-button>
               </el-popover>
-              <el-button :disabled="checkIdArry.length>0" size="small" type="primary" style="margin:0 10px;" @click.stop="pushDatabtn(scope.row,2)">{{ $t('sys_mat107') }}</el-button>
-              <el-button :disabled="checkIdArry.length>0" size="small" :border="false" style="padding: 0;" @click.stop>
+              <el-button
+                :disabled="checkIdArry.length>0"
+                size="small"
+                style="margin:0 10px;"
+                type="primary"
+                @click.stop="pushDatabtn(scope.row,2)"
+              >{{ $t('sys_mat107') }}
+              </el-button>
+              <el-button :border="false" :disabled="checkIdArry.length>0" size="small" style="padding: 0;" @click.stop>
                 <el-dropdown @command="(command)=>{handleCommand(scope.row,command)}">
                   <el-button :disabled="checkIdArry.length>0" size="small" type="primary">{{ $t('sys_c079') }}
                     <i class="el-icon-arrow-down el-icon--right" />
@@ -93,12 +126,12 @@
         </el-table>
         <div class="layui_page">
           <el-pagination
-            background
-            :page-sizes="pageOption"
             :current-page.sync="model1.page"
             :page-size="this.model1.limit"
-            layout="total, sizes, prev, pager, next, jumper"
+            :page-sizes="pageOption"
             :total="this.model1.total"
+            background
+            layout="total, sizes, prev, pager, next, jumper"
             @size-change="setPageSize"
             @current-change="switchPage"
           />
@@ -107,15 +140,21 @@
     </div>
 
     <!-- 新增-->
-    <el-dialog :title="$t('sys_mat034')" center :visible.sync="ipModel" :close-on-click-modal="false" :width="ipModelWidth">
-      <el-form ref="ipForm" size="small" :model="ipForm" label-width="0" :rules="ipRules">
+    <el-dialog
+      :close-on-click-modal="false"
+      :title="$t('sys_mat034')"
+      :visible.sync="ipModel"
+      :width="ipModelWidth"
+      center
+    >
+      <el-form ref="ipForm" :model="ipForm" :rules="ipRules" label-width="0" size="small">
         <el-row>
           <el-col :span="24">
             <el-form-item>
               <el-steps :active="stepsActive">
-                <el-step :title="$t('sys_c058')" :description="$t('sys_m056')" />
-                <el-step :title="$t('sys_m055')" :description="$t('sys_m057')" />
-                <el-step :title="$t('sys_mat034')" :description="$t('sys_m058')" />
+                <el-step :description="$t('sys_m056')" :title="$t('sys_c058')" />
+                <el-step :description="$t('sys_m057')" :title="$t('sys_m055')" />
+                <el-step :description="$t('sys_m058')" :title="$t('sys_mat034')" />
               </el-steps>
             </el-form-item>
           </el-col>
@@ -130,65 +169,57 @@
               <el-form-item prop="data_way">
                 <div class="label_title">{{ $t('sys_g130') }}</div>
                 <el-radio-group v-model="ipForm.data_way">
-                  <el-radio v-for="(item,idx) in dataOption" v-show="item!==''" :key="idx" :label="idx">{{ item }}</el-radio>
+                  <el-radio v-for="(item,idx) in dataOption" v-show="item!==''" :key="idx" :label="idx">{{
+                    item
+                  }}
+                  </el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
-            <!-- <el-col :span="24">
-                <el-form-item prop="is_err">
-                    <div class="label_title">{{ $t('sys_l112') }}</div>
-                    <el-radio-group v-model="ipForm.is_err">
-                        <el-radio :label="idx" v-for="(item,idx) in clearOption" :key="idx" v-show="item!==''">{{ item }}</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-            </el-col> -->
+            <el-col :span="24">
+              <el-form-item prop="data_type">
+                <div class="label_title">数据类型</div>
+                <el-select v-model="ipForm.data_type" clearable filterable placeholder="请选择数据类型">
+                  <el-option v-for="item in dataTypeList" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item prop="country">
+                <div class="label_title">国家</div>
+                <el-select v-model="ipForm.country" clearable filterable placeholder="请选择国家">
+                  <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="24">
               <el-form-item>
                 <div class="label_title">{{ $t('sys_c058') }}</div>
                 <div>{{ $t('sys_c136') }}</div>
                 <div class="submit_btn">
                   <el-button v-if="ipForm.file_name" class="custom_file1" style="margin-top: 0;">{{ $t('sys_c059') }}
-                    <input id="uploadFile" ref="uploadclear" type="file" title=" " @change="checkDataIsUse">
+                    <input id="uploadFile" ref="uploadclear" title=" " type="file" @change="checkDataIsUse">
                   </el-button>
-                  <el-button v-else class="custom_file1" style="margin-top: 0;" @click="submitWayBtn('ipForm')">{{ $t('sys_c059') }}</el-button>
+                  <el-button v-else class="custom_file1" style="margin-top: 0;" @click="submitWayBtn('ipForm')">点击上传
+                  </el-button>
                   <span class="export_tips" @click="downLoadTemp">
                     <i class="el-icon-download" />{{ $t('sys_l066') }}
                   </span>
                 </div>
               </el-form-item>
             </el-col>
-            <!-- <el-col :span="20">
-                <el-form-item style="margin-bottom: 0;">
-                    <div class="label_title">选择使用数据的席位</div>
-                    <div>添加席位(若最终生效席位中存在则不会重复添加)</div>
-                    <div style="display: flex;justify-content: space-between;">
-                        <el-input v-model="input" :placeholder="$t('sys_mat025')"></el-input>
-                        <el-button type="primary" style="margin-left: 20px;">主要按钮</el-button>
-                    </div>
-                </el-form-item>
-            </el-col>
-            <el-col :span="20">
-                <el-form-item prop="group_id">
-                    <div>最终生效席位</div>
-                    <el-select clearable filterable v-model="ipForm.group_id" :placeholder="$t('sys_mat025')"
-                        style="width:100%;">
-                        <el-option v-for="item in ipGroupList" :key="item.id" :label="item.name"
-                            :value="item.id" />
-                    </el-select>
-                </el-form-item>
-            </el-col> -->
           </template>
           <el-col :span="24">
             <el-form-item label-width="0">
               <template v-if="stepsActive==2">
-                <el-progress :text-inside="true" :stroke-width="14" :percentage="percentage" />
+                <el-progress :percentage="percentage" :stroke-width="14" :text-inside="true" />
                 <div class="upload_img" style="margin-top: 10px;">
-                  <img src="../../../assets/upload_ing.png" alt="" srcset="">
+                  <img alt="" src="../../../assets/upload_ing.png" srcset="">
                 </div>
               </template>
               <template v-if="stepsActive==3">
                 <div class="upload_img">
-                  <img src="../../../assets/success.png" alt="" srcset="">
+                  <img alt="" src="../../../assets/success.png" srcset="">
                   <div style="font-weight: 600;">{{ $t('sys_c119') }}</div>
                   <div v-html="$t('sys_c118',{s_number:success_number,f_number:fail_number})" />
                 </div>
@@ -197,7 +228,7 @@
           </el-col>
         </el-row>
         <template v-if="stepsActive==3">
-          <el-form-item label-width="0" style="text-align:center;" class="el-item-bottom">
+          <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
             <el-button @click="restUpload">{{ $t('sys_c076') }}</el-button>
             <el-button type="primary" @click="ipModel = false">{{ $t('sys_c075') }}</el-button>
           </el-form-item>
@@ -209,7 +240,9 @@
 
 <script>
 import { successTips, resetPage } from '@/utils'
-import { getdatapacklist,bathdel,uploadfile,getschedule,dooutputdata,getresiduenum } from '@/api/datamanage'
+import { getdatapacklist, bathdel, uploadfile, getschedule, dooutputdata, getresiduenum } from '@/api/datamanage'
+import { getLabelByVal } from '@/utils';
+
 export default {
   data() {
     return {
@@ -234,10 +267,15 @@ export default {
       waitTimer: null,
       setInter: 1000,
       success_number: 0,
-      countryList: [],
+      countryList: [
+        { label: '美国', value: 'US', },
+        { label: '中国', value: 'CN', },
+        { label: '巴西', value: 'BR', },
+        { label: '全球', value: 'ALL', },
+      ],
       checkIdArry: [],
       residueList: [],
-      showNum: [7,8],
+      showNum: [7, 8],
       randomNum: [1, 2, 4, 8, 3, 8, 4, 6, 3, 8],
       pageOption: resetPage(),
       ipForm: {
@@ -245,7 +283,9 @@ export default {
         file_name: '',
         data_way: 1,
         ip_file: '',
-        is_err: 1
+        is_err: 1,
+        data_type: '',
+        country: ''
       },
       model2: {
         page: 1,
@@ -255,7 +295,11 @@ export default {
       timer: null,
       isTime: null,
       isMore: false,
-      cliHeight:null
+      cliHeight: null,
+      dataTypeList: [
+        { label: 'Whatsapp', value: '1', },
+        { label: 'Sms', value: '2', },
+      ],
     }
   },
   computed: {
@@ -263,14 +307,16 @@ export default {
       return {
         data_way: [{ required: true, message: this.$t('sys_c052'), trigger: 'change' }],
         is_err: [{ required: true, message: this.$t('sys_c052'), trigger: 'change' }],
+        data_type: [{ required: true, message: '请选择数据类型', trigger: 'change' }],
+        country: [{ required: true, message: '请选择国家', trigger: 'change' }],
         file_name: [{ required: true, message: this.$t('sys_mat024'), trigger: 'blur' }]
       }
     },
     dataOption() {
-      return ['',this.$t('sys_mat022'), this.$t('sys_mat023')]
+      return ['', this.$t('sys_mat022'), this.$t('sys_mat023')]
     },
     taskOption() {
-      return ['',this.$t('sys_q015'),this.$t('sys_mat047')]
+      return ['', this.$t('sys_q015'), this.$t('sys_mat047')]
     },
     stopOptions() {
       return ['', this.$t('sys_c025'), this.$t('sys_c026')]
@@ -279,7 +325,7 @@ export default {
       return ['', this.$t('sys_l113'), this.$t('sys_l114')]
     },
     moreOption() {
-      return ['',this.$t('sys_mat035'), this.$t('sys_mat036'), this.$t('sys_mat105')]
+      return ['', this.$t('sys_mat035'), this.$t('sys_mat036'), this.$t('sys_mat105')]
     }
   },
   watch: {
@@ -289,6 +335,8 @@ export default {
         this.ipForm.data_way = 1;
         this.ipForm.file_name = '';
         this.ipForm.ip_file = '';
+        this.ipForm.data_type = '';
+        this.ipForm.country = '';
         this.$refs.ipForm.resetFields();
       }
     }
@@ -317,7 +365,7 @@ export default {
     },
     getLeaveNum() {
       this.moreLoading = true;
-      getresiduenum({ id: this.model2.id,page: this.model2.page,limit: this.model2.limit }).then(res => {
+      getresiduenum({ id: this.model2.id, page: this.model2.page, limit: this.model2.limit }).then(res => {
         this.moreLoading = false;
         if (res.code !== 0) return;
         this.model2.total = res.data.total;
@@ -332,7 +380,7 @@ export default {
         this.timer = setTimeout(() => {
           this.isMore = false;
           this.model2.page += 1;
-          getresiduenum({ id: this.model2.id,page: this.model2.page,limit: this.model2.limit }).then(res => {
+          getresiduenum({ id: this.model2.id, page: this.model2.page, limit: this.model2.limit }).then(res => {
             this.moreLoading = false;
             if (res.code !== 0) return;
             this.residueList = this.residueList.concat(res.data.list)
@@ -345,7 +393,9 @@ export default {
       }
     },
     handleSelectionChange(row) {
-      this.checkIdArry = row.map(item => { return item.id })
+      this.checkIdArry = row.map(item => {
+        return item.id
+      })
     },
     rowSelectChange(row, column, event) {
       const refsElTable = this.$refs.serveTable;
@@ -354,7 +404,7 @@ export default {
         refsElTable.toggleRowSelection(row, false);
         return;
       }
-      refsElTable.toggleRowSelection(row,true);
+      refsElTable.toggleRowSelection(row, true);
     },
     initDatalist(num) {
       this.loading = true;
@@ -367,7 +417,10 @@ export default {
       getdatapacklist(params).then(res => {
         this.loading = false;
         this.model1.total = res.data.total;
-        this.dataList = res.data.list || [];
+        this.dataList = res.data.list.map(item => {
+          item.data_type = item.data_type ? String(item.data_type) : '0'
+          return item
+        });
         this.$nextTick(() => {
           if (this.$refs.serveTable) {
             this.$refs.serveTable.doLayout();
@@ -391,14 +444,14 @@ export default {
             } else {
               return prev;
             }
-          },0);
+          }, 0);
         } else {
           sums[index] = '--';
         }
       });
       return sums;
     },
-    pushDatabtn(row,idx) {
+    pushDatabtn(row, idx) {
       this.ipModel = true;
       this.stepsActive = 1;
       this.ipForm.id = row.id;
@@ -414,12 +467,14 @@ export default {
       const files = this.$refs.uploadclear.files[0];
       const formData = new FormData();
       formData.append('file', files);
-      formData.append('ptype',this.ipModelType);
+      formData.append('ptype', this.ipModelType);
       formData.append('name', this.ipForm.file_name);
-      formData.append('into_type',this.ipForm.data_way);
+      formData.append('into_type', this.ipForm.data_way);
+      formData.append('data_type', Number(this.ipForm.data_type));
+      formData.append('country', this.ipForm.country);
       // formData.append('is_err',this.ipForm.is_err);
       if (this.ipModelType === 2) {
-        formData.append('id',this.ipForm.id);
+        formData.append('id', this.ipForm.id);
       }
       this.stepsActive = 2;
       this.$refs.uploadclear.value = null;
@@ -432,10 +487,10 @@ export default {
           clearInterval(this.waitTimer);
           this.initDatalist();
           this.stepsActive = 3
-            this.fail_number = getResult.data.fail;
+          this.fail_number = getResult.data.fail;
           this.success_number = getResult.data.success;
         }
-      },this.setInter)
+      }, this.setInter)
       // const getResult = await getschedule({id:result.data.id})
       // if (getResult.code !== 0) return;
       // this.initDatalist();
@@ -468,7 +523,7 @@ export default {
     },
     restUpload() {
       this.stepsActive = 1
-        this.ipModelType = 1;
+      this.ipModelType = 1;
     },
     setPageSize(val) {
       this.model1.limit = val;
@@ -490,7 +545,7 @@ export default {
     },
     changeIpBtn() {
       const that = this;
-      that.$confirm(that.$t('sys_rai046',{ value: that.$t('sys_c024') }), that.$t('sys_c028'), {
+      that.$confirm(that.$t('sys_rai046', { value: that.$t('sys_c024') }), that.$t('sys_c028'), {
         type: 'warning',
         confirmButtonText: that.$t('sys_c024'),
         cancelButtonText: that.$t('sys_c023'),
@@ -510,8 +565,8 @@ export default {
         that.$message({ type: 'info', message: that.$t('sys_c048') });
       })
     },
-    handleCommand(row,idx) {
-      dooutputdata({ type: idx,id: row.id }).then(res => {
+    handleCommand(row, idx) {
+      dooutputdata({ type: idx, id: row.id }).then(res => {
         if (res.code !== 0) return;
         window.location.href = res.data.url;
       })
@@ -520,15 +575,17 @@ export default {
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 280;
     },
+    getLabelByVal
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .group_main {
   display: flex;
   width: 100%;
   flex-direction: column;
+
   .tab_check_warp {
     width: 100%;
     display: flex;
@@ -550,28 +607,33 @@ export default {
     }
   }
 }
-.text_number{
+
+.text_number {
   color: #209cdf;
 }
-.label_title{
+
+.label_title {
   color: #606266;
   font-size: 14px;
   font-weight: 700;
 }
-.residue_less{
+
+.residue_less {
   width: 100%;
   max-height: 100px;
   overflow: hidden;
   overflow-y: auto;
 }
-.upload_img{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  line-height:30px;
+
+.upload_img {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 30px;
   margin-top: 10px;
-  img{
+
+  img {
     width: 280px;
     height: 188px;
     margin: 10px 0;
@@ -583,6 +645,7 @@ export default {
   display: flex;
   align-items: center;
   margin-top: 0;
+
   .export_tips {
     display: flex;
     font-size: 12px;
