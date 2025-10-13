@@ -78,8 +78,8 @@ export default {
     fileInputFun() {
       this.uploadIng = true
       const { files } = this.$refs['fileInputRef']
-      const fileList = [files[0]]
-      if (fileList.length) {
+      if (files.length) {
+        const fileList = [files[0]]
         this.fileList = fileList.map(item => {
           item.fileExtension = item.name.match(/\.[^.]+$/)[0].slice(1);
           item.fileSize = (item.size / (1024 * 1024)).toFixed(2) + ' MB'
@@ -101,6 +101,7 @@ export default {
           message: '请选择文件后开始上传！',
           type: 'warning'
         });
+        this.resetFileFun()
       }
     },
     // 上传图片

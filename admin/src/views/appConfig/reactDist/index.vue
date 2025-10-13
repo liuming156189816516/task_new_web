@@ -196,7 +196,7 @@
           </div>
           <UploadFiles
             v-else
-            ref="refUploadFiles"
+            ref="refUploadFilespackageUrl"
             :format="['zip']"
             :max-size="100"
             kay="packageUrl"
@@ -220,7 +220,7 @@
           </div>
           <UploadFiles
             v-else
-            ref="refUploadFiles"
+            ref="refUploadFilespatch_url"
             :format="['zip']"
             :max-size="100"
             kay="patch_url"
@@ -394,6 +394,7 @@ export default {
     },
     // 上传成功回调
     uploadSuccess(file, kay) {
+      const refName = 'refUploadFiles' + kay
       const formData = new FormData();
       formData.append('directory', 'react-package');
       formData.append('file', file);
@@ -402,8 +403,10 @@ export default {
           this.addModal.formData[kay] = res.data.url
           successTips(this, 'success', '上传成功！')
           if (this.$refs.refUploadFiles) {
-            this.$refs.refUploadFiles.resetFileFun()
+            this.$refs[refName].resetFileFun()
           }
+        } else {
+          this.$refs[refName].resetFileFun()
         }
       })
     },
