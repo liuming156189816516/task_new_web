@@ -7,7 +7,7 @@
         <el-button type="primary" @click="pushDatabtn(0,1)">{{ $t('sys_c135') }}</el-button>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="model1.task_name" :placeholder="$t('sys_mat026')" />
+        <el-input v-model="model1.name" placeholder="请输入数据名称" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="initDatalist(1)">{{ $t('sys_c002') }}</el-button>
@@ -250,7 +250,7 @@ export default {
         page: 1,
         limit: 10,
         total: 0,
-        task_name: ''
+        name: ''
       },
       Loading: '',
       percentage: 0,
@@ -412,7 +412,7 @@ export default {
       const params = {
         page: this.model1.page,
         limit: this.model1.limit,
-        name: this.model1.task_name
+        name: this.model1.name
       }
       getdatapacklist(params).then(res => {
         this.loading = false;
