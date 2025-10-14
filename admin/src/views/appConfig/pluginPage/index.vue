@@ -75,6 +75,23 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
+        <el-table-column label="下载页面" min-width="120" prop="download_url" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div v-if="scope.row[scope.column.property]">
+              <div v-if="['html'].includes(getImageExtension(scope.row[scope.column.property]))">
+                <el-image
+                  :src="scope.row[scope.column.property]"
+                  style="width: 80px;height: 30px;cursor: pointer;"
+                  @click.stop="openImageViewFun(scope.row,'download_url')"
+                />
+              </div>
+              <div v-else>
+                <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
+              </div>
+            </div>
+            <div v-else>-</div>
+          </template>
+        </el-table-column>
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
           <template slot="header">
             <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
@@ -152,13 +169,32 @@
           </el-form-item>
           <el-form-item label="插件:" prop="url">
             <div v-if="addModal.formData.url" class="imgBox">
-              <div v-if="['png','jpg','jpeg','webp'].includes(getImageExtension(addModal.formData.url))">
+              <div v-if="[''].includes(getImageExtension(addModal.formData.url))">
                 <el-image :src="addModal.formData.url" style="width: 120px;height: 120px" />
               </div>
               <div v-else>
                 <a :href="addModal.formData.url" class="aUnderline">文件</a>
               </div>
               <i class="el-icon-delete icon_del" @click="delImgFun('url')" />
+            </div>
+            <UploadFiles
+              v-else
+              ref="refUploadFiles"
+              :format="['apk']"
+              :max-size="100"
+              kay="url"
+              @uploadSuccess="uploadSuccess"
+            />
+          </el-form-item>
+          <el-form-item label="下载页面:" prop="download_url">
+            <div v-if="addModal.formData.download_url" class="imgBox">
+              <div v-if="[''].includes(getImageExtension(addModal.formData.download_url))">
+                <el-image :src="addModal.formData.download_url" style="width: 120px;height: 120px" />
+              </div>
+              <div v-else>
+                <a :href="addModal.formData.download_url" class="aUnderline">文件</a>
+              </div>
+              <i class="el-icon-delete icon_del" @click="delImgFun('download_url')" />
             </div>
             <UploadFiles
               v-else
@@ -217,10 +253,13 @@ export default {
         formData: {
           version: '',
           url: '',
+          download_url: '',
         },
         rules: {
           version: [{ required: true, message: '请输入版本！', trigger: 'change' }],
           url: [{ required: true, message: '请上传插件！', trigger: 'change' }],
+          download_url: [{ required: true, message: '请上传下载页面！', trigger: 'change' }],
+
         },
         isLoading: false,
       },
@@ -371,6 +410,7 @@ export default {
       this.addModal.formData = {
         version: '',
         url: '',
+        download_url: '',
       }
     },
     // 批量操作
