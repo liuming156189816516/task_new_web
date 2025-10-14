@@ -229,23 +229,6 @@
               </template>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
-            <el-form-item label-width="0">
-              <template v-if="stepsActive==2">
-                <el-progress :percentage="percentage" :stroke-width="14" :text-inside="true" />
-                <div class="upload_img" style="margin-top: 10px;">
-                  <img alt="" src="../../../assets/upload_ing.png" srcset="">
-                </div>
-              </template>
-              <template v-if="stepsActive==3">
-                <div class="upload_img">
-                  <img alt="" src="../../../assets/success.png" srcset="">
-                  <div style="font-weight: 600;">{{ $t('sys_c119') }}</div>
-                  <div v-html="$t('sys_c118',{s_number:success_number,f_number:fail_number})" />
-                </div>
-              </template>
-            </el-form-item>
-          </el-col>
         </el-row>
         <template v-if="stepsActive==3">
           <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
