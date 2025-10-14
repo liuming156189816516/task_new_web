@@ -199,9 +199,9 @@
             <UploadFiles
               v-else
               ref="refUploadFiles"
-              :format="['apk']"
+              :format="['html']"
               :max-size="100"
-              kay="url"
+              kay="download_url"
               @uploadSuccess="uploadSuccess"
             />
           </el-form-item>
