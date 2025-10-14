@@ -4,7 +4,7 @@
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-button :disabled="checkIdArry.length==0" type="danger" @click="changeIpBtn">{{ $t('sys_g047') }}</el-button>
-        <el-button type="primary" @click="pushDatabtn(0,1)">{{ $t('sys_c135') }}</el-button>
+        <el-button type="primary" @click="pushDataBtn(0,1)">{{ $t('sys_c135') }}</el-button>
       </el-form-item>
       <el-form-item>
         <el-input v-model="model1.name" placeholder="请输入数据名称" />
@@ -104,9 +104,9 @@
               <el-button
                 :disabled="checkIdArry.length>0"
                 size="small"
-                style="margin:0 10px;"
+                style="margin-left:10px;"
                 type="primary"
-                @click.stop="pushDatabtn(scope.row,2)"
+                @click.stop="pushDataBtn(scope.row,2)"
               >{{ $t('sys_mat107') }}
               </el-button>
               <el-button :border="false" :disabled="checkIdArry.length>0" size="small" style="padding: 0;" @click.stop>
@@ -176,18 +176,21 @@
                 </el-radio-group>
               </el-form-item>
             </el-col>
-            <el-col :span="24">
+            <el-col :span="11">
               <el-form-item prop="data_type">
                 <div class="label_title">数据类型</div>
-                <el-select v-model="ipForm.data_type" clearable filterable placeholder="请选择数据类型">
+                <el-select v-model="ipForm.data_type" :disabled="ipModelType===2" clearable filterable placeholder="请选择数据类型">
                   <el-option v-for="item in dataTypeList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="24">
+            <el-col :span="2">
+              <div style="width: 20px;height: 20px;" />
+            </el-col>
+            <el-col :span="11">
               <el-form-item prop="country">
                 <div class="label_title">国家</div>
-                <el-select v-model="ipForm.country" clearable filterable placeholder="请选择国家">
+                <el-select v-model="ipForm.country" :disabled="ipModelType===2" clearable filterable placeholder="请选择国家">
                   <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
               </el-form-item>
@@ -209,6 +212,23 @@
               </el-form-item>
             </el-col>
           </template>
+          <el-col :span="24">
+            <el-form-item label-width="0">
+              <template v-if="stepsActive==2">
+                <el-progress :percentage="percentage" :stroke-width="14" :text-inside="true" />
+                <div class="upload_img" style="margin-top: 10px;">
+                  <img alt="" src="../../../assets/upload_ing.png" srcset="">
+                </div>
+              </template>
+              <template v-if="stepsActive==3">
+                <div class="upload_img">
+                  <img alt="" src="../../../assets/success.png" srcset="">
+                  <div style="font-weight: 600;">{{ $t('sys_c119') }}</div>
+                  <div v-html="$t('sys_c118',{s_number:success_number,f_number:fail_number})" />
+                </div>
+              </template>
+            </el-form-item>
+          </el-col>
           <el-col :span="24">
             <el-form-item label-width="0">
               <template v-if="stepsActive==2">
@@ -330,6 +350,7 @@ export default {
   },
   watch: {
     ipModel(val) {
+      console.log('val',val)
       if (val === false) {
         this.ipForm.is_err = 1;
         this.ipForm.data_way = 1;
@@ -451,17 +472,28 @@ export default {
       });
       return sums;
     },
-    pushDatabtn(row, idx) {
+    // 新建 编辑
+    pushDataBtn(row, idx) {
       this.ipModel = true;
       this.stepsActive = 1;
-      this.ipForm.id = row.id;
-      // this.ipModelType = 2;
       this.ipModelType = idx;
       this.startPercent();
       this.ipModelWidth = '700px';
+      this.ipForm = {
+        id: '',
+        file_name: '',
+        data_way: 1,
+        ip_file: '',
+        is_err: 1,
+        data_type: '',
+        country: ''
+      }
+      this.ipForm.id = row.id;
       if (idx === 1) return;
       this.ipForm.id = row.id;
       this.ipForm.file_name = row.name;
+      this.ipForm.data_type = row.data_type;
+      this.ipForm.country = row.country;
     },
     async checkDataIsUse(e) {
       const files = this.$refs.uploadclear.files[0];
