@@ -4,6 +4,9 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
+        <el-input v-model="queryData.task_record_id" clearable placeholder="请输入任务明细ID" />
+      </el-form-item>
+      <el-form-item>
         <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
       </el-form-item>
       <el-form-item>
@@ -40,28 +43,9 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
-          <el-table-column label="任务类型" min-width="120" prop="task_type" show-overflow-tooltip>
-            <template slot="header">
-              <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'task_type')">
-                <span :class="[queryData.task_type?'dropdown_title':'']" style="color:#909399"> 任务类型
-                  <i class="el-icon-arrow-down el-icon--right" />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    v-for="(item,index) in taskTypeList"
-                    :key="index"
-                    :class="{'dropdown_selected':item.value===queryData.task_type}"
-                    :command="item.value"
-                  >{{ item.label }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
+          <el-table-column label="任务明细ID" min-width="120" prop="task_record_id" show-overflow-tooltip>
             <template slot-scope="scope">
-              <span v-if="scope.row[scope.column.property]!=='0'">
-                {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
-              </span>
-              <span v-else>-</span>
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
           <el-table-column label="收益类型" min-width="120" prop="type" show-overflow-tooltip>
@@ -130,8 +114,8 @@ export default {
         page: 1,
         limit: 20,
         total: 0,
-        task_type: null,
         type: null,
+        task_record_id: '',
         l_account: '',
         time: [],
       },
@@ -148,6 +132,12 @@ export default {
         { label: '全部', value: '0' },
         { label: '签到', value: '1' },
         { label: '人工修正', value: '2' },
+        { label: 'tiktok-Like', value: '3' },
+        { label: 'tiktok-follow', value: '4' },
+        { label: 'Whatsapp-SendLocal', value: '5' },
+        { label: 'Sms-SendLocal', value: '6' },
+        { label: 'Whatsapp-SendGlobal', value: '7' },
+        { label: 'Sms-SendGlobal', value: '8' },
       ],
       typeList2: [
         { label: '签到', value: '1' },
@@ -182,9 +172,9 @@ export default {
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
+        task_record_id: this.queryData.task_record_id,
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
-        task_type: this.queryData.task_type ? Number(this.queryData.task_type) : -1,
         start_time: Number(new Date(startTime)) / 1000,
         end_time: Number(new Date(endTime)) / 1000,
       }
@@ -194,7 +184,6 @@ export default {
           this.loading = false;
           this.queryData.total = res.data.total;
           this.tableData = res.data.list.map(item => {
-            item.task_type = item.task_type ? String(item.task_type) : '0'
             item.type = item.type ? String(item.type) : '0'
             return item
           });
@@ -207,9 +196,9 @@ export default {
         page: 1,
         limit: 20,
         total: 0,
-        task_type: null,
         type: null,
         l_account: '',
+        task_record_id: '',
         time: [],
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
