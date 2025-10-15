@@ -133,6 +133,14 @@ export const asyncRoutes = [
           title: '脚本',
         }
       },
+      {
+        path: '/noticeTemplate',
+        component: () => import('@/views/appConfig/noticeTemplate'),
+        name: 'noticeTemplate',
+        meta: {
+          title: '通知模板',
+        }
+      },
 
     ]
   },
