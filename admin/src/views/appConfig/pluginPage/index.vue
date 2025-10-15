@@ -75,6 +75,11 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
+        <el-table-column label="md5" min-width="120" prop="hash" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] }}
+          </template>
+        </el-table-column>
         <el-table-column label="下载页面" min-width="120" prop="download_url" show-overflow-tooltip>
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]">

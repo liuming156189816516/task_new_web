@@ -260,6 +260,14 @@ export const asyncRoutes = [
           title: '人工修正',
         }
       },
+      {
+        path: '/taskDetails',
+        component: () => import('@/views/financeManage/taskDetails'),
+        name: 'taskDetails',
+        meta: {
+          title: '任务明细',
+        }
+      },
     ]
   },
   // 发布任务
