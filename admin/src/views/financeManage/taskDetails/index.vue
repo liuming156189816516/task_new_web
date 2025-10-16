@@ -45,7 +45,7 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="任务类型" min-width="120" prop="task_type" show-overflow-tooltip>
+          <el-table-column label="任务类型" min-width="150" prop="task_type" show-overflow-tooltip>
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
                 {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
@@ -53,7 +53,7 @@
               <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="平台" min-width="120" prop="platform" show-overflow-tooltip>
+          <el-table-column label="平台" min-width="100" prop="platform" show-overflow-tooltip>
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
                 {{ getLabelByVal(scope.row[scope.column.property], platformList) }}
@@ -61,7 +61,6 @@
               <span v-else>-</span>
             </template>
           </el-table-column>
-
           <el-table-column label="执行状态" min-width="120" prop="execute_status" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'execute_status')">
@@ -86,7 +85,7 @@
               <span v-else>-</span>
             </template>
           </el-table-column>
-          <el-table-column label="结算状态" min-width="120" prop="settle_status" show-overflow-tooltip>
+          <el-table-column label="结算状态" min-width="100" prop="settle_status" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'settle_status')">
                 <span :class="[queryData.settle_status?'dropdown_title':'']" style="color:#909399"> 结算状态
@@ -107,22 +106,27 @@
               {{ getLabelByVal(scope.row[scope.column.property], settleStatusList) }}
             </template>
           </el-table-column>
-          <el-table-column label="执行时间" min-width="120" prop="execute_time" show-overflow-tooltip>
+          <el-table-column label="执行时间" min-width="150" prop="execute_time" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ formatTimestamp(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
-          <el-table-column label="结算时间" min-width="120" prop="settle_time" show-overflow-tooltip>
+          <el-table-column label="结算时间" min-width="150" prop="settle_time" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ formatTimestamp(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
-          <el-table-column label="任务奖励" min-width="120" prop="reward" show-overflow-tooltip>
+          <el-table-column label="任务奖励" min-width="80" prop="reward" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
+          <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] }}
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ formatTimestamp(scope.row[scope.column.property]) }}
             </template>
@@ -184,12 +188,14 @@ export default {
         { label: 'Sms', value: '4' },
       ],
       executeStatusList: [
+        { label: '全部', value: '0' },
         { label: 'Running', value: '1' },
         { label: 'Timeout', value: '2' },
         { label: 'Err', value: '3' },
         { label: 'Completed', value: '4' },
       ],
       settleStatusList: [
+        { label: '全部', value: '0' },
         { label: 'Settling', value: '1' },
         { label: 'Unsettled', value: '2' },
         { label: 'Settled', value: '3' },
