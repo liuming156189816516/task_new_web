@@ -17,6 +17,9 @@
         </el-select>
       </el-form-item>
       <el-form-item>
+        <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -166,6 +169,7 @@ export default {
         platform: '',
         execute_status: '',
         settle_status: '',
+        l_account: ''
       },
       tableData: [],
       cliHeight: null,
@@ -226,6 +230,7 @@ export default {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
         uniqueid: this.queryData.uniqueid,
+        l_account: this.queryData.l_account,
         task_type: this.queryData.task_type ? Number(this.queryData.task_type) : 0,
         platform: this.queryData.platform ? Number(this.queryData.platform) : 0,
         execute_status: this.queryData.execute_status ? Number(this.queryData.execute_status) : 0,
@@ -257,6 +262,7 @@ export default {
         platform: '',
         execute_status: '',
         settle_status: '',
+        l_account: '',
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
