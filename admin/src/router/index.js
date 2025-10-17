@@ -141,6 +141,14 @@ export const asyncRoutes = [
           title: '通知模板',
         }
       },
+      {
+        path: '/languagePage',
+        component: () => import('@/views/appConfig/languagePage'),
+        name: 'languagePage',
+        meta: {
+          title: '语言包',
+        }
+      },
 
     ]
   },
