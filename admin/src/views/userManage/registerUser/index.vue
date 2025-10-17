@@ -66,6 +66,11 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
+          <el-table-column label="国家时区" min-width="120" prop="time_zone_name" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="状态" min-width="120" prop="status" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-tag :type="getLabelByVal(scope.row[scope.column.property], statusList,{label:'type',value:'value'})">
