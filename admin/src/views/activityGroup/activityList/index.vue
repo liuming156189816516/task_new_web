@@ -4,7 +4,9 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
+        <el-select v-model="queryData.title" clearable filterable placeholder="请选择标题">
+          <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-select v-model="queryData.activity_type" clearable filterable placeholder="请选择活动类型">
@@ -65,7 +67,7 @@
         <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], titleList) }}
           </template>
         </el-table-column>
         <el-table-column label="活动类型" min-width="120" prop="activity_type" show-overflow-tooltip>
@@ -174,7 +176,9 @@
           size="small"
         >
           <el-form-item label="标题:" prop="title">
-            <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
+            <el-select v-model="addModal.formData.title" clearable filterable placeholder="请选择标题">
+              <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item label="活动类型:" prop="activity_type">
             <el-select v-model="addModal.formData.activity_type" clearable filterable placeholder="请选择活动类型">
@@ -232,6 +236,7 @@ import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
+import {getTitleListApi} from "@/views/taskGroup/taskType/api";
 
 export default {
   name: 'AppConfigPage',
@@ -305,11 +310,13 @@ export default {
       imgData: {
         show: false,
         scr: ''
-      }
+      },
+      titleList: []
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
+    this.getTitleListFun(); // 标题
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
@@ -582,6 +589,27 @@ export default {
     openImageViewFun(row, kay) {
       this.imgData.show = true
       this.imgData.scr = row[kay]
+    },
+    // 标题
+    getTitleListFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+        language: 'en',
+        category: 'server.activity.title',
+      }
+      getTitleListApi(params).then(res => {
+        if (res.msg === 'success') {
+          console.log('res',res)
+          this.titleList = res.data.list.map(item => {
+            return {
+              value: item.key,
+              label: item.val,
+            }
+          })
+          console.log(' this.titleList ', this.titleList)
+        }
+      })
     },
     // 处理打开输入框无法输入问题
     changeInput() {

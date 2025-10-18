@@ -4,7 +4,9 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
+        <el-select v-model="queryData.title" clearable filterable placeholder="请选择标题">
+          <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-select v-model="queryData.category" clearable filterable placeholder="请选择分类">
@@ -60,7 +62,7 @@
         <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], titleList) }}
           </template>
         </el-table-column>
         <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
@@ -132,7 +134,9 @@
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
         <el-form-item label="标题:" prop="title">
-          <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
+          <el-select v-model="addModal.formData.title" clearable filterable placeholder="请选择标题">
+            <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="分类:" prop="category">
           <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择分类">
@@ -154,6 +158,7 @@ import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editR
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import sortablejs from 'sortablejs';
+import {getTitleListApi} from "@/views/taskGroup/taskType/api";
 
 export default {
   name: 'ActivityType',
@@ -208,10 +213,12 @@ export default {
         { label: '已下架', value: '2' ,type: 'primary' },
         { label: '已发布', value: '3' ,type: 'success' },
       ],
+      titleList: []
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
+    this.getTitleListFun(); // 标题
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
@@ -444,6 +451,26 @@ export default {
       // else if (type === 'modal') {
       //
       // }
+    },
+    // 标题
+    getTitleListFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+        language: 'en',
+        category: 'server.activitycategories.title',
+      }
+      getTitleListApi(params).then(res => {
+        if (res.msg === 'success') {
+          this.titleList = res.data.list.map(item => {
+            return {
+              value: item.key,
+              label: item.val,
+            }
+          })
+          console.log(' this.titleList ', this.titleList)
+        }
+      })
     },
     // 处理打开输入框无法输入问题
     changeInput() {

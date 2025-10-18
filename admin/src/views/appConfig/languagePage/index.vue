@@ -1,4 +1,4 @@
-<!-- 通知模板 -->
+<!-- 语言包 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
