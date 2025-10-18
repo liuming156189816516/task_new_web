@@ -4,7 +4,9 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.language" clearable placeholder="请输入语言" @input="changeInput" />
+        <el-select v-model="queryData.language" clearable filterable placeholder="请选择语言">
+          <el-option v-for="item in languageList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-input v-model="queryData.category" clearable placeholder="请输入类别" @input="changeInput" />
@@ -128,7 +130,9 @@
           size="small"
         >
           <el-form-item label="语言:" prop="language">
-            <el-input v-model="addModal.formData.language" placeholder="请输入语言" @input="changeInput" />
+            <el-select v-model="addModal.formData.language" clearable filterable placeholder="请选择语言">
+              <el-option v-for="item in languageList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item label="类别:" prop="category">
             <el-input v-model="addModal.formData.category" placeholder="请输入类别" @input="changeInput" />
@@ -171,7 +175,7 @@ export default {
         page: 1,
         limit: 10,
         total: 0,
-        language: '',
+        language: 'en',
         category: '',
         key: '',
         val: '',
@@ -183,14 +187,14 @@ export default {
         show: false,
         type: 'add',
         formData: {
-          language: '',
+          language: 'en',
           category: '',
           key: '',
           val: '',
           remark: '',
         },
         rules: {
-          language: [{ required: true, message: '请输入语言！', trigger: 'change' }],
+          language: [{ required: true, message: '请选择语言！', trigger: 'change' }],
           category: [{ required: true, message: '请输入类别！', trigger: 'change' }],
           key: [{ required: true, message: '请输入Key！', trigger: 'change' }],
           val: [{ required: true, message: '请输入val！', trigger: 'change' }],
@@ -200,10 +204,9 @@ export default {
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
       loading: false,
-      notifyTypeList: [
-        { label: '小喇叭', value: '1' },
-        { label: '任务成功', value: '2' },
-        { label: '任务失败', value: '3' },
+      languageList: [
+        { label: 'en', value: 'en' },
+        { label: 'pt', value: 'pt' },
       ],
       setBatchData: {
         show: false,
