@@ -550,7 +550,9 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.getTitleListFun(); // 标题
-    this.getTagListFun() // 标签
+    setTimeout(()=>{
+      this.getTagListFun() // 标签
+    },300)
     this.setFullHeight();
     // this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
