@@ -124,6 +124,11 @@
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
+          <el-table-column label="任务配置" min-width="80" prop="conf" show-overflow-tooltip>
+            <template slot-scope="scope">
+              <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>
+            </template>
+          </el-table-column>
           <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
@@ -149,11 +154,41 @@
         </div>
       </div>
     </div>
+    <!-- 配置 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="配置"
+      :visible.sync="confModal.show"
+      center
+      class="actionConfModal"
+      width="500px"
+      @close="closeConfModal"
+    >
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <el-form
+          ref="refConfModal"
+          :model="confModal.formData"
+          :rules="confModal.rules"
+          label-position="top"
+          label-width="0"
+          size="small"
+        >
+          <el-form-item label="配置:" prop="conf">
+            <el-input v-model="confModal.formData.conf" :readonly="true" type="textarea" style="width: 100%" :autosize="{ minRows: 4, maxRows: 10}" placeholder="请输入配置" @input="changeInput" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer">
+        <div class="el-item-bottom" style="text-align:center;">
+          <el-button @click="closeConfModal">关闭</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { resetPage, getLabelByVal, } from '@/utils/index'
+import {resetPage, getLabelByVal, deepClone } from '@/utils/index'
 import { formatTimestamp } from '@/filters'
 import { gettaskrecordlistApi } from './api'
 
@@ -203,7 +238,18 @@ export default {
         { label: 'Settling', value: '1' },
         { label: 'Unsettled', value: '2' },
         { label: 'Settled', value: '3' },
-      ]
+      ],
+      confModal: {
+        show: false,
+        cloneRow: {},
+        formData: {
+          conf: '',
+        },
+        rules: {
+          conf: [{ required: true, message: '请输入配置！', trigger: 'change' }],
+        },
+        isLoading: false,
+      },
     }
   },
   computed: {},
@@ -250,6 +296,24 @@ export default {
           });
         }
       })
+    },
+    // 打开配置
+    confOpenFun(row) {
+      this.confModal.show = true
+      this.confModal.type = 'edit'
+      this.confModal.cloneRow = deepClone(row)
+      if (deepClone(row).conf && deepClone(row).conf.message) {
+        this.confModal.formData.conf = deepClone(row).conf.message
+      }
+    },
+    // 关闭 配置
+    closeConfModal() {
+      this.confModal.show = false
+      this.confModal.isLoading = false
+      this.$refs.refConfModal.resetFields();
+      this.confModal.formData = {
+        conf: '',
+      }
     },
     // 重置
     restQueryBtn() {
@@ -310,6 +374,10 @@ export default {
     // 窗口高度
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 240;
+    },
+    // 处理打开输入框无法输入问题
+    changeInput() {
+      this.$forceUpdate()
     },
     formatTimestamp,
     getLabelByVal
