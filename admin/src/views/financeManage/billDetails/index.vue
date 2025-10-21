@@ -140,6 +140,7 @@ export default {
         { label: 'Sms-SendGlobal', value: '8' },
         { label: '邀请奖励', value: '9' },
         { label: '上级返佣', value: '10' },
+        { label: '提现', value: '11' },
       ],
       typeList2: [
         { label: '签到', value: '1' },
