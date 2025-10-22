@@ -141,6 +141,7 @@ export default {
         { label: '邀请奖励', value: '9' },
         { label: '上级返佣', value: '10' },
         { label: '提现', value: '11' },
+        { label: '退费', value: '12' },
       ],
       typeList2: [
         { label: '签到', value: '1' },
