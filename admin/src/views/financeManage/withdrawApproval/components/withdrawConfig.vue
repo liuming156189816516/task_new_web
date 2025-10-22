@@ -235,6 +235,12 @@ export default {
     // 关闭 体现配置
     closeModal() {
       this.modal.show = false
+      this.queryData = {
+        page: 1,
+        limit: 10,
+        total: 0,
+        country: '',
+      }
       this.addModal.formData = {
         country: '',
         key: '',
@@ -262,6 +268,7 @@ export default {
           this.queryData.total = res.data.total;
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
+            item.value = item.value
             return item
           })
         }
@@ -271,6 +278,13 @@ export default {
     addOpenFun() {
       this.addModal.type = 'add'
       this.addModal.show = true
+      // this.addModal.formData = {
+      //   country: '',
+      //   key: '',
+      //   value: '',
+      //   remark: '',
+      // }
+      console.log('this.addModal.formData',this.addModal.formData)
     },
     // 编辑
     editOpenFun(row) {
@@ -288,6 +302,7 @@ export default {
         value: '',
         remark: '',
       }
+      this.$refs.refAddModal.resetFields();
     },
     // 新建 编辑 保存
     addSubmit() {
