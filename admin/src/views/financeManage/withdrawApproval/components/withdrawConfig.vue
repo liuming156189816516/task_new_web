@@ -125,7 +125,7 @@
       width="600px"
       @close="closeAddModal"
     >
-      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+      <div :style="{maxHeight:modalHeight-250+'px'}" class="content">
         <el-form
           ref="refAddModal"
           :model="addModal.formData"
@@ -136,7 +136,7 @@
         >
           <el-form-item v-if="addModal.type==='add'" label="国家:" prop="title">
             <el-select v-model="addModal.formData.country" clearable filterable placeholder="请选择国家">
-              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in countryList2" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item v-if="addModal.type==='add'" label="key:" prop="key">
@@ -220,53 +220,9 @@ export default {
         { label: '全部',value: '' },
         { label: '巴西',value: 'BR' },
       ],
-      categoryList: [
-        { label: 'Hot', value: '1' },
-        { label: 'Social', value: '2' },
-        { label: 'Games', value: '3' },
-        { label: 'Others', value: '4' },
+      countryList2: [
+        { label: '巴西',value: 'BR' },
       ],
-      taskTypeList: [
-        { label: 'tiktok-Like', value: '1' },
-        { label: 'tiktok-follow', value: '2' },
-        { label: 'Whatsapp-SendLocal', value: '3' },
-        { label: 'Sms-SendLocal', value: '4' },
-        { label: 'Whatsapp-SendGlobal', value: '5' },
-        { label: 'Sms-SendGlobal', value: '6' },
-      ],
-      platformList: [
-        { label: 'tiktok', value: '1' },
-        { label: 'whatsapp', value: '2' },
-        { label: 'instagram', value: '3' },
-        { label: 'Sms', value: '4' },
-      ],
-      tagsList: [],
-      releaseStatusList: [
-        { label: '全部', value: '0', type: 'primary' },
-        { label: '未发布', value: '1', type: 'primary' },
-        { label: '已下架', value: '2', type: 'primary' },
-        { label: '已发布', value: '3', type: 'success' },
-      ],
-      imgData: {
-        show: false,
-        scr: ''
-      },
-      isRecommendList: [
-        { label: '否', value: '0' },
-        { label: '是', value: '1' },
-
-      ],
-      confModal: {
-        show: false,
-        cloneRow: {},
-        formData: {
-          conf: '',
-        },
-        rules: {
-          conf: [{ required: true, message: '请输入配置！', trigger: 'change' }],
-        },
-        isLoading: false,
-      },
       titleList: []
     }
   },
@@ -325,6 +281,7 @@ export default {
     // 关闭新建
     closeAddModal() {
       this.addModal.show = false
+      this.addModal.isLoading = false
       this.addModal.formData = {
         country: '',
         key: '',
