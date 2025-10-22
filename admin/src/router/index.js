@@ -284,6 +284,14 @@ export const asyncRoutes = [
           title: '任务明细',
         }
       },
+      {
+        path: '/withdrawApproval',
+        component: () => import('@/views/financeManage/withdrawApproval'),
+        name: 'withdrawApproval',
+        meta: {
+          title: '提现审批',
+        }
+      },
     ]
   },
   // 发布任务
