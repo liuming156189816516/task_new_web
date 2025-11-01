@@ -67,7 +67,7 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="用户账号" min-width="150" prop="account" />
+          <el-table-column align="center" label="用户账号" min-width="160" prop="account" />
           <el-table-column align="center" label="国家" min-width="120" prop="country" />
           <el-table-column align="center" label="提现编号" min-width="120" prop="user_withdraw_id" />
           <el-table-column align="center" label="提现账号" min-width="100" prop="card_no" />
@@ -129,11 +129,11 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="失败原因" min-width="140" prop="remark">
+          <el-table-column label="失败原因" min-width="200" prop="remark">
             <template slot-scope="scope">
-              <el-tooltip :content="scope.row.remark" class="item" effect="dark" placement="top">
+              <el-tooltip :content="getLabelByVal(scope.row[scope.column.property], titleList)" class="item" effect="dark" placement="top">
                 <div style="max-width: 200px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">
-                  {{ scope.row.remark || "-" }}
+                  {{ getLabelByVal(scope.row[scope.column.property], titleList) || "-" }}
                 </div>
               </el-tooltip>
             </template>
@@ -198,7 +198,7 @@
 </template>
 
 <script>
-import { resetPage } from '@/utils'
+import { getLabelByVal, resetPage } from '@/utils'
 import { getwithdrawapprovallist, doapproval } from './api'
 import withdrawConfig from './components/withdrawConfig'
 import { getTitleListApi } from '@/views/taskGroup/taskType/api';
@@ -245,7 +245,8 @@ export default {
           { required: true, message: '请选择类型', trigger: 'change' },
         ]
       },
-      applyOption: ['', '未审批', '已通过', '已驳回']
+      applyOption: ['', '未审批', '已通过', '已驳回'],
+      titleList: []
     }
   },
   computed: {
@@ -275,6 +276,7 @@ export default {
   mounted() {
     this.getPayOrderList();
     this.setFullHeight();
+    this.getTitleListFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -361,18 +363,16 @@ export default {
         page: 1,
         limit: 1000,
         language: 'en',
-        category: 'server.activity.title',
+        category: 'page.withdraws',
       }
       getTitleListApi(params).then(res => {
         if (res.msg === 'success') {
-          console.log('res',res)
           this.titleList = res.data.list.map(item => {
             return {
               value: item.key,
               label: item.val,
             }
           })
-          console.log(' this.titleList ', this.titleList)
         }
       })
     },
@@ -418,6 +418,7 @@ export default {
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 240;
     },
+    getLabelByVal,
   },
 }
 </script>

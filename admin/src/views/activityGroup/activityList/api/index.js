@@ -53,3 +53,13 @@ export const editReleaseStatusApi = (params) => {
     data: params
   })
 }
+
+// 配置保存
+export const editConfigApi = (params) => {
+  return request({
+    url: '/activity/upactivityconf',
+    method: 'post',
+    data: params
+  })
+}
+

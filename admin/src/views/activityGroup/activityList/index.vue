@@ -93,11 +93,6 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="增加积分" min-width="120" prop="reward" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
-          </template>
-        </el-table-column>
         <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -140,9 +135,9 @@
             <div class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
-<!--            <div class="action-btn">-->
-<!--              <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>-->
-<!--            </div>-->
+            <div class="action-btn">
+              <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -210,9 +205,6 @@
           <el-form-item label="描述:" prop="desc">
             <el-input v-model="addModal.formData.desc" placeholder="请输入描述" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="增加积分:" prop="reward">
-            <el-input v-model="addModal.formData.reward" type="number" placeholder="请输入增加积分" @input="changeInput" />
-          </el-form-item>
           <el-form-item label="跳转地址:" prop="deeplink">
             <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
           </el-form-item>
@@ -227,23 +219,7 @@
     </el-dialog>
 
     <!-- 配置 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      title="配置"
-      :visible.sync="confModal.show"
-      center
-      class="actionConfModal"
-      width="800px"
-      @close="closeConfModal"
-    >
-      <div :style="{maxHeight:cliHeight-100+'px'}" class="content" />
-      <div slot="footer">
-        <div class="el-item-bottom" style="text-align:center;">
-          <el-button @click="closeConfModal">取消</el-button>
-          <el-button :loading="confModal.isLoading" type="primary" @click="confSubmit">确认</el-button>
-        </div>
-      </div>
-    </el-dialog>
+    <confModal ref="refConfModal" @updateData="getDataListFun" />
 
     <!-- 图片预览 -->
     <ImagePreview ref="refImagePreview" v-model="imgData.show" :src="imgData.scr" />
@@ -259,13 +235,14 @@ import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 import { getTitleListApi } from '@/views/taskGroup/taskType/api';
-import { editConfDataApi } from '@/views/taskGroup/taskList/api';
+import confModal from "./components/confModal";
 
 export default {
   name: 'AppConfigPage',
   components: {
     UploadFiles,
-    ImagePreview
+    ImagePreview,
+    confModal
   },
   data() {
     return {
@@ -289,7 +266,6 @@ export default {
           activitie_icon: '',
           title: '',
           desc: '',
-          reward: '',
           deeplink: '',
           category: '',
         },
@@ -298,7 +274,6 @@ export default {
           activitie_icon: [{ required: true, message: '请上传活动图标！', trigger: 'change' }],
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
-          reward: [{ required: true, message: '请输入增加积分！', trigger: 'change' }],
           deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
           category: [{ required: true, message: '请选择活动分类！', trigger: 'change' }],
         },
@@ -333,13 +308,6 @@ export default {
       imgData: {
         show: false,
         scr: ''
-      },
-      confModal: {
-        show: false,
-        cloneRow: {},
-        columns: [],
-        tableData: [],
-        isLoading: false,
       },
       titleList: []
     }
@@ -381,7 +349,6 @@ export default {
             item.release_status = item.release_status ? String(item.release_status) : ''
             item.category = item.category ? String(item.category) : ''
             item.activity_type = item.activity_type ? String(item.activity_type) : ''
-            console.log('item',item)
             return item
           })
         }
@@ -398,13 +365,9 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
+    // 配置
     confOpenFun(row) {
-      this.confModal.show = true
-      this.confModal.type = 'edit'
-      this.confModal.cloneRow = deepClone(row)
-      if (deepClone(row).conf && deepClone(row).conf.message) {
-        this.confModal.formData.conf = deepClone(row).conf.message
-      }
+    this.$refs.refConfModal.open(row)
     },
     // 修改发布
     changeReleaseStatusFun(form,val) {
@@ -434,7 +397,6 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.reward = formData.reward ? Number(formData.reward) : 0
           formData.category = formData.category ? Number(formData.category) : 0
           formData.activity_type = formData.activity_type ? Number(formData.activity_type) : 0
           if (this.addModal.type === 'add') {
@@ -499,7 +461,6 @@ export default {
         activitie_icon: '',
         title: '',
         desc: '',
-        reward: '',
         deeplink: '',
         category: '',
       }
@@ -647,14 +608,12 @@ export default {
       }
       getTitleListApi(params).then(res => {
         if (res.msg === 'success') {
-          console.log('res',res)
           this.titleList = res.data.list.map(item => {
             return {
               value: item.key,
               label: item.val,
             }
           })
-          console.log(' this.titleList ', this.titleList)
         }
       })
     },
