@@ -129,7 +129,7 @@
             {{ formatTimestamp(scope.row.itime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
+        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="240">
           <template slot-scope="scope">
             <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
               <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
@@ -140,6 +140,9 @@
             <div class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
+<!--            <div class="action-btn">-->
+<!--              <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>-->
+<!--            </div>-->
           </template>
         </el-table-column>
       </el-table>
@@ -223,6 +226,25 @@
       </div>
     </el-dialog>
 
+    <!-- 配置 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="配置"
+      :visible.sync="confModal.show"
+      center
+      class="actionConfModal"
+      width="800px"
+      @close="closeConfModal"
+    >
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content" />
+      <div slot="footer">
+        <div class="el-item-bottom" style="text-align:center;">
+          <el-button @click="closeConfModal">取消</el-button>
+          <el-button :loading="confModal.isLoading" type="primary" @click="confSubmit">确认</el-button>
+        </div>
+      </div>
+    </el-dialog>
+
     <!-- 图片预览 -->
     <ImagePreview ref="refImagePreview" v-model="imgData.show" :src="imgData.scr" />
   </div>
@@ -236,7 +258,8 @@ import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
-import {getTitleListApi} from "@/views/taskGroup/taskType/api";
+import { getTitleListApi } from '@/views/taskGroup/taskType/api';
+import { editConfDataApi } from '@/views/taskGroup/taskList/api';
 
 export default {
   name: 'AppConfigPage',
@@ -311,6 +334,13 @@ export default {
         show: false,
         scr: ''
       },
+      confModal: {
+        show: false,
+        cloneRow: {},
+        columns: [],
+        tableData: [],
+        isLoading: false,
+      },
       titleList: []
     }
   },
@@ -368,6 +398,14 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
+    confOpenFun(row) {
+      this.confModal.show = true
+      this.confModal.type = 'edit'
+      this.confModal.cloneRow = deepClone(row)
+      if (deepClone(row).conf && deepClone(row).conf.message) {
+        this.confModal.formData.conf = deepClone(row).conf.message
+      }
+    },
     // 修改发布
     changeReleaseStatusFun(form,val) {
       const massage = val === 2 ? '下架' : '发布'
@@ -422,6 +460,15 @@ export default {
           }
         }
       })
+    },
+    // 保存 配置
+    confSubmit() {
+      this.getDataListFun()
+    },
+    // 关闭 配置
+    closeConfModal() {
+      this.confModal.show = false
+      this.confModal.isLoading = false
     },
     // 上传成功回调
     uploadSuccess(file, kay) {

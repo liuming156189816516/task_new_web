@@ -7,6 +7,12 @@
           <el-input v-model="factorModel.account" clearable placeholder="请输入用户账号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
+          <el-input v-model="factorModel.country" clearable placeholder="请输入国家" style="width:180px;" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="factorModel.user_withdraw_id" clearable type="number" placeholder="请输入提现编号" style="width:180px;" />
+        </el-form-item>
+        <el-form-item>
           <el-input v-model="factorModel.card_no" clearable placeholder="请输入提现账号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
@@ -61,7 +67,9 @@
               </el-tooltip>
             </template>
           </el-table-column>
-          <el-table-column align="center" label="用户账号" min-width="120" prop="account" />
+          <el-table-column align="center" label="用户账号" min-width="150" prop="account" />
+          <el-table-column align="center" label="国家" min-width="120" prop="country" />
+          <el-table-column align="center" label="提现编号" min-width="120" prop="user_withdraw_id" />
           <el-table-column align="center" label="提现账号" min-width="100" prop="card_no" />
           <el-table-column align="center" label="收款类型" min-width="100" prop="type" />
           <el-table-column align="center" label="收款姓名" min-width="100" prop="payee_name">
@@ -193,6 +201,7 @@
 import { resetPage } from '@/utils'
 import { getwithdrawapprovallist, doapproval } from './api'
 import withdrawConfig from './components/withdrawConfig'
+import { getTitleListApi } from '@/views/taskGroup/taskType/api';
 export default {
   components: {
     withdrawConfig
@@ -210,7 +219,9 @@ export default {
         limit: 10,
         card_id: '',
         start_amount: '',
-        end_amount: ''
+        end_amount: '',
+        country: '',
+        user_withdraw_id: null
       },
       type: 0,
       cliHeight: null,
@@ -294,7 +305,9 @@ export default {
         account: this.factorModel.account,
         approval_status: this.factorModel.apy_status || -1,
         start_amount: Number(this.factorModel.start_amount) || -1,
-        end_amount: Number(this.factorModel.end_amount) || -1
+        end_amount: Number(this.factorModel.end_amount) || -1,
+        country: this.factorModel.country,
+        user_withdraw_id: Number(this.factorModel.user_withdraw_id) || -1,
       }
       getwithdrawapprovallist(params).then(res => {
         this.loading = false;
@@ -341,6 +354,27 @@ export default {
     handleStatus(val) {
       this.factorModel.status = val;
       this.getPayOrderList();
+    },
+    // 标题
+    getTitleListFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+        language: 'en',
+        category: 'server.activity.title',
+      }
+      getTitleListApi(params).then(res => {
+        if (res.msg === 'success') {
+          console.log('res',res)
+          this.titleList = res.data.list.map(item => {
+            return {
+              value: item.key,
+              label: item.val,
+            }
+          })
+          console.log(' this.titleList ', this.titleList)
+        }
+      })
     },
     // 页数量
     limitChange(val) {

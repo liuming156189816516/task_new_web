@@ -85,7 +85,7 @@
             {{ getLabelByVal(scope.row[scope.column.property], platformList) || '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="任务类型" min-width="150" prop="task_type" show-overflow-tooltip>
+        <el-table-column label="任务类型" min-width="180" prop="task_type" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
           </template>
@@ -510,6 +510,8 @@ export default {
         { label: 'Sms-SendLocal', value: '4' },
         { label: 'Whatsapp-SendGlobal', value: '5' },
         { label: 'Sms-SendGlobal', value: '6' },
+        { label: 'Whatsapp-SendLocal-Auto', value: '7' },
+        { label: 'Whatsapp-SendGlobal-Auto', value: '8' },
       ],
       platformList: [
         { label: 'tiktok', value: '1' },
