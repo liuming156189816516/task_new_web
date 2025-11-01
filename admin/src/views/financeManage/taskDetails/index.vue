@@ -56,6 +56,11 @@
               <span v-else>-</span>
             </template>
           </el-table-column>
+          <el-table-column label="国家" min-width="120" prop="country" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="平台" min-width="100" prop="platform" show-overflow-tooltip>
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
@@ -219,6 +224,8 @@ export default {
         { label: 'Sms-SendLocal', value: '4' },
         { label: 'Whatsapp-SendGlobal', value: '5' },
         { label: 'Sms-SendGlobal', value: '6' },
+        { label: 'Whatsapp-SendLocal-Auto', value: '7' },
+        { label: 'Whatsapp-SendGlobal-Auto', value: '8' },
       ],
       platformList: [
         { label: 'Tiktok', value: '1' },

@@ -69,6 +69,11 @@
               {{ getLabelByVal(scope.row[scope.column.property], typeList) }}
             </template>
           </el-table-column>
+          <el-table-column label="国家" min-width="120" prop="country" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="金额" min-width="120" prop="amount" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] }}
@@ -142,6 +147,8 @@ export default {
         { label: '上级返佣', value: '10' },
         { label: '提现', value: '11' },
         { label: '退费', value: '12' },
+        { label: 'Whatsapp-SendLocal-Auto', value: '13' },
+        { label: 'Whatsapp-SendGlobal-Auto', value: '14' },
       ],
       typeList2: [
         { label: '签到', value: '1' },
