@@ -61,3 +61,12 @@ export const editConfDataApi = (params) => {
     data: params
   })
 }
+
+// 获取徽章列表
+export const getBadgeListApi = (params) => {
+  return request({
+    url: '/badge/getbadgelist',
+    method: 'post',
+    data: params
+  })
+}

@@ -146,7 +146,7 @@
         </el-table-column>
         <el-table-column label="是否推荐" min-width="120" prop="is_recommend" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], isRecommendList)|| '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], isRecommendList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="任务限制" min-width="120" prop="task_limit" show-overflow-tooltip>
@@ -342,10 +342,10 @@
           <el-form-item label="是否推荐:" prop="is_recommend">
             <el-switch
               v-model="addModal.formData.is_recommend"
-              active-value="1"
-              inactive-value="0"
               active-text="是"
+              active-value="1"
               inactive-text="否"
+              inactive-value="0"
             />
           </el-form-item>
           <el-form-item label="任务限制:" prop="task_limit">
@@ -373,26 +373,72 @@
     <!-- 配置 -->
     <el-dialog
       :close-on-click-modal="false"
-      title="配置"
       :visible.sync="confModal.show"
       center
       class="actionConfModal"
-      width="500px"
+      title="配置"
+      width="800px"
       @close="closeConfModal"
     >
       <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <!--                  :rules="confModal.rules"
+-->
         <el-form
           ref="refConfModal"
           :model="confModal.formData"
-          :rules="confModal.rules"
+          class="confModalStyle"
           label-position="top"
           label-width="0"
           size="small"
         >
-          <el-form-item label="配置:" prop="conf">
-            <el-input v-model="confModal.formData.conf" type="textarea" style="width: 100%" :autosize="{ minRows: 4, maxRows: 10}" placeholder="请输入配置" @input="changeInput" />
+          <el-form-item
+            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">发送文本</div>
           </el-form-item>
-
+          <el-form-item
+            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'"
+            label=""
+            prop="conf"
+            :rules="[
+              { required: true, message: '请输入发送文本！', trigger: 'change' },
+            ]"
+            style="width: 100%"
+          >
+            <el-input
+              v-model="confModal.formData.conf"
+              :autosize="{ minRows: 4, maxRows: 10}"
+              placeholder="请输入配置"
+              style="width: 100%"
+              type="textarea"
+              @input="changeInput"
+            />
+          </el-form-item>
+          <el-form-item class="formTitleRules" label="">
+            <div style="font-size: 18px;color: #333333">任务限制</div>
+          </el-form-item>
+          <el-form-item
+            v-for="(item,index) in confModal.formData.domains"
+            :key="item.key"
+            :label="item.label"
+            :prop="'domains.' + index + '.value'"
+            :rules="[
+              {
+                required: true,
+                message: '请输入' + item.label + '！',
+                trigger: 'change'
+              }
+            ]"
+          >
+            <el-input
+              v-model="item.value"
+              :placeholder="'请输入'+item.label"
+              type="number"
+              @input="changeInput"
+            />
+          </el-form-item>
         </el-form>
       </div>
       <div slot="footer">
@@ -416,7 +462,8 @@ import {
   delDataApi,
   editSortDataApi,
   editReleaseStatusApi,
-  editConfDataApi
+  editConfDataApi,
+  getBadgeListApi
 } from './api';
 import { getDataApi as getCategoriesListApi, getTitleListApi } from '@/views/taskGroup/taskType/api/index.js';
 
@@ -538,11 +585,15 @@ export default {
       confModal: {
         show: false,
         cloneRow: {},
+        formColumn: [],
         formData: {
+          domains: [],
           conf: '',
         },
         rules: {
-          conf: [{ required: true, message: '请输入配置！', trigger: 'change' }],
+          conf: [
+            { required: true, message: '请输入发送文本！', trigger: 'change' },
+          ],
         },
         isLoading: false,
       },
@@ -552,9 +603,10 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.getTitleListFun(); // 标题
+    this.getBadgeListFun()
     setTimeout(() => {
       this.getTagListFun() // 标签
-    },300)
+    }, 300)
     this.setFullHeight();
     // this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
@@ -581,7 +633,6 @@ export default {
         category: Number(this.queryData.category),
         platform: Number(this.queryData.platform),
         task_type: Number(this.queryData.task_type),
-
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -613,11 +664,13 @@ export default {
     // 打开配置
     confOpenFun(row) {
       this.confModal.show = true
-      this.confModal.type = 'edit'
       this.confModal.cloneRow = deepClone(row)
-      if (deepClone(row).conf && deepClone(row).conf.message) {
-        this.confModal.formData.conf = deepClone(row).conf.message
-      }
+      setTimeout(() => {
+        // this.$refs.refConfModal.resetFields();
+        if (deepClone(row).conf && deepClone(row).conf.message) {
+          this.confModal.formData.conf = deepClone(row).conf.message
+        }
+      }, 100)
     },
     // 修改发布
     changeReleaseStatusFun(form, val) {
@@ -679,22 +732,26 @@ export default {
     },
     // 保存 配置
     confSubmit() {
+      console.log('formData',this.confModal.formData)
       this.$refs.refConfModal.validate((v) => {
         if (v) {
+          return false
           this.confModal.isLoading = true
+          const levelData = {}
           const formData = {
             id: this.confModal.cloneRow.id,
             conf: {
-              message: this.confModal.formData.conf
+              message: this.confModal.formData.conf,
+              limit_by_level: levelData
             }
           }
-            editConfDataApi(formData).then(res => {
-              if (res.msg === 'success') {
-                successTips(this, 'success', '編輯成功！')
-                this.closeConfModal()
-                this.getDataListFun()
-              }
-            })
+          editConfDataApi(formData).then(res => {
+            if (res.msg === 'success') {
+              successTips(this, 'success', '编辑成功！')
+              this.closeConfModal()
+              this.getDataListFun()
+            }
+          })
         }
       })
     },
@@ -702,10 +759,11 @@ export default {
     closeConfModal() {
       this.confModal.show = false
       this.confModal.isLoading = false
-      this.$refs.refConfModal.resetFields();
-      this.confModal.formData = {
-        conf: '',
-      }
+      // this.$refs.refConfModal.resetFields();
+      // this.confModal.formColumn.forEach((item, index) => {
+      //   this.confModal.formData['level' + (index + 1)] = ''
+      // })
+      this.confModal.formData.conf = ''
     },
 
     // 上传成功回调
@@ -894,7 +952,6 @@ export default {
               label: item.val,
             }
           })
-          console.log(' this.titleList ', this.titleList)
         }
       })
     },
@@ -914,7 +971,6 @@ export default {
               label: item.val,
             }
           })
-          console.log(' this.titleList ', this.tagsList)
         }
       })
     },
@@ -930,6 +986,38 @@ export default {
         }
       })
     },
+    // 获取 徽章列表 配置 等级列表
+    getBadgeListFun() {
+      const params = {
+        page: 1,
+        limit: 100,
+        level: -1,
+        tar_points: -1,
+      }
+      getBadgeListApi(params).then(res => {
+        if (res.msg === 'success') {
+          this.confModal.formColumn = res.data.list.map((item, index) => {
+            item.label = '等级' + (index + 1)
+            item.prop = 'level' + (index + 1)
+            item.key = 'level' + (index + 1)
+            item.rules = [
+              {
+                required: true,
+                message: '请输入' + item.label + '！',
+                trigger: 'change'
+              }
+            ]
+            this.confModal.formData.domains.push({
+              label: '等级' + (index + 1),
+              prop: 'level' + (index + 1),
+              key: 'level' + (index + 1),
+              value: '',
+            })
+            return item
+          })
+        }
+      })
+    },
     // 打开预览图片
     openImageViewFun(row, kay) {
       this.imgData.show = true
@@ -942,7 +1030,7 @@ export default {
     formatTimestamp,
     getLabelByVal,
     getLabelArrByVal,
-    getImageExtension
+    getImageExtension,
 
   }
 }
@@ -981,7 +1069,6 @@ export default {
     overflow: hidden;
     overflow-y: auto;
     padding: 16px;
-
   }
 
   .el-form {
@@ -993,7 +1080,8 @@ export default {
     .el-form-item {
       width: 31%;
       margin-right: 20px;
-      &:nth-of-type(3n){
+
+      &:nth-of-type(3n) {
         margin-right: 0;
       }
     }
@@ -1009,5 +1097,44 @@ export default {
 .aUnderline {
   color: #00a8ff;
   text-decoration: underline;
+}
+
+.actionConfModal {
+  ::v-deep .el-dialog__body {
+    padding: 0;
+  }
+
+  .content {
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+}
+
+.confModalStyle {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .el-form-item {
+    width: 48%;
+  }
+
+  .formTitleRules {
+    width: 100%;
+    position: relative;
+    padding-left: 10px;
+
+    &:before {
+      position: absolute;
+      content: '*';
+      left: 0;
+      top: 5px;
+      font-size: 14px;
+      color: #ff0000;
+    }
+
+  }
 }
 </style>

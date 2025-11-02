@@ -146,6 +146,9 @@ export default {
     // 删除图片
     delImgFun(kay) {
       this.actionModal.formData[kay] = ''
+      if (this.$refs.refUploadFiles) {
+        this.$refs.refUploadFiles.resetFileFun()
+      }
     },
     // 关闭新建
     closeModal() {
