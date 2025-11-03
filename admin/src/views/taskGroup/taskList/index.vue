@@ -381,8 +381,6 @@
       @close="closeConfModal"
     >
       <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
-        <!--                  :rules="confModal.rules"
--->
         <el-form
           ref="refConfModal"
           :model="confModal.formData"
@@ -400,11 +398,11 @@
           </el-form-item>
           <el-form-item
             v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'"
-            label=""
-            prop="conf"
             :rules="[
               { required: true, message: '请输入发送文本！', trigger: 'change' },
             ]"
+            label=""
+            prop="conf"
             style="width: 100%"
           >
             <el-input
@@ -426,7 +424,7 @@
             :prop="'domains.' + index + '.value'"
             :rules="[
               {
-                required: true,
+                required: false,
                 message: '请输入' + item.label + '！',
                 trigger: 'change'
               }
@@ -665,12 +663,15 @@ export default {
     confOpenFun(row) {
       this.confModal.show = true
       this.confModal.cloneRow = deepClone(row)
-      setTimeout(() => {
-        // this.$refs.refConfModal.resetFields();
-        if (deepClone(row).conf && deepClone(row).conf.message) {
-          this.confModal.formData.conf = deepClone(row).conf.message
-        }
-      }, 100)
+
+      if (deepClone(row).conf && deepClone(row).conf.message) {
+        this.confModal.formData.conf = deepClone(row).conf.message
+      }
+      if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
+        this.confModal.formData.domains.forEach(item => {
+          item.value = row.conf.limit_by_level[item.key]
+        })
+      }
     },
     // 修改发布
     changeReleaseStatusFun(form, val) {
@@ -732,12 +733,13 @@ export default {
     },
     // 保存 配置
     confSubmit() {
-      console.log('formData',this.confModal.formData)
       this.$refs.refConfModal.validate((v) => {
         if (v) {
-          return false
           this.confModal.isLoading = true
           const levelData = {}
+          this.confModal.formData.domains.forEach(item => {
+            levelData[item.key] = Number(item.value)
+          })
           const formData = {
             id: this.confModal.cloneRow.id,
             conf: {
@@ -757,13 +759,9 @@ export default {
     },
     // 关闭 配置
     closeConfModal() {
+      this.$refs.refConfModal.resetFields();
       this.confModal.show = false
       this.confModal.isLoading = false
-      // this.$refs.refConfModal.resetFields();
-      // this.confModal.formColumn.forEach((item, index) => {
-      //   this.confModal.formData['level' + (index + 1)] = ''
-      // })
-      this.confModal.formData.conf = ''
     },
 
     // 上传成功回调
@@ -1015,6 +1013,7 @@ export default {
             })
             return item
           })
+          console.log('this.confModal.formColumn', this.confModal)
         }
       })
     },
