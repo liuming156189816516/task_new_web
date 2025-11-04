@@ -275,6 +275,7 @@ export default {
         { label: '中国', value: 'CN', },
         { label: '巴西', value: 'BR', },
         { label: '全球', value: 'ALL', },
+        { label: '马来西亚', value: 'MY', },
       ],
       checkIdArry: [],
       residueList: [],
