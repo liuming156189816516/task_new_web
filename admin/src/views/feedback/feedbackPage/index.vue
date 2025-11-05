@@ -51,17 +51,12 @@
         >
           <el-table-column type="selection" width="55" />
           <el-table-column label="序号" type="index" width="60" />
-          <el-table-column label="appuid" min-width="120" prop="app_uid" show-overflow-tooltip>
+          <el-table-column label="用户反馈内容" min-width="120" prop="content" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
           <el-table-column label="所属用户" min-width="120" prop="l_account" show-overflow-tooltip>
-            <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="用户反馈内容" min-width="120" prop="content" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
