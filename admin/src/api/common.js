@@ -35,3 +35,12 @@ export const uploadImgFileApi = (params) => {
     data: params,
   })
 }
+
+// 获取国际化 语言包 list
+export const getLanguagePageListApi = (params) => {
+  return request({
+    url: '/language/getlanguagecontent',
+    method: 'post',
+    data: params
+  })
+}

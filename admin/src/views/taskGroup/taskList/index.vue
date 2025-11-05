@@ -463,13 +463,11 @@ import {
   editConfDataApi,
   getBadgeListApi
 } from './api';
-import { getDataApi as getCategoriesListApi, getTitleListApi } from '@/views/taskGroup/taskType/api/index.js';
-
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
-import { formatTimestamp } from '@/filters'
+import { formatTimestamp ,getLanguagePageList } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi } from '@/api/common';
+import { uploadFileApi ,getLanguagePageListApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 
 export default {
@@ -600,13 +598,9 @@ export default {
   },
   mounted() {
     this.getDataListFun(); // 获取列表
-    this.getTitleListFun(); // 标题
+    this.getLanguagePageListFun();
     this.getBadgeListFun()
-    setTimeout(() => {
-      this.getTagListFun() // 标签
-    }, 300)
     this.setFullHeight();
-    // this.getCategoriesListFun()
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
   },
@@ -934,53 +928,14 @@ export default {
       //
       // }
     },
-    // 标题
-    getTitleListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-        language: 'en',
-        category: 'server.task.title',
-      }
-      getTitleListApi(params).then(res => {
+    // 获取国际化
+    getLanguagePageListFun() {
+      getLanguagePageListApi({}).then(res => {
         if (res.msg === 'success') {
-          this.titleList = res.data.list.map(item => {
-            return {
-              value: item.key,
-              label: item.val,
-            }
-          })
-        }
-      })
-    },
-    // 标题
-    getTagListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-        language: 'en',
-        category: 'server.task.tag',
-      }
-      getTitleListApi(params).then(res => {
-        if (res.msg === 'success') {
-          this.tagsList = res.data.list.map(item => {
-            return {
-              value: item.key,
-              label: item.val,
-            }
-          })
-        }
-      })
-    },
-    // 获取 任务分类
-    getCategoriesListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-      }
-      getCategoriesListApi(params).then(res => {
-        if (res.msg === 'success') {
-          this.categoriesList = res.data.list
+          const kay1 = 'server.task.title'
+          const kay2 = 'server.task.tag'
+          this.titleList = getLanguagePageList(res.data.content,kay1)
+          this.tagsList = getLanguagePageList(res.data.content,kay2)
         }
       })
     },
@@ -1013,7 +968,6 @@ export default {
             })
             return item
           })
-          console.log('this.confModal.formColumn', this.confModal)
         }
       })
     },

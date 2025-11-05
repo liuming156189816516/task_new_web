@@ -157,3 +157,15 @@ export function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss'
   return format.replace(/YYYY|MM|DD|HH|mm|ss/g, match => map[match]);
 }
 
+/**
+ * @param {object} data
+ * @param {string} kay
+ */
+export function getLanguagePageList(data,kay) {
+  const value = []
+  Object.keys(data[kay]).forEach(key => {
+    const val = { value: key,label: data[kay][key] }
+    value.push(val)
+  });
+  return value
+}

@@ -156,9 +156,9 @@
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editReleaseStatusApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
-import { formatTimestamp } from '@/filters'
+import { formatTimestamp, getLanguagePageList } from '@/filters'
 import sortablejs from 'sortablejs';
-import {getTitleListApi} from "@/views/taskGroup/taskType/api";
+import { getLanguagePageListApi } from '@/api/common';
 
 export default {
   name: 'ActivityType',
@@ -218,7 +218,7 @@ export default {
   },
   mounted() {
     this.getDataListFun(); // 获取列表
-    this.getTitleListFun(); // 标题
+    this.getLanguagePageListFun(); // 标题
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
@@ -452,23 +452,12 @@ export default {
       //
       // }
     },
-    // 标题
-    getTitleListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-        language: 'en',
-        category: 'server.activitycategories.title',
-      }
-      getTitleListApi(params).then(res => {
+    // 获取国际化
+    getLanguagePageListFun() {
+      getLanguagePageListApi({}).then(res => {
         if (res.msg === 'success') {
-          this.titleList = res.data.list.map(item => {
-            return {
-              value: item.key,
-              label: item.val,
-            }
-          })
-          console.log(' this.titleList ', this.titleList)
+          const kay = 'server.activitycategories.title'
+          this.titleList = getLanguagePageList(res.data.content,kay)
         }
       })
     },

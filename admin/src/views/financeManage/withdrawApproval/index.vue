@@ -201,7 +201,8 @@
 import { getLabelByVal, resetPage } from '@/utils'
 import { getwithdrawapprovallist, doapproval } from './api'
 import withdrawConfig from './components/withdrawConfig'
-import { getTitleListApi } from '@/views/taskGroup/taskType/api';
+import { getLanguagePageListApi } from '@/api/common';
+import { getLanguagePageList } from '@/filters';
 export default {
   components: {
     withdrawConfig
@@ -276,7 +277,7 @@ export default {
   mounted() {
     this.getPayOrderList();
     this.setFullHeight();
-    this.getTitleListFun()
+    this.getLanguagePageListFun()
     window.addEventListener('resize', this.setFullHeight);
   },
   beforeDestroy() {
@@ -357,22 +358,12 @@ export default {
       this.factorModel.status = val;
       this.getPayOrderList();
     },
-    // 标题
-    getTitleListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-        language: 'en',
-        category: 'page.withdraws',
-      }
-      getTitleListApi(params).then(res => {
+    // 获取国际化
+    getLanguagePageListFun() {
+      getLanguagePageListApi({}).then(res => {
         if (res.msg === 'success') {
-          this.titleList = res.data.list.map(item => {
-            return {
-              value: item.key,
-              label: item.val,
-            }
-          })
+          const kay = 'page.withdraws'
+          this.titleList = getLanguagePageList(res.data.content,kay)
         }
       })
     },

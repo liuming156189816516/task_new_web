@@ -229,13 +229,12 @@
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi ,editReleaseStatusApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal } from '@/utils';
-import { formatTimestamp } from '@/filters'
+import { formatTimestamp, getLanguagePageList } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi } from '@/api/common';
+import { getLanguagePageListApi, uploadFileApi } from '@/api/common';
 import sortablejs from 'sortablejs';
-import { getTitleListApi } from '@/views/taskGroup/taskType/api';
-import confModal from "./components/confModal";
+import confModal from './components/confModal';
 
 export default {
   name: 'AppConfigPage',
@@ -314,7 +313,7 @@ export default {
   },
   mounted() {
     this.getDataListFun(); // 获取列表
-    this.getTitleListFun(); // 标题
+    this.getLanguagePageListFun();
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
@@ -598,22 +597,12 @@ export default {
       this.imgData.show = true
       this.imgData.scr = row[kay]
     },
-    // 标题
-    getTitleListFun() {
-      const params = {
-        page: 1,
-        limit: 1000,
-        language: 'en',
-        category: 'server.activity.title',
-      }
-      getTitleListApi(params).then(res => {
+    // 获取国际化
+    getLanguagePageListFun() {
+      getLanguagePageListApi({}).then(res => {
         if (res.msg === 'success') {
-          this.titleList = res.data.list.map(item => {
-            return {
-              value: item.key,
-              label: item.val,
-            }
-          })
+          const kay = 'server.activity.title'
+          this.titleList = getLanguagePageList(res.data.content,kay)
         }
       })
     },

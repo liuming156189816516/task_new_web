@@ -53,12 +53,3 @@ export const editReleaseStatusApi = (params) => {
     data: params
   })
 }
-
-// 标题选项列表
-export const getTitleListApi = (params) => {
-  return request({
-    url: '/language/getlanguagelist',
-    method: 'post',
-    data: params
-  })
-}
