@@ -328,6 +328,23 @@ export const asyncRoutes = [
       },
     ]
   },
+  // 问题反馈
+  {
+    path: '/feedback',
+    component: Layout,
+    name: 'feedback',
+    meta: { title: '问题反馈', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/feedbackPage',
+        component: () => import('@/views/feedback/feedbackPage'),
+        name: 'feedbackPage',
+        meta: {
+          title: '问题反馈',
+        }
+      },
+    ]
+  },
   // 权限配置
   {
     path: '/permission',
