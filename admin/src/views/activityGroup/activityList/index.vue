@@ -90,7 +90,7 @@
         </el-table-column>
         <el-table-column label="描述" min-width="120" prop="desc" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            {{ getLabelByVal(scope.row[scope.column.property], descList) }}
           </template>
         </el-table-column>
         <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
@@ -203,7 +203,9 @@
             </el-select>
           </el-form-item>
           <el-form-item label="描述:" prop="desc">
-            <el-input v-model="addModal.formData.desc" placeholder="请输入描述" @input="changeInput" />
+            <el-select v-model="addModal.formData.desc" clearable filterable placeholder="请选择描述">
+              <el-option v-for="item in descList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item label="跳转地址:" prop="deeplink">
             <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
@@ -308,7 +310,8 @@ export default {
         show: false,
         scr: ''
       },
-      titleList: []
+      titleList: [],
+      descList:[]
     }
   },
   mounted() {
@@ -603,6 +606,8 @@ export default {
         if (res.msg === 'success') {
           const kay = 'server.activity.title'
           this.titleList = getLanguagePageList(res.data.content,kay)
+          const kay2 = 'server.activity.desc'
+          this.descList = getLanguagePageList(res.data.content,kay2)
         }
       })
     },
