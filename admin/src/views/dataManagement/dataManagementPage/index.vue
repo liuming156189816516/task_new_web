@@ -276,6 +276,7 @@ export default {
         { label: '巴西', value: 'BR', },
         { label: '全球', value: 'ALL', },
         { label: '马来西亚', value: 'MY', },
+        { label: '老挝', value: 'LA', },
       ],
       checkIdArry: [],
       residueList: [],
