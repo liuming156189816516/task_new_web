@@ -53,7 +53,9 @@
           <el-table-column label="序号" type="index" width="60" />
           <el-table-column label="用户反馈内容" min-width="120" prop="content" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              <el-button :loading="feedbackModal.isLoading" size="small" type="primary" @click="openFeedbackModalFun(scope.row)">查看</el-button>
+
+              <!--              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}-->
             </template>
           </el-table-column>
           <el-table-column label="所属用户" min-width="120" prop="l_account" show-overflow-tooltip>
@@ -81,13 +83,36 @@
         </div>
       </div>
     </div>
+
+    <!-- 查看 内容 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :visible.sync="feedbackModal.show"
+      center
+      class="actionModal"
+      title="用户反馈内容"
+      width="600px"
+      @close="closeModal"
+    >
+      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
+        <div class="contentBox">
+          {{ feedbackModal.formData.content }}
+        </div>
+      </div>
+      <div slot="footer">
+        <div class="el-item-bottom" style="text-align:center;">
+          <!--          <el-button @click="closeModal">取消</el-button>-->
+          <!--          <el-button :loading="feedbackModal.isLoading" type="primary" @click="addSubmit">确认</el-button>-->
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { resetPage, getLabelByVal, successTips, } from '@/utils/index'
 import { formatTimestamp, formatDateTime } from '@/filters'
-import { getFeedbackListApi,delFeedbackListApi } from './api'
+import { getFeedbackListApi, delFeedbackListApi } from './api'
 
 export default {
   data() {
@@ -114,6 +139,14 @@ export default {
         batchOption: [
           { icon: 'delete', label: '批量删除' },
         ],
+      },
+      feedbackModal: {
+        show: false,
+        type: 'add',
+        formData: {
+          content: '',
+        },
+        isLoading: false,
       },
     }
   },
@@ -214,6 +247,19 @@ export default {
       }).catch(() => {
         this.$message({ type: 'info', message: '已取消' });
       })
+    },
+    // 打开 用户反馈内容
+    openFeedbackModalFun(form) {
+      this.feedbackModal.show = true
+      this.feedbackModal.formData.content = form.content
+    },
+    // 关闭 用户反馈内容
+    closeModal() {
+      this.feedbackModal.show = false
+      this.feedbackModal.isLoading = false
+      this.feedbackModal.formData = {
+        content: '',
+      }
     },
     // 分页 切换
     changePageSize(val, type) {
@@ -706,5 +752,14 @@ export default {
 
 .loading_icon {
   margin-top: 10px;
+}
+
+.contentBox{
+  min-height: 150px;
+  max-height: 400px;
+  border: 1px solid #333333;
+  border-radius: 10px;
+  padding: 10px;
+  overflow-y: auto;
 }
 </style>
