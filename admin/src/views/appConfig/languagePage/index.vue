@@ -93,9 +93,6 @@
               <div v-if="scope.row.type==='2'">
                 <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
               </div>
-              <div v-else>
-                {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-              </div>
             </div>
             <div v-else>-</div>
           </template>
@@ -179,7 +176,6 @@
                 @uploadSuccess="uploadSuccess"
               />
             </div>
-
           </el-form-item>
 
           <el-form-item label="备注:" prop="remark">
@@ -241,6 +237,7 @@ export default {
           key: [{ required: true, message: '请输入Key！', trigger: 'change' }],
           val: [{ required: true, message: '请输入val！', trigger: 'change' }],
           type: [{ required: true, message: '请选择类型！', trigger: 'change' }],
+          remark: [{ required: true, message: '请输入备注！', trigger: 'change' }],
         },
         isLoading: false,
       },
