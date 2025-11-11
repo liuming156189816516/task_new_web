@@ -79,9 +79,22 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="类型" min-width="120" prop="type" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], typeList) || '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="val" min-width="120" prop="val" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <div v-if="scope.row[scope.column.property]">
+              <div v-if="scope.row.type==='1'">
+                {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              </div>
+              <div v-if="scope.row.type==='2'">
+                <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
+              </div>
+            </div>
+            <div v-else>-</div>
           </template>
         </el-table-column>
         <el-table-column label="备注" min-width="120" prop="remark" show-overflow-tooltip>
@@ -140,9 +153,32 @@
           <el-form-item label="Key:" prop="key">
             <el-input v-model="addModal.formData.key" placeholder="请输入Key" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="val:" prop="val">
-            <el-input v-model="addModal.formData.val" placeholder="请输入val" @input="changeInput" />
+          <el-form-item label="类型:" prop="type">
+            <el-select v-model="addModal.formData.type" clearable filterable placeholder="请选择类型" @change="changeTypeFun">
+              <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
+          <el-form-item label="val:" prop="val">
+            <div v-if="addModal.formData.type=== '1' ">
+              <el-input v-model="addModal.formData.val" placeholder="请输入val" @input="changeInput" />
+            </div>
+            <div v-if="addModal.formData.type=== '2' ">
+              <div v-if="addModal.formData.val" class="imgBox">
+                <a :href="addModal.formData.val" class="aUnderline">文件</a>
+                <i class="el-icon-delete icon_del" @click="delImgFun('val')" />
+              </div>
+              <UploadFiles
+                v-else
+                ref="refUploadFiles"
+                :format="['mp4']"
+                :max-size="100"
+                kay="val"
+                @uploadSuccess="uploadSuccess"
+              />
+            </div>
+
+          </el-form-item>
+
           <el-form-item label="备注:" prop="remark">
             <el-input v-model="addModal.formData.remark" placeholder="请输入备注" @input="changeInput" />
           </el-form-item>
@@ -161,13 +197,15 @@
 <script>
 import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
 
-import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal } from '@/utils';
+import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal , getImageExtension } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import { uploadFileApi } from '@/api/common';
+import UploadFiles from '@/components/UploadFiles/UploadFiles'
 
 export default {
   name: 'ScriptPage',
   components: {
+    UploadFiles,
   },
   data() {
     return {
@@ -192,15 +230,21 @@ export default {
           key: '',
           val: '',
           remark: '',
+          type: '1',
         },
         rules: {
           language: [{ required: true, message: '请选择语言！', trigger: 'change' }],
           category: [{ required: true, message: '请输入类别！', trigger: 'change' }],
           key: [{ required: true, message: '请输入Key！', trigger: 'change' }],
           val: [{ required: true, message: '请输入val！', trigger: 'change' }],
+          type: [{ required: true, message: '请选择类型！', trigger: 'change' }],
         },
         isLoading: false,
       },
+      typeList: [
+        { label: '文本', value: '1' },
+        { label: '视频', value: '2' },
+      ],
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
       loading: false,
@@ -251,7 +295,7 @@ export default {
           this.queryData.total = res.data.total;
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
-            // item.notify_type = item.notify_type ? String(item.notify_type) : ''
+            item.type = item.type ? String(item.type) : ''
             return item
           })
         }
@@ -268,13 +312,18 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
+    // 编辑类型
+    changeTypeFun(val) {
+      console.log('addModal.formData.type',this.addModal.formData.type)
+      this.addModal.formData.val = ''
+    },
     // 新建 编辑 保存
     addSubmit() {
       this.$refs.refAddModal.validate((v) => {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          // formData.notify_type = formData.notify_type ? Number(formData.notify_type) : 0
+          formData.type = formData.type ? Number(formData.type) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -298,7 +347,7 @@ export default {
     // 上传成功回调
     uploadSuccess(file, kay) {
       const formData = new FormData();
-      formData.append('directory', 'notify-template');
+      formData.append('directory', 'language');
       formData.append('file', file);
       uploadFileApi(formData).then(res => {
         if (res.msg === 'success') {
@@ -320,10 +369,12 @@ export default {
       this.addModal.isLoading = false
       this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        title: '',
-        icon: '',
-        notify_type: null,
-        desc: '',
+        language: 'en',
+        category: '',
+        key: '',
+        val: '',
+        remark: '',
+        type: '1',
       }
     },
     // 批量操作
@@ -433,6 +484,7 @@ export default {
     formatTimestamp,
     getLabelByVal,
     getLabelArrByVal,
+    getImageExtension
 
   }
 }
@@ -457,8 +509,9 @@ export default {
     color: red;
     position: absolute;
     font-size: 22px;
-    left: 130px;
-    top: 38%;
+    left: 50px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 

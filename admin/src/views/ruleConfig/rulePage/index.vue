@@ -60,9 +60,11 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
+        <el-table-column label="标题" min-width="120" prop="title" >
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], titleList) }}
+            <el-tooltip class="item" effect="dark" :content="scope.row[scope.column.property]" placement="top">
+              <span>{{ getLabelByVal(scope.row[scope.column.property], titleList) }}</span>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
