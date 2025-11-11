@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 列表
 export const getDataApi = (params) => {
   return request({
-    url: '/taskcategories/gettaskcategorieslist',
+    url: '/rules/getruleslist',
     method: 'post',
     data: params
   })
@@ -12,7 +12,7 @@ export const getDataApi = (params) => {
 // 新增
 export const addDataApi = (params) => {
   return request({
-    url: '/taskcategories/addtaskcategories',
+    url: '/rules/addrules',
     method: 'post',
     data: params
   })
@@ -21,7 +21,7 @@ export const addDataApi = (params) => {
 // 编辑
 export const editDataApi = (params) => {
   return request({
-    url: '/taskcategories/uptaskcategories',
+    url: '/rules/uprules',
     method: 'post',
     data: params
   })
@@ -30,26 +30,9 @@ export const editDataApi = (params) => {
 // 删除
 export const delDataApi = (params) => {
   return request({
-    url: '/taskcategories/deltaskcategories',
+    url: '/rules/delrules',
     method: 'post',
     data: params
   })
 }
 
-// 拖拽排序
-export const editSortDataApi = (params) => {
-  return request({
-    url: '/taskcategories/sorttaskcategories',
-    method: 'post',
-    data: params
-  })
-}
-
-// 修改发布状态
-export const editReleaseStatusApi = (params) => {
-  return request({
-    url: '/taskcategories/uptaskcategoriesreleasestatus',
-    method: 'post',
-    data: params
-  })
-}

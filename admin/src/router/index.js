@@ -345,23 +345,23 @@ export const asyncRoutes = [
       },
     ]
   },
-  // // 问题反馈
-  // {
-  //   path: '/ruleConfig',
-  //   component: Layout,
-  //   name: 'ruleConfig',
-  //   meta: { title: '规则配置', icon: 'el-icon-office-building' },
-  //   children: [
-  //     {
-  //       path: '/rulePage',
-  //       component: () => import('@/views/ruleConfig/rulePage'),
-  //       name: 'rulePage',
-  //       meta: {
-  //         title: '规则配置',
-  //       }
-  //     },
-  //   ]
-  // },
+  // 规则配置
+  {
+    path: '/ruleConfig',
+    component: Layout,
+    name: 'ruleConfig',
+    meta: { title: '规则配置', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/rulePage',
+        component: () => import('@/views/ruleConfig/rulePage'),
+        name: 'rulePage',
+        meta: {
+          title: '规则配置',
+        }
+      },
+    ]
+  },
 
   // 权限配置
   {
