@@ -93,6 +93,9 @@
               <div v-if="scope.row.type==='2'">
                 <a :href="scope.row[scope.column.property]" class="aUnderline">文件</a>
               </div>
+              <div v-else>
+                {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+              </div>
             </div>
             <div v-else>-</div>
           </template>
