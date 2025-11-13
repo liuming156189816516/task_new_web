@@ -70,3 +70,12 @@ export const getBadgeListApi = (params) => {
     data: params
   })
 }
+
+// 获取数据包 列表
+export const getDataPackListApi = (params) => {
+  return request({
+    url: '/datapack/getdatapacklist',
+    method: 'post',
+    data: params
+  })
+}

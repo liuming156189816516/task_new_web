@@ -386,14 +386,14 @@
           size="small"
         >
           <el-form-item
-            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'"
+            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'&&confModal.cloneRow.task_type!=='9'"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">发送文本</div>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'"
+            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'&&confModal.cloneRow.task_type!=='9'"
             :rules="[
               { required: true, message: '请输入发送文本！', trigger: 'change' },
             ]"
@@ -409,6 +409,26 @@
               type="textarea"
               @input="changeInput"
             />
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">数据包配置</div>
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            :rules="[
+              { required: true, message: '请选择数据包！', trigger: 'change' },
+            ]"
+            label=""
+            prop="data_pack_id"
+            style="width: 100%"
+          >
+            <el-select v-model="confModal.formData.data_pack_id" clearable filterable placeholder="请选择数据包">
+              <el-option v-for="item in dataPackList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item class="formTitleRules" label="">
             <div style="font-size: 18px;color: #333333">任务限制</div>
@@ -431,6 +451,23 @@
               :placeholder="'请输入'+item.label"
               type="number"
               @input="changeInput"
+            />
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='4'||confModal.cloneRow.task_type==='7'||confModal.cloneRow.task_type==='3'"
+            :rules="[
+              { required: true, message: '请选择是否优先取本地数据！', trigger: 'change' },
+            ]"
+            label="是否优先取本地数据"
+            prop="is_prefer_local_data"
+            style="width: 100%"
+          >
+            <el-switch
+              v-model="confModal.formData.is_prefer_local_data"
+              active-value="1"
+              inactive-value="0"
+              active-text="是"
+              inactive-text="否"
             />
           </el-form-item>
         </el-form>
@@ -457,7 +494,8 @@ import {
   editSortDataApi,
   editReleaseStatusApi,
   editConfDataApi,
-  getBadgeListApi
+  getBadgeListApi,
+  getDataPackListApi
 } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
 import { formatTimestamp ,getLanguagePageList } from '@/filters'
@@ -576,6 +614,8 @@ export default {
         formData: {
           domains: [],
           conf: '',
+          data_pack_id: '',
+          is_prefer_local_data: '1',
         },
         rules: {
           conf: [
@@ -584,13 +624,15 @@ export default {
         },
         isLoading: false,
       },
-      titleList: []
+      titleList: [],
+      dataPackList: []
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.getLanguagePageListFun();
     this.getBadgeListFun()
+    this.getDataPackListFun()
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
@@ -648,9 +690,10 @@ export default {
     confOpenFun(row) {
       this.confModal.show = true
       this.confModal.cloneRow = deepClone(row)
-
       if (deepClone(row).conf && deepClone(row).conf.message) {
         this.confModal.formData.conf = deepClone(row).conf.message
+        this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id
+        this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
       }
       if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
         this.confModal.formData.domains.forEach(item => {
@@ -728,6 +771,8 @@ export default {
             id: this.confModal.cloneRow.id,
             conf: {
               message: this.confModal.formData.conf,
+              data_pack_id: this.confModal.formData.data_pack_id,
+              is_prefer_local_data: this.confModal.formData.is_prefer_local_data === '1',
               limit_by_level: levelData
             }
           }
@@ -956,6 +1001,24 @@ export default {
               value: '',
             })
             return item
+          })
+        }
+      })
+    },
+    // 获取 徽章列表 配置 等级列表
+    getDataPackListFun() {
+      const params = {
+        page: 1,
+        limit: 1000,
+      }
+      getDataPackListApi(params).then(res => {
+        if (res.msg === 'success') {
+          this.dataPackList = []
+            res.data.list.forEach((item, index) => {
+              const val = { label: item.name,value: item.id }
+              if (item.data_type === 3) {
+                this.dataPackList.push(val)
+              }
           })
         }
       })
