@@ -779,10 +779,10 @@ export default {
             formData.conf.message = this.confModal.formData.conf
           }
           if (taskType === '3' || taskType === '4' || taskType === '7') {
-            formData.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'
+            formData.conf.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'
           }
           if (taskType === '9') {
-            formData.data_pack_id = this.confModal.formData.data_pack_id
+            formData.conf.data_pack_id = this.confModal.formData.data_pack_id
           }
 
           editConfDataApi(formData).then(res => {
