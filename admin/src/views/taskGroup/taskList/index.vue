@@ -690,7 +690,7 @@ export default {
     confOpenFun(row) {
       this.confModal.show = true
       this.confModal.cloneRow = deepClone(row)
-      if (deepClone(row).conf && deepClone(row).conf.message) {
+      if (deepClone(row).conf) {
         this.confModal.formData.conf = deepClone(row).conf.message
         this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id
         this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
@@ -1029,6 +1029,7 @@ export default {
                 this.dataPackList.push(val)
               }
           })
+          console.log(' this.dataPackLis', this.dataPackList)
         }
       })
     },
