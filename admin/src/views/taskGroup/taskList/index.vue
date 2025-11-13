@@ -454,7 +454,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='4'||confModal.cloneRow.task_type==='7'||confModal.cloneRow.task_type==='3'"
+            v-if="confModal.cloneRow.task_type==='3'||confModal.cloneRow.task_type==='4'||confModal.cloneRow.task_type==='7'"
             :rules="[
               { required: true, message: '请选择是否优先取本地数据！', trigger: 'change' },
             ]"
@@ -770,12 +770,21 @@ export default {
           const formData = {
             id: this.confModal.cloneRow.id,
             conf: {
-              message: this.confModal.formData.conf,
-              data_pack_id: this.confModal.formData.data_pack_id,
-              is_prefer_local_data: this.confModal.formData.is_prefer_local_data === '1',
               limit_by_level: levelData
             }
           }
+          const taskType = this.confModal.cloneRow.task_type
+
+          if (taskType !== '1' && taskType !== '2' && taskType !== '9') {
+            formData.conf.message = this.confModal.formData.conf
+          }
+          if (taskType === '3' || taskType === '4' || taskType === '7') {
+            formData.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'
+          }
+          if (taskType === '9') {
+            formData.data_pack_id = this.confModal.formData.data_pack_id
+          }
+
           editConfDataApi(formData).then(res => {
             if (res.msg === 'success') {
               successTips(this, 'success', '编辑成功！')
