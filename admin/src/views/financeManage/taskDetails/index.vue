@@ -220,12 +220,9 @@ export default {
       taskTypeList: [
         { label: 'Tiktok-Like', value: '1' },
         { label: 'Tiktok-Follow', value: '2' },
-        { label: 'Whatsapp-SendLocal', value: '3' },
-        { label: 'Sms-SendLocal', value: '4' },
-        { label: 'Whatsapp-SendGlobal', value: '5' },
-        { label: 'Sms-SendGlobal', value: '6' },
-        { label: 'Whatsapp-SendLocal-Auto', value: '7' },
-        { label: 'Whatsapp-SendGlobal-Auto', value: '8' },
+        { label: 'Whatsapp-Send', value: '3' },
+        { label: 'Whatsapp-Send-Auto', value: '7' },
+        { label: 'Whatsapp-Group', value: '9' },
       ],
       platformList: [
         { label: 'Tiktok', value: '1' },

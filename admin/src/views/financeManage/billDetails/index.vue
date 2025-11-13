@@ -139,6 +139,19 @@ export default {
         { label: '人工修正', value: '2' },
         { label: 'tiktok-Like', value: '3' },
         { label: 'tiktok-follow', value: '4' },
+        { label: 'Whatsapp-Send', value: '5' },
+        { label: 'Sms-Send', value: '6' },
+        { label: '邀请奖励', value: '9' },
+        { label: '上级返佣', value: '10' },
+        { label: '提现', value: '11' },
+        { label: '退费', value: '12' },
+        { label: 'Whatsapp-Send-Auto', value: '13' },
+        { label: 'Whatsapp-Group', value: '15' },
+        /*
+        { label: '签到', value: '1' },
+        { label: '人工修正', value: '2' },
+        { label: 'tiktok-Like', value: '3' },
+        { label: 'tiktok-follow', value: '4' },
         { label: 'Whatsapp-SendLocal', value: '5' },
         { label: 'Sms-SendLocal', value: '6' },
         { label: 'Whatsapp-SendGlobal', value: '7' },
@@ -149,6 +162,7 @@ export default {
         { label: '退费', value: '12' },
         { label: 'Whatsapp-SendLocal-Auto', value: '13' },
         { label: 'Whatsapp-SendGlobal-Auto', value: '14' },
+        */
       ],
       typeList2: [
         { label: '签到', value: '1' },
