@@ -271,12 +271,12 @@ export default {
       setInter: 1000,
       success_number: 0,
       countryList: [
-        { label: '美国', value: 'US', },
-        { label: '中国', value: 'CN', },
-        { label: '巴西', value: 'BR', },
-        { label: '全球', value: 'ALL', },
-        { label: '马来西亚', value: 'MY', },
-        { label: '老挝', value: 'LA', },
+        { label: '美国', value: 'US' },
+        { label: '中国', value: 'CN' },
+        { label: '巴西', value: 'BR' },
+        { label: '马来西亚', value: 'MY' },
+        { label: '老挝', value: 'LA' },
+        { label: '全球', value: 'ALL' },
       ],
       checkIdArry: [],
       residueList: [],
@@ -304,6 +304,7 @@ export default {
       dataTypeList: [
         { label: 'Whatsapp', value: '1', },
         { label: 'Sms', value: '2', },
+        { label: 'Whatsapp拉群', value: '3', },
       ],
     }
   },
