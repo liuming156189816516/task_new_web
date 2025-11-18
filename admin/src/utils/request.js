@@ -6,8 +6,9 @@ import { getToken } from '@/utils/auth'
 
 const baseUrl = process.env.NODE_ENV=="production"?`${process.env.VUE_APP_BASE_PATH}:${process.env.VUE_APP_SERVER_PORT}`:"/api";
 axios.interceptors.request.use(config => {
-    config.headers['Content-Type'] = 'text/plain'
-    config.url = getToken()?baseUrl+config.url+`?token=${getToken()}`:baseUrl+config.url
+  config.headers['Content-Type'] = 'text/plain'
+  config.headers['x-token'] = getToken()
+    config.url = baseUrl+config.url // `?x-token=${getToken()}`:baseUrl+config.url
     if(config.method.toLowerCase() === 'get'){
       config.params = config.data;
     }

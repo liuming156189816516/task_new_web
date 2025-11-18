@@ -7,14 +7,14 @@ const state = {
   roles: [],
   routes: [],
   addRoutes: [],
-  token: getToken(),
+  'x-token': getToken(),
   userInfo: getUserInfo(),
   introduction: ''
 }
 
 const mutations = {
   SET_TOKEN: (state, token) => {
-    state.token = token
+    state['x-token'] = token
   },
   SET_USER_INFO: (state, userInfo) => {
     state.userInfo = userInfo
