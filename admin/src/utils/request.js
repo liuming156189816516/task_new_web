@@ -4,12 +4,13 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
-const baseUrl = process.env.NODE_ENV=="production"?`${process.env.VUE_APP_BASE_PATH}:${process.env.VUE_APP_SERVER_PORT}`:"/api";
+const baseUrl = process.env.NODE_ENV == 'production' ? `${process.env.VUE_APP_BASE_PATH}:${process.env.VUE_APP_SERVER_PORT}` : '/api';
 axios.interceptors.request.use(config => {
   config.headers['Content-Type'] = 'text/plain'
-  config.headers['x-token'] = getToken()
-    config.url = baseUrl+config.url // `?x-token=${getToken()}`:baseUrl+config.url
-    if(config.method.toLowerCase() === 'get'){
+  config.headers['x-token'] = getToken() ? getToken() : ''
+  // config.url = getToken()?baseUrl+config.url+`?token=${getToken()}`:baseUrl+config.url
+    config.url = baseUrl + config.url // `?x-token=${getToken()}`:baseUrl+config.url
+    if (config.method.toLowerCase() === 'get') {
       config.params = config.data;
     }
     return config
