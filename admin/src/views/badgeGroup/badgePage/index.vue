@@ -205,8 +205,32 @@ export default {
           tar_points: null,
         },
         rules: {
-          level: [{ required: true, message: '请输入等级！', trigger: 'change' }],
-          badge_icon: [{ required: true, message: '请上传徽章图标！', trigger: 'change' }],
+          level: [
+            { required: true, message: '请输入等级！', trigger: 'change' },
+            {
+              required: true, validator: (rule, value, callback) => {
+                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
+                if (reg.test(value)) {
+                  callback()
+                } else {
+                  return callback(new Error('请输入大于0的数！'))
+                }
+              }, trigger: 'change'
+            },
+          ],
+          badge_icon: [
+            { required: true, message: '请上传徽章图标！', trigger: 'change' },
+            {
+              required: true, validator: (rule, value, callback) => {
+                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
+                if (reg.test(value)) {
+                  callback()
+                } else {
+                  return callback(new Error('请输入大于0的数！'))
+                }
+              }, trigger: 'change'
+            },
+          ],
           avatar_coin: [{ required: true, message: '请上传头像上的图标！', trigger: 'change' }],
           tar_points: [{ required: true, message: '请输入目标积分！', trigger: 'change' }],
         },
