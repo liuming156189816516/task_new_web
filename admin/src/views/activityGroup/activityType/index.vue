@@ -106,7 +106,7 @@
             <div v-if="scope.row.release_status==='3'" class="action-btn">
               <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
             </div>
-            <div class="action-btn">
+            <div v-if="scope.row.release_status !=='3'" class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
           </template>

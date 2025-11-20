@@ -220,6 +220,10 @@ export default {
           ],
           badge_icon: [
             { required: true, message: '请上传徽章图标！', trigger: 'change' },
+          ],
+          avatar_coin: [{ required: true, message: '请上传头像上的图标！', trigger: 'change' }],
+          tar_points: [
+            { required: true, message: '请输入目标积分！', trigger: 'change' },
             {
               required: true, validator: (rule, value, callback) => {
                 const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
@@ -231,8 +235,6 @@ export default {
               }, trigger: 'change'
             },
           ],
-          avatar_coin: [{ required: true, message: '请上传头像上的图标！', trigger: 'change' }],
-          tar_points: [{ required: true, message: '请输入目标积分！', trigger: 'change' }],
         },
         isLoading: false,
       },

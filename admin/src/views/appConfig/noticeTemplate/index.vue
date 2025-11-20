@@ -97,12 +97,6 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-<!--            <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">-->
-<!--              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>-->
-<!--            </div>-->
-<!--            <div v-if="scope.row.release_status==='3'" class="action-btn">-->
-<!--              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>-->
-<!--            </div>-->
             <div class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
