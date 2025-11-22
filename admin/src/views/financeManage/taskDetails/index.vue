@@ -193,7 +193,7 @@
 </template>
 
 <script>
-import {resetPage, getLabelByVal, deepClone } from '@/utils/index'
+import { resetPage, getLabelByVal, deepClone } from '@/utils/index'
 import { formatTimestamp } from '@/filters'
 import { gettaskrecordlistApi } from './api'
 
@@ -221,6 +221,7 @@ export default {
         { label: 'Tiktok-Like', value: '1' },
         { label: 'Tiktok-Follow', value: '2' },
         { label: 'Whatsapp-Send', value: '3' },
+        { label: 'Sms-Send', value: '4' },
         { label: 'Whatsapp-Send-Auto', value: '7' },
         { label: 'Whatsapp-Group', value: '9' },
       ],
