@@ -76,6 +76,36 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
+          <el-table-column label="版本名称" min-width="120" prop="version_name" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="设备型号" min-width="120" prop="device_type" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="手机厂商" min-width="120" prop="device_brand" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="系统地区" min-width="120" prop="sys_region" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="系统版本" min-width="120" prop="os_version" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
+          <el-table-column label="渠道" min-width="120" prop="channel" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="状态" min-width="120" prop="status" show-overflow-tooltip>
             <template slot-scope="scope">
               <el-tag :type="getLabelByVal(scope.row[scope.column.property], statusList,{label:'type',value:'value'})">
