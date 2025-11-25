@@ -220,6 +220,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.task_type = item.task_type ? String(item.task_type) : ''
+            item.code = item.code ? String(item.code) : ''
             return item
           })
         }

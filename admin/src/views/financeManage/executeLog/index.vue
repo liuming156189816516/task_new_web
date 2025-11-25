@@ -107,11 +107,14 @@
               </el-dropdown-menu>
             </el-dropdown>
           </template>
+<!--          <template slot-scope="scope">-->
+<!--            <span v-if="scope.row[scope.column.property]!=='0'">-->
+<!--              {{ getLabelByVal(scope.row[scope.column.property], pTypeList) }}-->
+<!--            </span>-->
+<!--            <span v-else>-</span>-->
+<!--          </template>-->
           <template slot-scope="scope">
-            <span v-if="scope.row[scope.column.property]!=='0'">
-              {{ getLabelByVal(scope.row[scope.column.property], pTypeList) }}
-            </span>
-            <span v-else>-</span>
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
 
@@ -185,8 +188,10 @@ export default {
       ],
       pTypeList: [
         { label: '全部', value: '0' },
-        { label: '检查是否可以执行', value: '1' },
-        { label: '前端通知后端任务是否完成', value: '2' },
+        // { label: '检查是否可以执行', value: '1' },
+        // { label: '前端通知后端任务是否完成', value: '2' },
+        { label: '1', value: '1' },
+        { label: '2', value: '2' },
       ],
 
     }
