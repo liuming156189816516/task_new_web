@@ -1,0 +1,864 @@
+<!-- 账号入库 -->
+<template>
+  <div ref="appEle" style="height: 100%;">
+    <el-alert title="温馨提示" type="warning" @close="handleClose">
+      <template slot>
+        <div class="storage_tips">
+          <div>{{ $t('sys_c101') }}</div>
+          <div>{{ $t('sys_c102') }}</div>
+          <div>{{ $t('sys_c103') }}</div>
+          <div>{{ $t('sys_c104') }}</div>
+          <div>{{ $t('sys_c105') }}</div>
+          <div>{{ $t('sys_c106') }}</div>
+        </div>
+      </template>
+    </el-alert>
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
+      <el-form-item class="select_body">
+        <el-input v-model="model1.file_name" :placeholder="$t('sys_l055')" clearable />
+      </el-form-item>
+      <el-form-item>
+        <el-date-picker
+          v-model="model1.ipCtime"
+          :end-placeholder="$t('sys_c110')"
+          :range-separator="$t('sys_c108')"
+          :start-placeholder="$t('sys_c109')"
+          type="daterange"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="el-icon-search" type="primary" @click="initDatalist(1)">{{ $t('sys_c002') }}</el-button>
+      </el-form-item>
+      <el-form-item class="el-item-right">
+        <el-button :disabled="checkIdArry.length==0" type="danger" @click="batchDel">{{ $t('sys_l048') }}</el-button>
+        <el-button :disabled="checkIdArry.length==0" type="warning" @click="exportModel=true">{{
+          $t('sys_mat050')
+        }}
+        </el-button>
+        <el-button style="margin-left: 10px;" type="success" @click="batchExport"> {{ $t('sys_c111') }}</el-button>
+      </el-form-item>
+    </el-form>
+    <div class="group_main">
+      <div class="tab_check_warp">
+        <i slot="reference" class="el-icon-info" />
+        <div v-html="$t('sys_mat007',{value:checkIdArry.length})" />
+      </div>
+      <div>
+        <el-table
+          ref="serveTable"
+          v-loading="loading"
+          :cell-style="{ textAlign: 'center' }"
+          :data="dataList"
+          :header-cell-style="{ color: '#909399', textAlign: 'center' }"
+          :height="autoHeight"
+          border
+          element-loading-background="rgba(255, 255, 255,1)"
+          element-loading-spinner="el-icon-loading"
+          row-key="id"
+          style="width: 100%;"
+          @selection-change="handleSelectionChange"
+          @row-click="rowSelectChange"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column :label="$t('sys_l056')" min-width="140" prop="name" show-overflow-tooltip />
+          <el-table-column :label="$t('sys_l057')" min-width="100" prop="acc_type" />
+          <el-table-column :label="$t('sys_l058')" min-width="100" prop="account_type">
+            <template slot-scope="scope">
+              <!-- {{ accountOption[scope.row.account_type] }} -->
+              {{ deviceOption[scope.row.account_type] }}
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('sys_l059')" min-width="100" prop="status">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.status==1?'warning':'success'" size="small"> {{
+                taskOption[scope.row.status]
+              }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('sys_l060')" min-width="100" prop="success_num" />
+          <el-table-column :label="$t('sys_l061')" min-width="100" prop="fail_num" />
+          <el-table-column :label="$t('sys_l062')" min-width="100" prop="remark" show-overflow-tooltip />
+          <el-table-column :label="$t('sys_l063')" min-width="148" prop="itime">
+            <template slot-scope="scope">
+              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : 0 }}
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('sys_c010')" width="120">
+            <template slot-scope="scope">
+              <!-- <el-button size="small" type="primary" @click="moveTable(scope.$index)">
+                <i class="el-icon-sort"></i>
+              </el-button> -->
+              <el-button
+                :disabled="checkIdArry.length > 0"
+                size="small"
+                type="primary"
+                @click.stop="showDetailbtn(scope.row)"
+              >{{ $t('sys_l064') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="layui_page">
+          <el-pagination
+            :current-page.sync="model1.page"
+            :page-size="model1.limit"
+            :page-sizes="pageOption"
+            :total="model1.total"
+            background
+            layout="total, sizes, prev, pager, next, jumper"
+            @size-change="homelHandleSize"
+            @current-change="homeHandleCurrent"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- 新增-->
+    <el-dialog
+      :class="{'custom_dialog':storeIdx==1}"
+      :close-on-click-modal="false"
+      :title="dialog_title"
+      :visible.sync="storeModel"
+      center
+      width="700px"
+    >
+      <el-form ref="accountForm" :model="accountForm" :rules="accountRules" label-width="0" size="small">
+        <template v-if="storeIdx==1">
+          <el-row>
+            <el-col :span="12">
+              <div class="export_type">
+                <div class="device_type">
+                  <h3 class="device_text">{{ $t('sys_l065') }}</h3>
+                  <el-button circle icon="el-icon-check" type="primary" />
+                </div>
+                <div class="device_desc">
+                  {{ $t('sys_m054') }}
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="12" />
+          </el-row>
+          <el-row>
+            <el-col v-for="(item,idx) in deviceOption" v-show="item" :key="idx" :span="12">
+              <div class="nummber_type" @click="changeType(idx)">
+                <div class="device_type">
+                  <h3 class="device_text">{{ item }}</h3>
+                  <el-button :type="deviceType==idx?'primary':''" circle icon="el-icon-check" />
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-button class="el-item-right" size="small" style="margin-top: 10px;" type="primary" @click="nextbtn">
+                {{ $t('sys_l069') }}
+              </el-button>
+            </el-col>
+          </el-row>
+        </template>
+        <template v-else>
+          <el-row>
+            <el-col :span="24" />
+            <el-col :span="24">
+              <el-form-item>
+                <el-steps :active="stepsActive">
+                  <el-step :description="$t('sys_m056')" :title="$t('sys_c058')" />
+                  <el-step :description="$t('sys_m057')" :title="$t('sys_m055')" />
+                  <el-step :description="$t('sys_m058')" :title="$t('sys_mat034')" />
+                </el-steps>
+              </el-form-item>
+            </el-col>
+            <template v-if="stepsActive==1">
+              <el-col :span="12">
+                <el-form-item prop="group_id">
+                  <div class="label_radius_title">{{ $t('sys_c053') }}</div>
+                  <el-select
+                    v-model="accountForm.group_id"
+                    :placeholder="$t('sys_c053')"
+                    clearable
+                    filterable
+                    style="width:100%;"
+                  >
+                    <el-option v-for="item in groupOption" :key="item.id" :label="item.name" :value="item.id" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4" style="margin-left: 22px;">
+                <el-form-item label-width="0">
+                  <div class="label_radius_title" style="opacity: 0;">?????</div>
+                  <el-popover v-model="visible" placement="top" width="260">
+                    <p>
+                      <el-input
+                        v-model="accountForm.group_name"
+                        :placeholder="$t('sys_c112')"
+                        maxlength="10"
+                        show-word-limit
+                        size="small"
+                      />
+                    </p>
+                    <div style="text-align: right; margin: 0">
+                      <el-button size="mini" type="text" @click="visible = false">{{ $t('sys_c023') }}</el-button>
+                      <el-button
+                        :disabled="!accountForm.group_name.trim()"
+                        :loading="groupLoading"
+                        size="mini"
+                        type="primary"
+                        @click="addGroup"
+                      >{{ $t('sys_c024') }}
+                      </el-button>
+                    </div>
+                    <el-button slot="reference" type="success">{{ $t('sys_c113') }}</el-button>
+                  </el-popover>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item prop="data_way">
+                  <div class="label_radius_title">{{ $t('sys_mat043') }}</div>
+                  <el-radio-group v-model="accountForm.data_way">
+                    <el-radio v-for="(item,idx) in accountOption" v-show="item!=''" :key="idx" :label="idx">{{
+                      item
+                    }}
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item prop="protocol_type">
+                  <div class="label_radius_title">{{ $t('sys_l109') }}</div>
+                  <el-radio-group v-model="accountForm.protocol_type">
+                    <el-radio v-for="(item,idx) in protOption" :key="idx" :label="idx">{{ item }}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item>
+                  <div class="label_radius_title">{{ $t('sys_c058') }}</div>
+                  <div>{{ $t('sys_c114') }}</div>
+                  <div class="submit_btn">
+                    <el-button v-if="accountForm.group_id" class="custom_file1" style="margin-top: 0;">{{
+                                                                                                         $t('sys_c059')
+                                                                                                       }}
+                      <input id="uploadFile" ref="uploadclear" title=" " type="file" @change="checkDataIsUse">
+                    </el-button>
+                    <el-button v-else class="custom_file1" style="margin-top: 0;" @click="submitWayBtn('accountForm')">
+                      {{ $t('sys_c059') }}
+                    </el-button>
+                    <span class="export_tips" @click="downLoadTemp">
+                      <i class="el-icon-download" />{{ $t('sys_l066') }}
+                    </span>
+                  </div>
+                </el-form-item>
+              </el-col>
+              <el-col>
+                <el-form-item prop="file_name">
+                  <div class="label_title">{{ $t('sys_l062') }}</div>
+                  <el-input
+                    v-model="accountForm.remark"
+                    :placeholder="$t('sys_c037')"
+                    maxlength="20"
+                    show-word-limit
+                    type="text"
+                  />
+                </el-form-item>
+              </el-col>
+            </template>
+            <el-col v-if="stepsActive==2&&!checkLoading" :span="24">
+              <el-form-item label-width="0" style="margin-bottom: 14px;">
+                <div class="upload_img">
+                  <img
+                    alt=""
+                    src="../../../assets/upload_03.png"
+                    srcset=""
+                    style="width: 140px;height: 140px;margin-bottom: 10px;"
+                  >
+                  <template v-if="success_number>0||fail_number>0">
+                    <div>{{ $t('sys_c115') }}</div>
+                    <div v-html="$t('sys_c116',{s_number:success_number,f_number:fail_number})" />
+                    <span
+                      v-if="success_number==0&&stepsHide"
+                      class=""
+                      style="display: flex;cursor: pointer; font-size: 12px; align-items: center;color: #209cdf; margin-left: 20px;"
+                      @click="exportErrFile"
+                    >
+                      <i class="el-icon-download" />
+                      {{ $t('sys_c117') }}
+                    </span>
+                  </template>
+                  <template v-else>
+                    <div style="display: flex;align-items: center;">
+                      检测中... <img
+                        alt=""
+                        src="../../../assets/loading_icon.gif"
+                        srcset=""
+                        style="width: 20px; height: 20px;margin-left: 10px;"
+                      >
+                    </div>
+                  </template>
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label-width="0">
+                <template v-if="checkLoading">
+                  <el-progress :percentage="percentage" :stroke-width="14" :text-inside="true" />
+                  <div class="upload_img">
+                    <img alt="" src="../../../assets/upload_ing.png" srcset="">
+                  </div>
+                </template>
+                <div v-if="stepsActive==3&&!checkLoading" class="upload_img">
+                  <img alt="" src="../../../assets/success.png" srcset="">
+                  <div style="font-weight: 600;">{{ $t('sys_c119') }}</div>
+                  <div v-html="$t('sys_c118',{s_number:success_number,f_number:fail_number})" />
+                  <!-- <div>成功导入账号数量{{success_number}}条，失败数据{{fail_number}}条,点击完成或继续上传</div> -->
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item v-if="stepsHide" class="el-item-bottom" label-width="0" style="text-align:center;">
+            <el-button v-if="stepsActive==2" @click="storeModel=false">{{ $t('sys_c073') }}</el-button>
+            <el-button v-if="stepsActive==3" @click="restUpload">{{ $t('sys_c076') }}</el-button>
+            <el-button v-if="stepsActive==2&&success_number>0" type="primary" @click="exportDataBtn('ipForm')">
+              {{ $t('sys_c121') }}
+            </el-button>
+            <el-button v-if="stepsActive==3" type="primary" @click="storeModel=false">{{ $t('sys_c075') }}</el-button>
+          </el-form-item>
+        </template>
+      </el-form>
+    </el-dialog>
+
+    <!-- 详情-->
+    <el-dialog :close-on-click-modal="false" :title="$t('sys_l064')" :visible.sync="detailModel" center width="450">
+      <el-table
+        :cell-style="{ textAlign: 'center' }"
+        :data="model2.data"
+        :header-cell-style="{ color: '#909399', textAlign: 'center' }"
+        border
+        height="540"
+        style="width: 100%;"
+      >
+        <el-table-column :label="$t('sys_g027')" min-width="140" prop="account" />
+        <el-table-column :label="$t('sys_l059')" min-width="100" prop="status">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status==1?'danger':'success'" size="small"> {{
+              detailTaskOption[scope.row.status]
+            }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('sys_c071')" min-width="100" prop="reason" show-overflow-tooltip />
+      </el-table>
+      <div class="layui_page">
+        <el-pagination
+          :current-page.sync="model2.page"
+          :page-size="model2.limit"
+          :page-sizes="pageOption"
+          :total="model2.total"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="detailHandleSize"
+          @current-change="detailHandleCurrent"
+        />
+      </div>
+    </el-dialog>
+
+    <!-- 导出-->
+    <el-dialog :close-on-click-modal="false" :title="$t('sys_mat050')" :visible.sync="exportModel" center width="360px">
+      <el-form ref="accountForm" :model="accountForm" :rules="accountRules" label-width="80px" size="small">
+        <el-form-item :label="$t('sys_mat055')" prop="export_type">
+          <el-select v-model="accountForm.export_type" :placeholder=" $t('sys_c052')">
+            <el-option v-for="(item,idx) in exportOption" v-show="item!=''" :key="idx" :label="item" :value="idx" />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;margin-top:40px;">
+          <el-button @click="exportModel = false">{{ $t('sys_c023') }}</el-button>
+          <el-button :loading="isDownLoading" type="primary" @click="exportBtn('accountForm')">{{
+            $t('sys_c024')
+          }}
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import { successTips, resetPage } from '@/utils/index'
+import {
+  getaccountfilelist,
+  getaccountgrouplist,
+  doaccountgroup,
+  checkaccountfile,
+  addaccount,
+  getaccountschedule,
+  getaccountloglist,
+  dooutputaccountlog,
+  dobathdelaccountfile
+} from '@/api/storeroom'
+
+export default {
+  data() {
+    return {
+      model1: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        ipCtime: '',
+        file_time: '',
+        file_name: '',
+      },
+      isTips: true,
+      visible: false,
+      loading: false,
+      stepsHide: true,
+      storeModel: false,
+      groupLoading: false,
+      checkLoading: false,
+      isDownLoading: false,
+      fail_number: 0,
+      dialog_title: '',
+      dataList: [],
+      success_number: 0,
+      checkIdArry: [],
+      groupOption: [],
+      success_list: [],
+      success_name: '',
+      storeIdx: 1,
+      percentage: 0,
+      deviceType: 2,
+      stepsActive: 1,
+      errFileUrl: '',
+      setInter: 2000,
+      waitTimer: null,
+      autoHeight: null,
+      accountForm: {
+        id: '',
+        remark: '',
+        ip_file: '',
+        file_name: '',
+        group_id: '',
+        group_name: '',
+        data_way: 1,
+        device_type: 1,
+        export_type: '',
+        protocol_type: 0
+      },
+      pageOption: resetPage(),
+      randomNum: [1, 2, 4, 8, 3, 8, 4, 6, 3, 8],
+      detailModel: false,
+      exportModel: false,
+      model2: {
+        id: '',
+        page: 1,
+        limit: 10,
+        total: 0,
+        data: []
+      }
+    }
+  },
+  computed: {
+    taskOption() {
+      return ['', this.$t('sys_mat046'), this.$t('sys_mat047')]
+    },
+    deviceOption() {
+      return ['', this.$t('sys_l067'), this.$t('sys_l068')]
+    },
+    detailTaskOption() {
+      return ['', this.$t('sys_mat048'), this.$t('sys_mat049')]
+    },
+    exportOption() {
+      return ['', this.$t('sys_mat051'), this.$t('sys_mat052'), this.$t('sys_mat053')]
+    },
+    accountRules() {
+      return {
+        group_id: [{ required: true, message: this.$t('sys_c052'), trigger: 'change' }],
+        export_type: [{ required: true, message: this.$t('sys_c052'), trigger: 'change' }],
+      }
+    },
+    accountOption() {
+      return ['', this.$t('sys_mat044'), this.$t('sys_q108')]
+    },
+    protOption() {
+      return [this.$t('sys_l121'), this.$t('sys_l111'), this.$t('sys_l115'), this.$t('sys_l122')]
+    }
+  },
+  watch: {
+    storeModel(val) {
+      if (!val) {
+        this.deviceType = 2;
+        this.stepsActive = 1;
+        this.errFileUrl = '';
+        this.success_name = 0;
+        this.success_list = [];
+        this.fail_number = 0;
+        this.accountForm.data_way = 1;
+        this.accountForm.remark = '';
+        this.accountForm.group_id = '';
+        this.accountForm.protocol_type = 0;
+      }
+    },
+    exportModel(val) {
+      if (!val) {
+        this.$refs.accountForm.resetFields();
+        this.accountForm.export_type = '';
+      }
+    }
+  },
+  created() {
+    this.initGroup();
+    this.initDatalist();
+  },
+  mounted() {
+    this.setFullHeight();
+    window.addEventListener('resize', this.setFullHeight);
+    console.log('123')
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setFullHeight);
+  },
+  methods: {
+    handleClose() {
+      this.isTips = false;
+      this.setFullHeight();
+    },
+    setFullHeight() {
+      if (this.isTips) {
+        this.autoHeight = this.$refs.appEle.clientHeight - 340;
+        console.log(this.autoHeight);
+      } else {
+        this.autoHeight = this.$refs.appEle.clientHeight - 180;
+      }
+    },
+    handleSelectionChange(row) {
+      this.checkIdArry = row.map(item => {
+        return item.id
+      })
+    },
+    moveTable(index) {
+      // if (index > 0) {
+      //   const upDate = this.data[index - 1];
+      //   this.data.splice(index - 1, 1);
+      //   this.data.splice(index, 0, upDate);
+      // } else {
+      //   alert("已经是第一条，不可上移");
+      // }
+
+      // if (index + 1 === this.data.length) {
+      //   alert("已经是最后一条，不可下移");
+      // } else {
+      //   const downDate = this.data[index + 1];
+      //   this.data.splice(index + 1, 1);
+      //   this.data.splice(index, 0, downDate);
+      // }
+    },
+    rowSelectChange(row, column, event) {
+      const tableCell = this.$refs.serveTable;
+      if (this.checkIdArry.includes(row.id)) {
+        tableCell.toggleRowSelection(row, false);
+        return;
+      }
+      tableCell.toggleRowSelection(row, true);
+    },
+    initDatalist(num) {
+      this.loading = true;
+      const sTime = this.model1.ipCtime;
+      this.model1.page = num || this.model1.page;
+      const params = {
+        page: this.model1.page,
+        limit: this.model1.limit,
+        name: this.model1.file_name,
+        start_time: sTime ? this.$baseFun.resetTime(sTime[0], 1) : -1,
+        end_time: sTime ? this.$baseFun.resetTime(sTime[1], 1) : -1
+      }
+      getaccountfilelist(params).then(res => {
+        this.loading = false;
+        this.model1.total = res.data.total;
+        this.dataList = res.data.list || [];
+      })
+    },
+    async initGroup() {
+      const { data } = await getaccountgrouplist({ page: 1, limit: 100 });
+      this.groupOption = data.list || [];
+    },
+    async addGroup() {
+      this.groupLoading = true;
+      const result = await doaccountgroup({ ptype: 1, name: this.accountForm.group_name });
+      this.groupLoading = false;
+      if (result.code !== 0) return;
+      this.visible = false;
+      this.initGroup();
+      successTips(this)
+      setTimeout(() => {
+        this.accountForm.group_id = this.groupOption.filter(item => item.name === this.accountForm.group_name)[0].id;
+      }, 600)
+    },
+    batchExport() {
+      this.storeModel = true;
+      this.$nextTick(() => {
+        this.storeIdx = 1;
+        this.dialog_title = this.$t('sys_mat043');
+      })
+    },
+    nextbtn() {
+      this.storeIdx = 2;
+      this.dialog_title = `${this.$t('sys_l065')}-${this.deviceOption[this.deviceType]}-${this.$t('sys_mat045')}`;
+    },
+    changeType(idx) {
+      this.deviceType = idx;
+    },
+    submitWayBtn(formName) {
+      this.$refs[formName].validate(valid => {
+      })
+    },
+    async checkDataIsUse() {
+      this.errFileUrl = '';
+      this.success_list = [];
+      this.fail_number = 0;
+      this.success_number = 0;
+      const files = this.$refs.uploadclear.files[0];
+      const formData = new FormData();
+      formData.append('file', files);
+      formData.append('import_type', this.accountForm.data_way);
+      this.stepsHide = false;
+      this.stepsActive = 2;
+      this.$refs.uploadclear.value = null;
+      const result = await checkaccountfile(formData);
+      this.stepsHide = true;
+      if (result.code !== 0) return;
+      this.errFileUrl = result.data.url;
+      this.success_name = result.data.name;
+      this.success_list = result.data.success_list;
+      this.fail_number = result.data.fail_number;
+      this.success_number = result.data.success_number || 0;
+    },
+    async exportDataBtn() {
+      const params = {
+        name: this.success_name,
+        account_type: this.deviceType,
+        success_list: this.success_list,
+        remark: this.accountForm.remark,
+        group_id: this.accountForm.group_id,
+        import_type: this.accountForm.data_way,
+        protocol: this.accountForm.protocol_type
+      }
+      this.startPercent();
+      this.fail_number = 0;
+      this.success_number = 0;
+      this.stepsHide = false;
+      this.checkLoading = true;
+      const result = await addaccount(params);
+      if (result.code !== 0) return;
+      this.waitTimer = setInterval(async() => {
+        const getResult = await getaccountschedule({ id: result.data.id })
+        if (getResult.code !== 0) return;
+        if (getResult.data.up_status === 2) {
+          this.checkLoading = false;
+          this.stepsActive = 3
+          this.stepsHide = true;
+          clearInterval(this.waitTimer);
+          this.initDatalist();
+          this.fail_number = getResult.data.fail;
+          this.success_number = getResult.data.success;
+        }
+      }, this.setInter)
+    },
+    restUpload() {
+      this.storeIdx = 2;
+      this.stepsActive = 1;
+      this.accountForm.remark = '';
+      this.accountForm.group_id = '';
+    },
+    startPercent() {
+      this.percentage = 0;
+      this.progrTimer = setInterval(() => {
+        const curPercent = Number(this.randomNum[Math.floor(Math.random() * this.randomNum.length)]);
+        if (this.percentage >= 55) {
+          if (this.percentage < 96) {
+            this.percentage++
+          } else {
+            this.percentage = 99
+            clearInterval(this.progrTimer)
+          }
+        } else {
+          this.percentage = this.percentage + curPercent
+        }
+      }, 500)
+    },
+    exportErrFile() {
+      window.location.href = this.errFileUrl;
+    },
+    homelHandleSize(val) {
+      this.model1.limit = val;
+      this.initDatalist();
+    },
+    homeHandleCurrent(val) {
+      this.model1.page = val;
+      this.initDatalist();
+    },
+    showDetailbtn(row) {
+      this.model2.data = [];
+      this.model2.file_id = row.id;
+      this.detailModel = true;
+      this.getDetail();
+    },
+    getDetail() {
+      const params = {
+        page: this.model2.page,
+        limit: this.model2.limit,
+        file_id: this.model2.file_id
+      }
+      getaccountloglist(params).then(res => {
+        this.model2.total = res.data.total;
+        this.model2.data = res.data.list || [];
+      })
+    },
+    detailHandleSize(val) {
+      this.model2.limit = val;
+      this.getDetail();
+    },
+    detailHandleCurrent(val) {
+      this.model2.page = val;
+      this.getDetail();
+    },
+    exportBtn(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.isDownLoading = true;
+          dooutputaccountlog({ ptype: this.accountForm.export_type, ids: this.checkIdArry }).then(res => {
+            this.isDownLoading = false;
+            if (res.code !== 0) return;
+            this.exportModel = false;
+            location.href = res.data.url;
+          })
+        }
+      })
+    },
+    batchDel() {
+      const that = this;
+      that.$confirm(that.$t('sys_c046', { value: that.$t('sys_c028') }), that.$t('sys_l013'), {
+        type: 'warning',
+        confirmButtonText: that.$t('sys_c024'),
+        cancelButtonText: that.$t('sys_c023'),
+        beforeClose: function(action, instance, done) {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            dobathdelaccountfile({ ids: that.checkIdArry }).then(res => {
+              instance.confirmButtonLoading = false;
+              that.initDatalist();
+              successTips(that)
+              done();
+            })
+          } else {
+            done();
+            instance.confirmButtonLoading = false;
+          }
+        }
+      }).catch(() => {
+        that.$message({ type: 'info', message: that.$t('sys_c048') });
+      })
+    },
+    downLoadTemp() {
+      var blob = new Blob(['账号,公钥,私钥,消息公钥,消息私钥,号码ID'], { type: 'text/plain' });
+      var a = document.createElement('a');
+      a.href = window.URL.createObjectURL(blob);
+      a.download = 'example-wa_export-channe.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(a.href);
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.custom_dialog {
+  ::v-deep .el-dialog {
+    background-color: #f2f7fa !important;
+  }
+}
+
+.storage_tips {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.export_type, .nummber_type {
+  border: 0.5px solid #eee;
+  padding: 8px;
+  margin: 10px;
+  background: #fff;
+  border-radius: 5px;
+
+  .device_type {
+    display: flex;
+    font-size: 14px;
+    align-items: center;
+    justify-content: space-between;
+
+    .device_text {
+      color: #333;
+      font-weight: 700;
+    }
+
+    .el-button {
+      padding: 6px;
+    }
+  }
+
+  .device_desc {
+    width: 100%;
+    font-size: 14px;
+    margin-top: 10px;
+    line-height: 1.6;
+    padding-right: 40px;
+    box-sizing: border-box;
+  }
+}
+
+.nummber_type {
+  .device_type {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+}
+
+.label_radius_title, .label_title {
+  color: #606266;
+  font-size: 14px;
+  font-weight: 700;
+  margin-left: 16px;
+  position: relative;
+  word-break: break-all;
+}
+
+.label_title {
+  margin-left: 0;
+}
+
+.label_radius_title::after {
+  content: "";
+  width: 4px;
+  height: 4px;
+  font-size: 20px;
+  border-radius: 50%;
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #606266;
+}
+
+.upload_img {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 30px;
+  margin-top: 10px;
+
+  img {
+    width: 280px;
+    height: 188px;
+    margin: 10px 0;
+  }
+}
+</style>

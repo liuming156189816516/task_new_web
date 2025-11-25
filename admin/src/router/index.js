@@ -378,7 +378,57 @@ export const asyncRoutes = [
       },
     ]
   },
+  // IP管理
+  {
+    path: '/ipManage',
+    component: Layout,
+    name: 'ipManage',
+    meta: { title: 'IP管理', icon: 'el-icon-office-building' },
+    children: [
+      {
+        path: '/ipPage',
+        component: () => import('@/views/ipManage/ipPage'),
+        name: 'ipPage',
+        meta: {
+          title: 'IP管理',
+        }
+      },
+    ]
+  },
 
+  {
+    path: '/storeroom',
+    component: Layout,
+    name: 'storeroom',
+    meta: { title: '账号管理',icon: 'el-icon-user' },
+    children: [
+      {
+        path: '/warehouse',
+        component: () => import('@/views/storeroom/warehouse'),
+        name: 'warehouse',
+        meta: {
+          title: '账号入库',
+        }
+      },
+      {
+        path: '/whats-app-list',
+        component: () => import('@/views/storeroom/whatsAppList'),
+        name: 'whats-app-list',
+        meta: {
+          title: '账号列表(安卓终端)',
+        }
+      },
+      {
+        path: '/after-sales',
+        component: () => import('@/views/storeroom/afterSales'),
+        name: 'after-sales',
+        meta: {
+          title: '账号列表(售后终端)',
+        }
+      },
+    ]
+  },
+  //
   // 权限配置
   {
     path: '/permission',
