@@ -106,7 +106,7 @@
         <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
           <template slot="header">
             <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
-              <span :class="[Number(queryData.release_status)?'dropdown_title':'']" style="color:#909399"> 发布状态
+              <span :class="[Number(queryData.release_status)>0?'dropdown_title':'']" style="color:#909399"> 发布状态
                 <i class="el-icon-arrow-down el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">

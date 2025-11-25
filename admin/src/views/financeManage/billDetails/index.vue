@@ -51,7 +51,7 @@
           <el-table-column label="收益类型" min-width="120" prop="type" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'type')">
-                <span :class="[queryData.type?'dropdown_title':'']" style="color:#909399"> 收益类型
+                <span :class="[Number(queryData.type)>0?'dropdown_title':'']" style="color:#909399"> 收益类型
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">

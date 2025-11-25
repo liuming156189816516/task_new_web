@@ -72,7 +72,7 @@
           <el-table-column label="执行状态" min-width="120" prop="execute_status" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'execute_status')">
-                <span :class="[queryData.execute_status?'dropdown_title':'']" style="color:#909399"> 执行状态
+                <span :class="[(queryData.execute_status)>0?'dropdown_title':'']" style="color:#909399"> 执行状态
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -96,7 +96,7 @@
           <el-table-column label="结算状态" min-width="100" prop="settle_status" show-overflow-tooltip>
             <template slot="header">
               <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'settle_status')">
-                <span :class="[queryData.settle_status?'dropdown_title':'']" style="color:#909399"> 结算状态
+                <span :class="[(queryData.settle_status)>0?'dropdown_title':'']" style="color:#909399"> 结算状态
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">

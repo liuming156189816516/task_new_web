@@ -292,6 +292,22 @@ export const asyncRoutes = [
           title: '提现审批',
         }
       },
+      {
+        path: '/reportLog',
+        component: () => import('@/views/financeManage/reportLog'),
+        name: 'reportLog',
+        meta: {
+          title: '上报日志',
+        }
+      },
+      {
+        path: '/executeLog',
+        component: () => import('@/views/financeManage/executeLog'),
+        name: 'executeLog',
+        meta: {
+          title: '执行日志',
+        }
+      },
     ]
   },
   // 发布任务
