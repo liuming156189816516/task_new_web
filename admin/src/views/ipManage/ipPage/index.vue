@@ -1,3 +1,4 @@
+<!-- IP管理 -->
 <template>
   <div style="width:100%;height: calc(100% - 180px); float: left; position: relative;">
     <el-row :gutter="20">
@@ -7,7 +8,7 @@
           <div v-else class="box_card_item" @click="syncInitApi">
             <div class="left_c">
               <div>
-                {{ idx == 0 ? $t('sys_g131') + ':' + $t('sys_c063') : $t('sys_g132') + ':' + $t('sys_c063') }}
+                {{ idx === 0 ? $t('sys_g131') + ':' + $t('sys_c063') : $t('sys_g132') + ':' + $t('sys_c063') }}
                 <span>{{ item.total_count || 0 }}</span>
               </div>
               <div>{{ $t('sys_c064') }}：<span>{{ item.use_num || 0 }}</span></div>
@@ -40,15 +41,15 @@
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item class="select_body">
         <div style="display: flex;">
-          <el-select v-model="model1.selectIp" :placeholder="$t('sys_c052')" class="select_ele">
+          <el-select v-model="queryData.selectIp" :placeholder="$t('sys_c052')" class="select_ele">
             <el-option v-for="(item, idx) in ipSelectList" :key="idx" :label="item" :value="idx" />
           </el-select>
-          <el-input v-model="model1.ip" :placeholder="$t('sys_c060')" class="input_ele" />
+          <el-input v-model="queryData.ip" :placeholder="$t('sys_c060')" class="input_ele" />
         </div>
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="model1.ipCtime"
+          v-model="queryData.ipCtime"
           :end-placeholder="$t('sys_c110')"
           :range-separator="$t('sys_c108')"
           :start-placeholder="$t('sys_c109')"
@@ -56,7 +57,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button icon="el-icon-search" type="primary" @click="initiplist(1)">{{ $t('sys_c002') }}</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getTableDataFun(1)">{{ $t('sys_c002') }}</el-button>
       </el-form-item>
       <el-form-item class="el-item-right">
         <!-- <el-button type="primary">套餐IP</el-button> -->
@@ -185,20 +186,14 @@
           <u-table
             ref="serveTable"
             v-loading="loading"
-            :current-page="model1.page"
             :data="ipDataList"
-            :page-size="model1.limit"
-            :page-sizes="pageOption"
-            :pagination-show="true"
-            :total="model1.total"
+            :pagination-show="false"
             border
             element-loading-spinner="el-icon-loading"
-            height="650"
+            height="550"
             row-key="id"
             show-body-overflow="title"
-            style="width: 100%;"
             use-virtual
-            @handlePageSize="switchPage"
             @sort-change="sorthandle"
             @selection-change="handleSelectionChange"
             @row-click="rowSelectChange"
@@ -209,17 +204,17 @@
             <u-table-column :label="$t('sys_c062')" min-width="100" prop="status">
               <template slot="header">
                 <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,1)">
-                  <span :class="[model1.status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c062') }}
+                  <span :class="[queryData.status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c062') }}
                     <i class="el-icon-arrow-down el-icon--right" />
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
                       v-for="(item,idx) in networkOption"
                       :key="idx"
-                      :class="{'dropdown_selected':idx==model1.status}"
+                      :class="{'dropdown_selected':idx==queryData.status}"
                       :command="idx"
                     >
-                      {{ item == '' ? $t('sys_l053') : item }}
+                      {{ item === '' ? $t('sys_l053') : item }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -242,7 +237,7 @@
             <u-table-column :label="$t('sys_c066')" min-width="100" prop="ip_category">
               <template slot="header">
                 <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,2)">
-                  <span :class="[model1.ip_category?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c066') }}
+                  <span :class="[queryData.ip_category?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c066') }}
                     <i class="el-icon-arrow-down el-icon--right" />
                   </span>
                   <el-dropdown-menu slot="dropdown">
@@ -250,10 +245,10 @@
                       v-for="(item,idx) in ipClassOptions"
                       v-show="item!=$t('sys_l035') "
                       :key="idx"
-                      :class="{'dropdown_selected':idx==model1.ip_category}"
+                      :class="{'dropdown_selected':idx==queryData.ip_category}"
                       :command="idx"
                     >
-                      {{ item == '' ? $t('sys_l053') : item }}
+                      {{ item === '' ? $t('sys_l053') : item }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -274,17 +269,17 @@
             <u-table-column :label="$t('sys_c066')" min-width="100" prop="expire_status">
               <template slot="header">
                 <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,3)">
-                  <span :class="[model1.expire_status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c067') }}
+                  <span :class="[queryData.expire_status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c067') }}
                     <i class="el-icon-arrow-down el-icon--right" />
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
                       v-for="(item,idx) in exprireOptions"
                       :key="idx"
-                      :class="{'dropdown_selected':idx==model1.expire_status}"
+                      :class="{'dropdown_selected':idx==queryData.expire_status}"
                       :command="idx"
                     >
-                      {{ item == '' ? $t('sys_l053') : item }}
+                      {{ item === '' ? $t('sys_l053') : item }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -302,17 +297,17 @@
             <u-table-column :label="$t('sys_c069')" min-width="100" prop="disable_status">
               <template slot="header">
                 <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,4)">
-                  <span :class="[model1.disable_status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c069') }}
+                  <span :class="[queryData.disable_status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c069') }}
                     <i class="el-icon-arrow-down el-icon--right" />
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
                       v-for="(item,idx) in stopOptions"
                       :key="idx"
-                      :class="{'dropdown_selected':idx==model1.disable_status}"
+                      :class="{'dropdown_selected':idx==queryData.disable_status}"
                       :command="idx"
                     >
-                      {{ item == '' ? $t('sys_l053') : item }}
+                      {{ item === '' ? $t('sys_l053') : item }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -339,6 +334,19 @@
             </u-table-column>
             <u-table-column :label="$t('sys_c071')" min-width="100" prop="reason" show-overflow-tooltip />
           </u-table>
+          <div class="layui_page">
+            <el-pagination
+              :current-page.sync="queryData.page"
+              :page-size="queryData.limit"
+              :page-sizes="pageOption"
+              :total="queryData.total"
+              background
+              layout="total, sizes, prev, pager, next, jumper"
+              @size-change="changePageSize($event,'table')"
+              @current-change="changePageCurrent($event,'table')"
+            />
+          </div>
+
         </div>
       </div>
     </div>
@@ -550,7 +558,7 @@
           style="text-align:center;"
         >
           <el-button v-if="ipModelType==1||ipModelType==2&&!ipModelType==3" @click="ipModel=false">
-            {{ ipModelType == 1 ? $t('sys_c023') : "取消导入" }}
+            {{ ipModelType === 1 ? $t('sys_c023') : "取消导入" }}
           </el-button>
           <el-button v-if="ipModelType==3" @click="restUpload">继续上传</el-button>
           <el-button v-if="ipModelType==0" type="primary" @click="submitIpBtn('ipForm')">{{
@@ -687,6 +695,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script>
 import Clipboard from 'clipboard';
 import { successTips, resetPage } from '@/utils/index'
@@ -716,7 +725,7 @@ import {
 export default {
   data() {
     return {
-      model1: {
+      queryData: {
         ip: '',
         page: 1,
         limit: 10,
@@ -729,6 +738,7 @@ export default {
         expire_status: '',
         disable_status: '',
       },
+      cliHeight: 0,
       ipModdelTitle: '',
       percentage: 0,
       stepsActive: 1,
@@ -942,7 +952,7 @@ export default {
   },
   watch: {
     ipModel(val) {
-      if (val == false) {
+      if (val === false) {
         this.ipForm.iptype = '';
         this.ipForm.group_id = '';
         this.ipForm.ipLoginNum = '';
@@ -962,9 +972,63 @@ export default {
   created() {
     this.syncInitApi();
     this.initipGroup();
-    this.initiplist();
+    this.getTableDataFun();
+  },
+  mounted() {
+    window.addEventListener('resize', this.setFullHeight);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setFullHeight);
   },
   methods: {
+    // 获取列表数据
+    getTableDataFun(num) {
+      this.loading = true;
+      const sTime = this.queryData.ipCtime;
+      this.queryData.page = num || this.queryData.page;
+      const params = {
+        page: this.queryData.page,
+        limit: this.queryData.limit,
+        proxy_ip: this.queryData.ip,
+        status: this.queryData.status || -1,
+        sort: this.queryData.sort,
+        ip_category: this.queryData.ip_category || -1,
+        expire_status: this.queryData.expire_status || -1,
+        disable_status: this.queryData.disable_status || -1,
+        group_id: this.queryData.pgroup_id,
+        start_time: sTime ? this.$baseFun.resetTime(sTime[0], 1) : -1,
+        end_time: sTime ? this.$baseFun.resetTime(sTime[1], 1) : -1
+      }
+      getiplist(params).then(res => {
+        this.loading = false;
+        this.queryData.total = res.data.total;
+        this.ipDataList = res.data.list || [];
+      })
+    },
+    // 窗口容器大小
+    setFullHeight() {
+      this.cliHeight = document.documentElement.clientHeight - 380;
+    },
+    // 分页 切换
+    changePageSize(val, type) {
+      if (type === 'table') {
+        this.queryData.limit = val;
+        this.getTableDataFun();
+      }
+      // else if (type === 'modal') {
+      //
+      // }
+    },
+    // 页码
+    changePageCurrent(val, type) {
+      if (type === 'table') {
+        this.queryData.page = val;
+        this.getTableDataFun();
+      }
+      // else if (type === 'modal') {
+      //
+      // }
+    },
     handleSelectionChange(row) {
       this.checkIdArry = row.map(item => {
         return item.id
@@ -979,16 +1043,16 @@ export default {
       tableCell.toggleRowSelection([{ row: row, selected: true }]);
     },
     handleNewwork(row, idx) {
-      if (idx == 1) {
-        this.model1.status = row;
-      } else if (idx == 2) {
-        this.model1.ip_category = row;
-      } else if (idx == 3) {
-        this.model1.expire_status = row;
-      } else if (idx == 4) {
-        this.model1.disable_status = row;
+      if (idx === 1) {
+        this.queryData.status = row;
+      } else if (idx === 2) {
+        this.queryData.ip_category = row;
+      } else if (idx === 3) {
+        this.queryData.expire_status = row;
+      } else if (idx === 4) {
+        this.queryData.disable_status = row;
       }
-      this.initiplist();
+      this.getTableDataFun();
     },
     addRemark(row, idx) {
       this.setIpType = idx;
@@ -999,12 +1063,12 @@ export default {
     },
     sorthandle({ column, prop, order }) {
       if (order) {
-        this.model1.sort = order == 'ascending' ? 'user_num' : '-user_num';
+        this.queryData.sort = order === 'ascending' ? 'user_num' : '-user_num';
       } else {
-        this.model1.sort = '';
+        this.queryData.sort = '';
       }
 
-      this.initiplist();
+      this.getTableDataFun();
     },
     handleTag(type) {
       let color;
@@ -1029,29 +1093,7 @@ export default {
       }
       return color;
     },
-    initiplist(num) {
-      this.loading = true;
-      const sTime = this.model1.ipCtime;
-      this.model1.page = num || this.model1.page;
-      const params = {
-        page: this.model1.page,
-        limit: this.model1.limit,
-        proxy_ip: this.model1.ip,
-        status: this.model1.status || -1,
-        sort: this.model1.sort,
-        ip_category: this.model1.ip_category || -1,
-        expire_status: this.model1.expire_status || -1,
-        disable_status: this.model1.disable_status || -1,
-        group_id: this.model1.pgroup_id,
-        start_time: sTime ? this.$baseFun.resetTime(sTime[0], 1) : -1,
-        end_time: sTime ? this.$baseFun.resetTime(sTime[1], 1) : -1
-      }
-      getiplist(params).then(res => {
-        this.loading = false;
-        this.model1.total = res.data.total;
-        this.ipDataList = res.data.list || [];
-      })
-    },
+
     restQueryBtn() {
       this.model2.ipTime = [];
       this.getIpDetailList(1);
@@ -1125,7 +1167,7 @@ export default {
     editGroup(row, idx) {
       this.type = idx;
       this.group_name = '';
-      if (idx == 1) return;
+      if (idx === 1) return;
       this.groupForm.id = row.id;
       this.group_name = row.name;
     },
@@ -1136,7 +1178,7 @@ export default {
         type: Number(this.cardAcyive),
       }
       this.groupLoading = true;
-      this.type == 2 ? params.id = this.groupForm.id : '';
+      this.type === 2 ? params.id = this.groupForm.id : '';
       const newBank = await doipgroup(params);
       this.groupLoading = false;
       if (newBank.code !== 0) return;
@@ -1146,7 +1188,7 @@ export default {
       successTips(this)
       if (title) {
         setTimeout(() => {
-          this.ipForm.group_id = this.ipGroupList.filter(item => item.name == this.group_name)[0].id;
+          this.ipForm.group_id = this.ipGroupList.filter(item => item.name === this.group_name)[0].id;
         }, 600)
       }
     },
@@ -1157,7 +1199,7 @@ export default {
       this.groupForm.group_id = '';
       successTips(this)
       for (let k = 0; k < this.ipGroupList.length; k++) {
-        if (this.ipGroupList[k].id == row.id) {
+        if (this.ipGroupList[k].id === row.id) {
           this.ipGroupList.splice(k, 1)
         }
       }
@@ -1188,7 +1230,7 @@ export default {
         this.ipModelType = 2;
       this.$refs.uploadclear.value = null;
       checkfile(formData).then(res => {
-        if (res.code != 0) return;
+        if (res.code !== 0) return;
         // this.ipModelType=2;
         this.errIpUrl = res.data.url;
         this.fail_number = res.data.fail_number;
@@ -1205,16 +1247,16 @@ export default {
         country: this.ipForm.country,
         group_id: this.ipForm.group_id,
         allot_num: this.ipForm.ipLoginNum,
-        ip_type: this.ipForm.iptype[2] == 4 ? 1 : 2,
+        ip_type: this.ipForm.iptype[2] === 4 ? 1 : 2,
         ip_category: this.ipForm.iptype[1],
         success_list: this.success_list,
         expire_time: Date.parse(this.$baseFun.resetTime(this.ipForm.ip_time)) / 1000
       }
       this.startPercent();
       const result = await addip(params);
-      if (result.code != 0) return;
+      if (result.code !== 0) return;
       this.initipGroup();
-      this.initiplist();
+      this.getTableDataFun();
       this.uploadloading = false;
       this.ipModelType = 3;
       this.stepsActive = 3,
@@ -1245,15 +1287,15 @@ export default {
     submitIpBtn(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          if (this.ipModelType == 0) {
+          if (this.ipModelType === 0) {
             this.initCountry();
             this.stepsActive = 1,
               this.ipModelType = 1;
-            if (this.ipForm.iptype[1] == 1) {
+            if (this.ipForm.iptype[1] === 1) {
               this.ipModdelTitle = 'WS-' + this.ipClassOptions[this.ipForm.iptype[1]] + '-' + this.ipNumOption[this.ipForm.iptype[2]] + '格式入库';
-            } else if (this.ipForm.iptype[1] == 2) {
+            } else if (this.ipForm.iptype[1] === 2) {
               this.ipModdelTitle = 'WS-' + this.ipClassOptions[this.ipForm.iptype[1]] + '格式入库';
-            } else if (this.ipForm.iptype[1] == 3) {
+            } else if (this.ipForm.iptype[1] === 3) {
               this.ipModdelTitle = 'WS-' + this.ipClassOptions[this.ipForm.iptype[1]] + '格式入库';
             }
             this.ipModelWidth = '680px';
@@ -1266,8 +1308,8 @@ export default {
       this.batchArry = [];
       this.checkedNum = 0;
       this.groupIdx = idx;
-      this.model1.pgroup_id = idx == 'clear' ? '' : row.id;
-      this.initiplist(1);
+      this.queryData.pgroup_id = idx === 'clear' ? '' : row.id;
+      this.getTableDataFun(1);
     },
     addContent(row, idx) {
       this.materType = idx;
@@ -1275,7 +1317,7 @@ export default {
       this.groupModel = true;
       this.$nextTick(() => {
         this.$refs.groupForm.resetFields();
-        if (idx == 1) return;
+        if (idx === 1) return;
         this.groupForm.title = row.name;
         this.groupForm.content = row.content;
       })
@@ -1287,32 +1329,32 @@ export default {
       });
     },
     setPageSize(val) {
-      this.model1.limit = val;
-      this.initiplist();
+      this.queryData.limit = val;
+      this.getTableDataFun();
     },
     switchPage({ page, size }) {
       this.loading = true;
-      if (this.model1.limit != size) {
-        this.model1.page = 1;
+      if (this.queryData.limit !== size) {
+        this.queryData.page = 1;
       } else {
-        this.model1.page = page;
+        this.queryData.page = page;
       }
-      this.model1.limit = size;
-      this.initiplist();
+      this.queryData.limit = size;
+      this.getTableDataFun();
     },
     handleCommand(command) {
-      if (this.checkIdArry.length == 0) {
+      if (this.checkIdArry.length === 0) {
         return successTips(this, 'error', this.$t('sys_c126'));
       }
       for (let k = 0; k < this.betchOption.length; k++) {
-        if (this.betchOption[k].label == command.label) {
+        if (this.betchOption[k].label === command.label) {
           this.setIpType = k;
           this.setIpName = this.betchOption[k].label;
         }
       }
-      if (this.setIpType == 0 || this.setIpType == 1 || this.setIpType == 2 || this.setIpType == 10) {
+      if (this.setIpType === 0 || this.setIpType === 1 || this.setIpType === 2 || this.setIpType === 10) {
         this.setIpModel = true;
-        if (this.setIpType == 10) {
+        if (this.setIpType === 10) {
           this.initCountry()
         }
         this.$nextTick(() => {
@@ -1330,12 +1372,12 @@ export default {
               instance.confirmButtonLoading = true;
               allPost[that.setIpType]({ ids: that.checkIdArry }).then(res => {
                 instance.confirmButtonLoading = false;
-                if (res.code != 0) return;
-                that.initiplist();
-                if (that.setIpType == 8) {
+                if (res.code !== 0) return;
+                that.getTableDataFun();
+                if (that.setIpType === 8) {
                   that.initipGroup();
                 }
-                if (that.setIpType == 9) {
+                if (that.setIpType === 9) {
                   window.location.href = res.data.url
                 }
                 successTips(that)
@@ -1356,27 +1398,27 @@ export default {
         if (valid) {
           const allPost = [doexpiretime, doallotnum, domoveipgroup, docheckstatus, '', '', dostartdistribution, dodisableallocation, dobatchdel, dooutputip, doupcountry, doipremark]
           const params = {}
-          this.setIpType == 11 ? params.id = this.ipForm.id : params.ids = this.checkIdArry;
-          if (this.setIpType == 0) {
+          this.setIpType === 11 ? params.id = this.ipForm.id : params.ids = this.checkIdArry;
+          if (this.setIpType === 0) {
             params.expire_time = Date.parse(this.$baseFun.resetTime(this.ipForm.expire_time)) / 1000;
-          } else if (this.setIpType == 1) {
+          } else if (this.setIpType === 1) {
             params.allot_num = Number(this.ipForm.allot_num)
-          } else if (this.setIpType == 2) {
+          } else if (this.setIpType === 2) {
             params.group_id = this.ipForm.group_id
-          } else if (this.setIpType == 10) {
+          } else if (this.setIpType === 10) {
             params.country = this.ipForm.country
-          } else if (this.setIpType == 11) {
+          } else if (this.setIpType === 11) {
             params.remark = this.ipForm.remock_text
           }
           this.isLoading = true;
           allPost[this.setIpType](params).then(res => {
             this.isLoading = false;
-            if (res.code != 0) return;
+            if (res.code !== 0) return;
             this.setIpModel = false;
-            if (this.setIpType == 2) {
+            if (this.setIpType === 2) {
               this.initipGroup();
             }
-            this.initiplist();
+            this.getTableDataFun();
             successTips(this)
           })
         } else {
@@ -1396,7 +1438,7 @@ export default {
       var blob = new Blob([textContent], { type: 'text/plain' });
       var a = document.createElement('a');
       a.href = window.URL.createObjectURL(blob);
-      a.download = this.ipForm.iptype[1] == 1 ? 'example-import-static-ip.txt' : 'example-import-dynamic-ip.txt';
+      a.download = this.ipForm.iptype[1] === 1 ? 'example-import-static-ip.txt' : 'example-import-dynamic-ip.txt';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1404,6 +1446,7 @@ export default {
     }
   }
 }
+
 </script>
 <style lang="scss" scoped>
 ::v-deep .el-card__body {

@@ -211,6 +211,21 @@
                   </el-popover>
                 </el-form-item>
               </el-col>
+              <el-col :span="12" style="margin-right: 22px">
+                <el-form-item prop="account_role">
+                  <div class="label_radius_title">账号角色</div>
+                  <el-select
+                    v-model="accountForm.account_role"
+                    placeholder="请选择账号角色"
+                    clearable
+                    filterable
+                    style="width:100%;"
+                  >
+                    <el-option v-for="item in accountRoleList" :key="item.value" :label="item.label" :value="item.value" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+
               <el-col :span="24">
                 <el-form-item prop="data_way">
                   <div class="label_radius_title">{{ $t('sys_mat043') }}</div>
@@ -419,6 +434,10 @@ export default {
       success_number: 0,
       checkIdArry: [],
       groupOption: [],
+      accountRoleList:[
+        {label:'管理员',value:'1' },
+        {label:'进群号',value:'2' },
+      ],
       success_list: [],
       success_name: '',
       storeIdx: 1,
@@ -439,7 +458,8 @@ export default {
         data_way: 1,
         device_type: 1,
         export_type: '',
-        protocol_type: 0
+        protocol_type: 0,
+        account_role:'',
       },
       pageOption: resetPage(),
       randomNum: [1, 2, 4, 8, 3, 8, 4, 6, 3, 8],
@@ -637,7 +657,8 @@ export default {
         remark: this.accountForm.remark,
         group_id: this.accountForm.group_id,
         import_type: this.accountForm.data_way,
-        protocol: this.accountForm.protocol_type
+        protocol: this.accountForm.protocol_type,
+        account_role: this.accountForm.account_role
       }
       this.startPercent();
       this.fail_number = 0;
