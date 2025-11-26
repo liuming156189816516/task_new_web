@@ -289,6 +289,26 @@
             </template>
             <template slot-scope="scope"> {{ accountType[scope.row.account_type] }}</template>
           </u-table-column>
+          <u-table-column label="账号角色" min-width="100" prop="account_role">
+            <template slot="header">
+              <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,6)">
+                <span :class="[queryData.account_role?'dropdown_title':'']" style="color:#909399"> 账号角色
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item,idx) in accountRoleList"
+                    :key="idx"
+                    :class="{'dropdown_selected':idx==queryData.account_role}"
+                    :command="idx"
+                  >
+                    {{ item === '' ? $t('sys_l053') : item }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+            <template slot-scope="scope"> {{ accountType[scope.row.account_role] }}</template>
+          </u-table-column>
           <u-table-column :label="$t('sys_g015')" prop="first_login_time" width="180">
             <template slot-scope="scope">
               {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : "-" }}
@@ -629,6 +649,7 @@ export default {
         status: '',
         account_type: '',
         reason: '',
+        account_role: ''
       },
       cliHeight: 0,
       seatPage: 1,
@@ -769,6 +790,9 @@ export default {
     accountType() {
       return ['', this.$t('sys_l067'), this.$t('sys_l068')]
     },
+    accountRoleList(){
+      return ['', '管理员', '进群号']
+    },
     accountOptions() {
       return ['', this.$t('sys_g032'), this.$t('sys_g033'), this.$t('sys_g034'), this.$t('sys_g035'), this.$t('sys_g036')]
     },
@@ -872,6 +896,7 @@ export default {
         account_type: this.queryData.account_type || -1,
         reason: this.queryData.reason,
         limit: this.queryData.limit,
+        account_role: this.queryData.account_role || -1,
       }
       getaccountinfolist(params).then(res => {
         this.loading = false;
@@ -1064,6 +1089,8 @@ export default {
         this.queryData.staff_status = row;
       } else if (idx === 5) {
         this.queryData.work_status = row;
+      }else if (idx === 6) {
+        this.queryData.account_role = row;
       }
       this.getTableDataFun();
     },

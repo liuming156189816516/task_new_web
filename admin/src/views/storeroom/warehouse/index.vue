@@ -211,28 +211,23 @@
                   </el-popover>
                 </el-form-item>
               </el-col>
-              <el-col :span="12" style="margin-right: 22px">
-                <el-form-item prop="account_role">
+
+              <el-col :span="24">
+                <el-form-item prop="data_way">
                   <div class="label_radius_title">账号角色</div>
-                  <el-select
-                    v-model="accountForm.account_role"
-                    placeholder="请选择账号角色"
-                    clearable
-                    filterable
-                    style="width:100%;"
-                  >
-                    <el-option v-for="item in accountRoleList" :key="item.value" :label="item.label" :value="item.value" />
-                  </el-select>
+                  <el-radio-group v-model="accountForm.account_role">
+                    <el-radio v-for="(item,idx) in accountRoleList" v-show="item!=''" :key="idx" :label="idx">{{item}}
+                    </el-radio>
+                  </el-radio-group>
                 </el-form-item>
               </el-col>
-
               <el-col :span="24">
                 <el-form-item prop="data_way">
                   <div class="label_radius_title">{{ $t('sys_mat043') }}</div>
                   <el-radio-group v-model="accountForm.data_way">
                     <el-radio v-for="(item,idx) in accountOption" v-show="item!=''" :key="idx" :label="idx">{{
-                      item
-                    }}
+                        item
+                      }}
                     </el-radio>
                   </el-radio-group>
                 </el-form-item>
@@ -434,10 +429,6 @@ export default {
       success_number: 0,
       checkIdArry: [],
       groupOption: [],
-      accountRoleList:[
-        {label:'管理员',value:'1' },
-        {label:'进群号',value:'2' },
-      ],
       success_list: [],
       success_name: '',
       storeIdx: 1,
@@ -459,7 +450,7 @@ export default {
         device_type: 1,
         export_type: '',
         protocol_type: 0,
-        account_role:'',
+        account_role: 1,
       },
       pageOption: resetPage(),
       randomNum: [1, 2, 4, 8, 3, 8, 4, 6, 3, 8],
@@ -496,6 +487,9 @@ export default {
     accountOption() {
       return ['', this.$t('sys_mat044'), this.$t('sys_q108')]
     },
+    accountRoleList() {
+      return ['', '管理员', '进群号']
+    },
     protOption() {
       return [this.$t('sys_l121'), this.$t('sys_l111'), this.$t('sys_l115'), this.$t('sys_l122')]
     }
@@ -512,6 +506,7 @@ export default {
         this.accountForm.data_way = 1;
         this.accountForm.remark = '';
         this.accountForm.group_id = '';
+        this.accountForm.account_role = '1'
         this.accountForm.protocol_type = 0;
       }
     },
@@ -658,7 +653,7 @@ export default {
         group_id: this.accountForm.group_id,
         import_type: this.accountForm.data_way,
         protocol: this.accountForm.protocol_type,
-        account_role: this.accountForm.account_role
+        account_role: Number(this.accountForm.account_role)
       }
       this.startPercent();
       this.fail_number = 0;
