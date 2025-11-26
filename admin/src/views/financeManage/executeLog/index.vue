@@ -90,7 +90,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="任务类型" min-width="120" prop="ptype" show-overflow-tooltip>
+        <el-table-column label="执行类型" min-width="120" prop="ptype" show-overflow-tooltip>
           <template slot="header">
             <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'ptype')">
               <span :class="[Number(queryData.ptype)>0?'dropdown_title':'']" style="color:#909399"> 执行类型
@@ -107,12 +107,19 @@
               </el-dropdown-menu>
             </el-dropdown>
           </template>
-<!--          <template slot-scope="scope">-->
-<!--            <span v-if="scope.row[scope.column.property]!=='0'">-->
-<!--              {{ getLabelByVal(scope.row[scope.column.property], pTypeList) }}-->
-<!--            </span>-->
-<!--            <span v-else>-</span>-->
-<!--          </template>-->
+          <!--
+          <template slot-scope="scope">
+            <span v-if="scope.row[scope.column.property]!=='0'">
+              {{ getLabelByVal(scope.row[scope.column.property], pTypeList) }}
+            </span>
+            <span v-else>-</span>
+          </template>
+          -->
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="源数据" min-width="120" prop="source_json" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
