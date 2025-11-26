@@ -1099,17 +1099,17 @@ export default {
     syncInitApi() {
       this.loadingIp = true;
       const getipv4 = new Promise((resolve, reject) => {
-        getipv4allot().then(res => {
+        getipv4allot({}).then(res => {
           resolve(res.data)
         })
       });
       const getipv6 = new Promise((resolve, reject) => {
-        getipv6allot().then(res => {
+        getipv6allot({}).then(res => {
           resolve(res.data)
         })
       });
       const gettrendsip = new Promise((resolve, reject) => {
-        getipdynamicallot().then(res => {
+        getipdynamicallot({}).then(res => {
           resolve(res.data)
         })
       });

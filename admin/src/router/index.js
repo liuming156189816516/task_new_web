@@ -417,15 +417,7 @@ export const asyncRoutes = [
         meta: {
           title: '账号列表(安卓终端)',
         }
-      },
-      {
-        path: '/after-sales',
-        component: () => import('@/views/storeroom/afterSales'),
-        name: 'after-sales',
-        meta: {
-          title: '账号列表(售后终端)',
-        }
-      },
+      }
     ]
   },
   //
