@@ -506,8 +506,8 @@ export default {
         this.accountForm.data_way = 1;
         this.accountForm.remark = '';
         this.accountForm.group_id = '';
-        this.accountForm.account_role = '1'
         this.accountForm.protocol_type = 0;
+        this.accountForm.account_role = 1;
       }
     },
     exportModel(val) {
@@ -653,7 +653,7 @@ export default {
         group_id: this.accountForm.group_id,
         import_type: this.accountForm.data_way,
         protocol: this.accountForm.protocol_type,
-        account_role: Number(this.accountForm.account_role)
+        account_role: this.accountForm.account_role
       }
       this.startPercent();
       this.fail_number = 0;

@@ -307,7 +307,7 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
-            <template slot-scope="scope"> {{ accountType[scope.row.account_role] }}</template>
+            <template slot-scope="scope"> {{ accountRoleList[scope.row.account_role] }}</template>
           </u-table-column>
           <u-table-column :label="$t('sys_g015')" prop="first_login_time" width="180">
             <template slot-scope="scope">
