@@ -304,7 +304,7 @@ export default {
       dataTypeList: [
         { label: 'Whatsapp', value: '1', },
         { label: 'Sms', value: '2', },
-        { label: 'Whatsapp拉群', value: '3', },
+        { label: 'WhatsappGroup', value: '3', },
       ],
     }
   },
