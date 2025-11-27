@@ -44,7 +44,7 @@
               :command="{item,idx}"
               :disabled="idx==0||checkIdArry.length==0"
             >
-              {{ item }}
+              {{ item.label }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -385,6 +385,16 @@
             />
           </el-form-item>
         </template>
+        <template v-if="batchOptionData.btnLabel === '批量上线'">
+          <el-form-item v-if="countryList.length===0" :label="$t('sys_c052') + ':'" prop="iptype">
+            <el-cascader ref="myCascader" v-model="ipForm.iptype" el-cascader :options="ipOptions" style="width: 100%;" @change="changeIpHandle" />
+          </el-form-item>
+          <el-form-item v-if="countryList.length>0" :label="$t('sys_c054') + ':'" prop="ip_id">
+            <el-select v-model="ipForm.ip_id" filterable :placeholder="$t('sys_c052')">
+              <el-option v-for="(item,idx) in countryList" :key="idx" :label="item.country" :value="item.ip_id?item.ip_id:item.country" />
+            </el-select>
+          </el-form-item>
+        </template>
 
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;margin-top: 40px;">
           <el-button @click="setIpModel = false">取消</el-button>
@@ -398,225 +408,12 @@
       </el-form>
     </el-dialog>
 
-    <!-- 设置IP -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :title="is_staff==1?setStaffName:setIpName"
-      :visible.sync="changeModel"
-      center
-      width="800px"
-    >
-      <el-form ref="ipForm" :model="ipForm" :rules="ipRules" label-width="100px" size="small">
-        <div style="display: flex;justify-content: space-between;">
-          <div>
-            <div class="group_head_warp" @click="changeStaffGroup(1,0)">
-              <div class="group_head">
-                {{ $t('sys_g049') }} ({{ numGroupTotal }})
-              </div>
-            </div>
-            <el-button v-if="outLoading" :loading="true" class="loading_icon" type="primary" />
-            <template v-else>
-              <div class="group_warp">
-                <div
-                  v-for="(item, idx) in staffGroupList"
-                  :key="idx"
-                  :class="['group_item', stsff_group_id==item.id ? 'group_active' : '']"
-                  @click="changeStaffGroup(item,idx)"
-                >
-                  <div class="group_name">
-                    <i
-                      :class="['left_icon', stsff_group_id==item.id ? 'el-icon-folder-opened' : 'el-icon-folder']"
-                      class="left_icon"
-                    />
-                    <span class="group_text">{{ item.name }}</span>
-                    <span>({{ item.count }})</span>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </div>
-          <div style="width: 100%;margin-left: 10px;">
-            <div style="display:flex;gap:10px;">
-              <el-input v-model="ipForm.staff_name" clearable placeholder="请输入账号查询" size="small" />
-              <el-button icon="el-icon-search" size="small" type="primary" @click="getStaffList(1)">{{
-                $t('sys_c002')
-              }}
-              </el-button>
-            </div>
-            <div v-if="changeModel" style="max-height:450px;overflow-y:auto;margin-top:10px;">
-              <u-table
-                ref="tableName"
-                v-loading="staffLoading"
-                :data="staffData"
-                border
-                element-loading-background="rgba(255, 255, 255,1)"
-                element-loading-spinner="el-icon-loading"
-                row-key="uid"
-                style="width: 100%;"
-                @selection-change="handleStaffChange"
-                @row-click="rowStaffChange"
-              >
-                <u-table-column :reserve-selection="true" type="selection" width="55" />
-                <u-table-column :label="$t('sys_c134')" prop="date">
-                  <template slot="header">
-                    <span style="color:#909399">全部 已选:{{ checkItem.length || 0 }}项</span>
-                  </template>
-                  <template slot-scope="scope">
-                    {{ scope.row.account }}({{ scope.row.name }},账号数量:{{ scope.row.account_num }})
-                  </template>
-                </u-table-column>
-              </u-table>
-            </div>
-            <div style="margin-top: 10px;">
-              <el-pagination
-                :current-page.sync="seatPage"
-                :page-size="seatLimit"
-                :page-sizes="pageOption"
-                :pager-count="5"
-                :total="seatTotal"
-                layout="total, sizes, prev, pager, next"
-                @size-change="seatSizeChange"
-                @current-change="seatChangePage"
-              />
-            </div>
-          </div>
-        </div>
-        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;margin-top: 40px;">
-          <el-button @click="changeModel = false">{{ $t('sys_c023') }}</el-button>
-          <el-button type="primary" @click="confirmBtn">{{ $t('sys_c090') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <!-- 设置IP -->
-    <el-dialog :close-on-click-modal="false" :title="blockTitle" :visible.sync="closeModel" center width="1000px">
-      <el-form label-width="100px" size="small">
-        <div class="add_inherit">
-          <div class="table_group">
-            <div class="group_head_warp">
-              <div class="group_head" @click="changeCloseGroup(0,0)">
-                {{ $t('sys_g049') }} ({{ numGroupTotal }})
-              </div>
-              <div class="group_icon">
-                <el-popover v-model="close_icon" placement="top" width="230">
-                  <p>
-                    <el-select
-                      v-model="close_group_name"
-                      :placeholder="$t('sys_c053')"
-                      clearable
-                      filterable
-                      size="small"
-                      style="width:100%;"
-                    >
-                      <el-option v-for="item in numberGroupList" :key="item.id" :label="item.name" :value="item.name" />
-                    </el-select>
-                  </p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="close_icon=false">{{ $t('sys_c023') }}</el-button>
-                    <el-button size="mini" type="primary" @click="initNumberGroup">{{ $t('sys_c024') }}</el-button>
-                  </div>
-                  <i slot="reference" class="el-icon-search" />
-                </el-popover>
-              </div>
-            </div>
-            <el-button
-              v-if="blockGroupLoading"
-              :loading="true"
-              class="loading_icon"
-              style="margin-top: 10px;"
-              type="primary"
-            />
-            <template v-else>
-              <div class="group_warp">
-                <template v-if="blockGroupList.length>0">
-                  <div
-                    v-for="(item, idx) in blockGroupList"
-                    :key="idx"
-                    :class="['group_item', titleGroupIdx === item.id ? 'group_active' : '']"
-                    @click="changeCloseGroup(item, idx)"
-                  >
-                    <div class="group_name">
-                      <i
-                        :class="['left_icon', titleGroupIdx === item.id ? 'el-icon-folder-opened' : 'el-icon-folder']"
-                        class="left_icon"
-                      />
-                      <span class="group_text">{{ item.name }}</span>
-                      <span>({{ item.count }})</span>
-                    </div>
-                    <div class="group_icon" @click.stop>
-                      <el-dropdown placement="top-start" size="small" trigger="click">
-                        <span class="el-dropdown-link">
-                          <i class="el-icon-more" />
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item size="small">
-                            <i class=" el-icon-user-solid" />
-                            {{ $t('sys_c124') }}：{{ item.id }}
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </div>
-                  </div>
-                </template>
-                <div v-else class="text_empty">{{ $t('sys_mat013') }}</div>
-              </div>
-            </template>
-          </div>
-          <div class="table_ele">
-            <div class="tab_check_warp">
-              <i slot="reference" class="el-icon-info" />
-              <div v-html="$t('sys_mat007',{value:blockCheckList.length})" />
-            </div>
-            <u-table
-              ref="blockTable"
-              v-loading="isBlockLoading"
-              :data="blockAccountList"
-              border
-              element-loading-background="rgba(255, 255, 255,1)"
-              element-loading-spinner="el-icon-loading"
-              height="420"
-              row-key="id"
-              style="width:100%;"
-              @selection-change="handleCloseChange"
-              @row-click="rowCloseChange"
-            >
-              <u-table-column :reserve-selection="true" type="selection" width="40" />
-              <u-table-column :label="$t('sys_g109')" min-width="140" prop="account" />
-              <u-table-column :label="$t('sys_l057')" min-width="100" prop="account_type">
-                <template slot="header">
-                  <span style="color:#909399"> {{ blockType === 1 ? $t('sys_mat062') : $t('sys_l057') }}</span>
-                </template>
-                <template slot-scope="scope">
-                  <span>{{ blockType === 1 ? scope.row.staff_no : accountType[scope.row.account_type] }}</span>
-                </template>
-              </u-table-column>
-            </u-table>
-            <div class="layui_page">
-              <el-pagination
-                :current-page.sync="blockPramse.page"
-                :page-size="blockPramse.limit"
-                :page-sizes="pageOption"
-                :total="blockPramse.total"
-                background
-                layout="total, sizes, prev, pager, next, jumper"
-                @size-change="blockPageSize"
-                @current-change="blockSwitchPage"
-              />
-            </div>
-          </div>
-        </div>
-        <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;margin-top: 40px;">
-          <el-button @click="closeModel = false">{{ $t('sys_c023') }}</el-button>
-          <el-button type="primary" @click="addBlockBtn">{{ $t('sys_c090') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { successTips, resetPage } from '@/utils/index'
-import { getadmingrouplist, getcustomeruserlist } from '@/api/staff'
+import { getcustomeruserlist } from '@/api/staff'
 import {
   getaccountinfolist,
   getaccountgrouplist,
@@ -631,10 +428,9 @@ import {
   getstaticip,
   dobatchlogout,
   doresetip,
-  getinheritgrouplist,
-  getinheritaccountlist,
-  doinherit,
-  sortgroup
+  sortgroup,
+  dobatchlogin,
+  dobatchfastlogin
 } from '@/api/storeroom'
 
 export default {
@@ -663,13 +459,11 @@ export default {
       numberGroupList: [],
       staffGroupList: [],
       loading: false,
-      closeModel: false,
       ipLoading: false,
       showGroup: true,
       loadingPort: false,
       staffLoading: false,
       setIpModel: false,
-      changeModel: false,
       checkIdArry: [],
       checkAccount: [],
       search_icon: false,
@@ -677,7 +471,6 @@ export default {
       outLoading: false,
       blockGroupLoading: false,
       isBlockLoading: false,
-      setIpType: '',
       setIpName: '',
       is_staff: '',
       setStaffName: '',
@@ -784,13 +577,10 @@ export default {
     blockOptions() {
       return ['', this.$t('sys_g111'), this.$t('sys_g112')]
     },
-    isUseOptions() {
-      return ['', this.$t('sys_g037'), this.$t('sys_g038')]
-    },
     accountType() {
       return ['', this.$t('sys_l067'), this.$t('sys_l068')]
     },
-    accountRoleList(){
+    accountRoleList() {
       return ['', '管理员', '进群号']
     },
     accountOptions() {
@@ -802,10 +592,6 @@ export default {
         { name: this.$t('sys_l062'), value: 3, check: false }, { name: this.$t('sys_g015'), value: 4, check: false },
         { name: this.$t('sys_g014'), value: 5, check: false }, { name: this.$t('sys_g013'), value: 6, check: false }
       ]
-      // return ["",this.$t('sys_g022'),this.$t('sys_g025'),this.$t('sys_l062'),this.$t('sys_g015'),this.$t('sys_g014'),this.$t('sys_g013')]
-    },
-    termOptions() {
-      return ['', this.$t('sys_g050'), this.$t('sys_g051'), this.$t('sys_g052'), this.$t('sys_g053')]
     },
     allPortList() {
       return [{ name: this.$t('sys_mat058'), num: 0 }, { name: this.$t('sys_mat059'), num: 0 }, {
@@ -814,7 +600,11 @@ export default {
       }, { name: '账号被封数', num: 0 }]
     },
     onlineOption() {
-      return [this.$t('sys_g028'), this.$t('sys_g029'), this.$t('sys_g030')]
+      return [
+        { label: '---默认通道---' ,api: dobatchfastlogin },
+        { label: '批量上线' ,api: dobatchlogin },
+        { label: '批量快速上线' ,api: dobatchfastlogin },
+      ]
     },
     batchOption() {
       return [
@@ -854,14 +644,6 @@ export default {
     }
   },
   watch: {
-    closeModel(val) {
-      if (val === false) {
-        this.blockPramse.offest = 1;
-        if (this.$refs.blockTable) {
-          this.$refs.blockTable.clearSelection();
-        }
-      }
-    },
     setIpModel(val) {
       if (val === false) {
         this.$refs.ipForm.resetFields();
@@ -950,7 +732,6 @@ export default {
       if (this.checkIdArry.length === 0) {
         return successTips(this, 'error', '请勾选要操作的列表');
       }
-      this.setIpType = command.idx;
       this.setIpName = command.item.label;
       this.batchOptionData.title = command.item.label;
       this.batchOptionData.btnLabel = command.item.label;
@@ -1005,7 +786,6 @@ export default {
       this.ipForm.account = '';
       this.blockAccount = [];
       this.inheritAccount = [];
-      this.setIpType = command.idx;
       this.setIpName = command.item.label;
       const that = this;
       that.$confirm(`确认${command.item.label}吗？`, '提示', {
@@ -1035,7 +815,65 @@ export default {
         that.$message({ type: 'info', message: '已取消' });
       })
     },
-
+    // 批量上线
+    onlineHandle(command) {
+      this.ipForm.ip_id = '';
+      this.setIpName = command.item.label;
+      this.batchOptionData.title = command.item.label;
+      this.batchOptionData.btnLabel = command.item.label;
+      if (command.item.label === '批量上线') {
+        this.setIpModel = true;
+        this.$nextTick(() => {
+          this.$refs.ipForm.resetFields();
+        })
+      } else {
+        this.popConfirm(command);
+      }
+      this.countryList = [];
+    },
+    // 批量操作 弹窗 保存
+    submitSetBtn(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const params = {}
+          this.ipForm.account ? params.accounts = [this.this.ipForm.account] : params.accounts = this.checkAccount;
+          let batchOptionArr = []
+          if (this.batchOptionData.btnLabel === '移至其他分组') {
+            batchOptionArr = this.batchOption
+            params.group_id = this.ipForm.group_id // 移动分组
+          } else if (this.batchOptionData.btnLabel === '批量修改备注') {
+            batchOptionArr = this.batchOption
+            params.remark = this.ipForm.remock_text // 修改备注
+          } else if (this.batchOptionData.btnLabel === '批量上线') {
+            batchOptionArr = this.onlineOption
+            params.ip_category = this.ipForm.iptype[0];
+            params.ip_type = this.ipForm.iptype[1] === 4 ? 1 : this.ipForm.iptype[1] === 6 ? 3 : 2;
+            this.ipForm.iptype[0] === 1 ? params.country = this.ipForm.ip_id : params.ip_id = this.ipForm.ip_id;
+        }
+          let reqApi;
+          this.isLoading = true;
+          batchOptionArr.forEach(item => {
+            if (item.label === this.batchOptionData.btnLabel) {
+              reqApi = item.api
+            }
+          })
+          reqApi(params).then(res => {
+            this.isLoading = false;
+            if (res.code !== 0) return;
+            this.setIpModel = false;
+            if (this.batchOptionData.btnLabel === '移至其他分组') {
+              this.initNumberGroup();
+            }
+            this.getTableDataFun();
+            this.$refs.serveTable.clearSelection();
+            successTips(this)
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     // 窗口容器大小
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 380;
@@ -1048,25 +886,6 @@ export default {
       this.checkAccount = row.map(item => {
         return item.account
       })
-    },
-    // 弹窗 表格 点击行
-    rowCloseChange(row) {
-      const refsElTable = this.$refs.blockTable;
-      const findRow = this.blockCheckList.find(item => item.id === row.id);
-      if (findRow) {
-        refsElTable.toggleRowSelection([{ row: row, selected: false }]);
-        return;
-      }
-      refsElTable.toggleRowSelection([{ row: row, selected: true }]);
-    },
-    // 弹窗 表格 点击行
-    rowStaffChange(row) {
-      const tableCell = this.$refs.tableName;
-      if (this.checkItem.includes(row.account)) {
-        tableCell.toggleRowSelection([{ row: row, selected: false }]);
-        return;
-      }
-      tableCell.toggleRowSelection([{ row: row, selected: true }]);
     },
     async changeIpHandle() {
       const params = {
@@ -1089,13 +908,12 @@ export default {
         this.queryData.staff_status = row;
       } else if (idx === 5) {
         this.queryData.work_status = row;
-      }else if (idx === 6) {
+      } else if (idx === 6) {
         this.queryData.account_role = row;
       }
       this.getTableDataFun();
     },
     addRemark(row, idx) {
-      this.setIpType = idx;
       this.setIpModel = true;
       this.ipForm.account = row.account;
       this.ipForm.remock_text = row.remark || '';
@@ -1180,20 +998,6 @@ export default {
       this.getTableDataFun(1);
       this.$refs.serveTable.clearSelection();
     },
-    addContent(row, idx) {
-      this.materType = idx;
-      this.groupForm.id = row.id;
-      this.groupModel = true;
-      this.$nextTick(() => {
-        this.$refs.groupForm.resetFields();
-        if (idx === 1) return;
-        this.groupForm.title = row.name;
-        this.groupForm.content = row.content;
-      })
-    },
-    getRowKeys(row) {
-      return row.id;
-    },
     switchPage({ page, size }) {
       this.loading = true;
       if (this.queryData.limit !== size) {
@@ -1203,74 +1007,6 @@ export default {
       }
       this.queryData.limit = size;
       this.getTableDataFun();
-    },
-    onlineHandle(row) {
-      this.ipForm.ip_id = '';
-      for (let k = 0; k < this.onlineOption.length; k++) {
-        if (k === row.idx) {
-          this.setIpName = this.onlineOption[k];
-          if (k === 1) {
-            this.setIpType = 99;
-          } else {
-            this.setIpType = 100;
-          }
-        }
-      }
-      if (this.setIpType === 100) {
-        this.popConfirm();
-        return;
-      }
-      this.setIpModel = true;
-      this.$nextTick(() => {
-        this.$refs.ipForm.resetFields();
-        const _cascader = this.$refs.myCascader;
-        _cascader.$refs.panel.activePath = [];
-        _cascader.$refs.panel.checkedValue = [];
-        _cascader.$refs.panel.syncActivePath()
-      })
-      this.countryList = [];
-    },
-    async showStaffModel() {
-      this.is_staff = 1;
-      this.seatPage = 1;
-      this.ipForm.staff_name = '';
-      this.changeModel = true;
-      this.staffLoading = true;
-      this.ipForm.staffCheck = [];
-      this.setStaffName = this.$t('sys_g058');
-      await this.initStaffGroup();
-      await this.getStaffList();
-      // await this.$nextTick();
-      if (this.staffData.length === 0 || this.ipForm.staffCheck.length === 0) return;
-      for (let i = 0; i < this.staffData.length; i++) {
-        if (this.ipForm.staffCheck.indexOf(this.staffData[i].account) > -1) {
-          this.$nextTick(() => {
-            this.$refs.tableName.toggleRowSelection(this.staffData[i], true);
-          })
-        } else {
-          this.$nextTick(() => {
-            this.$refs.tableName.toggleRowSelection(this.staffData[i], false);
-          })
-        }
-      }
-    },
-    async initStaffGroup() {
-      this.outLoading = true;
-      const { data } = await getadmingrouplist({ name: this.queryData.group_name, page: 1, limit: 100 });
-      this.outLoading = false;
-      this.staffGroupList = data.list || [];
-    },
-    changeStaffGroup(row, idx) {
-      this.stsff_group_id = row.id;
-      this.getStaffList();
-    },
-    seatSizeChange(val) {
-      this.seatLimit = val;
-      this.getStaffList()
-    },
-    seatChangePage(val) {
-      this.seatPage = val;
-      this.getStaffList()
     },
     async getStaffList(num) {
       this.staffData = [];
@@ -1286,189 +1022,6 @@ export default {
       this.staffLoading = false;
       this.seatTotal = res.data.total;
       this.staffData = res.data.list || [];
-    },
-    handleStaffChange(row) {
-      this.checkItem = [];
-      const shortItem = row.map(item => {
-        return item.account
-      })
-      for (let k = 0; k < shortItem.length; k++) {
-        if (this.ipForm.staffCheck.indexOf(shortItem[k]) === -1) {
-          this.checkItem.push(shortItem[k])
-        }
-      }
-      this.$refs.ipForm.clearValidate('staffCheck');
-    },
-    confirmBtn() {
-      this.ipForm.staffCheck = [...this.ipForm.staffCheck, ...this.checkItem];
-      this.changeModel = false;
-      this.seatPage = 1;
-    },
-    clearStaff(row) {
-      for (let k = 0; k < this.ipForm.staffCheck.length; k++) {
-        if (this.ipForm.staffCheck[k] === row) {
-          this.ipForm.staffCheck.splice(k, 1)
-        }
-      }
-    },
-    clearAllSeat() {
-      this.ipForm.staffCheck = [];
-      this.$refs.blockTable.clearSelection();
-    },
-
-    submitSetBtn(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          const params = {}
-
-          this.ipForm.account ? params.accounts = [this.this.ipForm.account] : params.accounts = this.checkAccount;
-          if (this.batchOptionData.btnLabel === '移至其他分组') {
-            params.group_id = this.ipForm.group_id // 移动分组
-          } else if (this.batchOptionData.btnLabel === '批量修改备注') {
-            params.remark = this.ipForm.remock_text // 修改备注
-          }
-          let reqApi;
-          this.isLoading = true;
-          this.batchOption.forEach(item => {
-            if (item.label === this.batchOptionData.btnLabel) {
-              reqApi = item.api
-            }
-          })
-          reqApi(params).then(res => {
-            this.isLoading = false;
-            if (res.code !== 0) return;
-            this.setIpModel = false;
-            if (this.batchOptionData.btnLabel === '移至其他分组') {
-              this.initNumberGroup();
-            }
-            this.getTableDataFun();
-            this.$refs.serveTable.clearSelection();
-            successTips(this)
-          })
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
-    async addCloseBtn(idx) {
-      this.blockType = idx;
-      this.blockGroupList = [];
-      this.blockAccountList = [];
-      this.blockPramse.total = 0;
-      this.blockPramse.offest = 1;
-      this.blockPramse.group_id = '';
-      this.blockTitle = this.blockOptions[idx];
-      this.closeModel = true;
-      await this.getBlockGroup();
-      await this.getBlockAccount();
-    },
-    handleBlockChange(row) {
-      this.blockCheckItem = row.map(item => {
-        return item.id
-      });
-    },
-    handleInheritChange(row) {
-      this.inheritCheckItem = row.map(item => {
-        return item.id
-      });
-    },
-    delCloseBtn(type) {
-      if (type === 1) {
-        this.blockAccount = this.blockAccount.filter(item => !this.blockCheckItem.includes(item.id));
-      } else {
-        this.inheritAccount = this.inheritAccount.filter(item => !this.inheritCheckItem.includes(item.id));
-      }
-    },
-    changeCloseGroup(row, idx) {
-      this.titleGroupIdx = row ? row.id : '';
-      this.blockPramse.group_id = row ? row.id : '';
-      this.getBlockAccount();
-    },
-    async getBlockGroup() {
-      this.blockGroupLoading = true;
-      const { data } = await getinheritgrouplist({ ptype: this.blockType, page: 1, limit: 100 });
-      this.blockGroupList = data.list || [];
-      this.blockGroupLoading = false;
-    },
-    async getBlockAccount(num) {
-      this.isBlockLoading = true;
-      this.blockPramse.offest = num || this.blockPramse.offest;
-      const params = {
-        ptype: this.blockType,
-        page: this.blockPramse.offest,
-        limit: this.blockPramse.limit,
-        group_id: this.blockPramse.group_id
-      }
-      const { data } = await getinheritaccountlist(params);
-      this.isBlockLoading = false;
-      this.blockPramse.total = data.total;
-      this.blockAccountList = data.list || [];
-      const checkAccount = this.blockType === 1 ? this.blockAccount : this.inheritAccount;
-      if (checkAccount.length === 0) return;
-      const accountArry = checkAccount.map(item => {
-        return item.account
-      });
-      for (let i = 0; i < this.blockAccountList.length; i++) {
-        if (accountArry.indexOf(this.blockAccountList[i].account) > -1) {
-          this.$nextTick(() => {
-            this.$refs.blockTable.toggleRowSelection(this.blockAccountList[i], true);
-          })
-        } else {
-          this.$nextTick(() => {
-            this.$refs.blockTable.toggleRowSelection(this.blockAccountList[i], false);
-          })
-        }
-      }
-    },
-    blockSwitchPage(page) {
-      this.blockPramse.offest = page;
-      this.getBlockAccount()
-    },
-    blockPageSize(limit) {
-      this.blockPramse.limit = limit;
-      this.getBlockAccount()
-    },
-    handleCloseChange(row) {
-      this.blockCheckList = row.map(item => ({
-        id: item.id,
-        account: item.account,
-        staff_no: item.staff_no,
-        group_name: item.group_name
-      }));
-    },
-    addBlockBtn() {
-      if (this.blockCheckList.length > 0 && this.blockType === 1) {
-        this.blockAccount = [];
-        this.blockAccount = this.blockCheckList;
-      }
-      if (this.blockCheckList.length > 0 && this.blockType === 2) {
-        this.inheritAccount = [];
-        this.inheritAccount = this.blockCheckList;
-      }
-      this.closeModel = false;
-    },
-    async submitBlockBtn() {
-      const from_accounts = this.blockAccount.map(item => {
-        return item.account
-      });
-      const to_accounts = this.inheritAccount.map(item => {
-        return item.account
-      });
-      if (this.blockAccount.length !== this.inheritAccount.length) {
-        return successTips(this, 'error', this.$t('sys_g114'));
-      }
-      const params = {
-        from_accounts: from_accounts,
-        to_accounts: to_accounts
-      }
-      // console.log(params);
-      this.isLoading = true;
-      const res = await doinherit(params);
-      this.isLoading = false;
-      if (res.code !== 0) return;
-      this.setIpModel = false;
-      successTips(this, '', this.$t('sys_g113'))
     },
     handleTag(type) {
       let color;

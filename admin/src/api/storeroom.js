@@ -151,7 +151,6 @@ export const setaccountunavailableApi = (params) => {
   return request({ url: '/account/setaccountunavailable', method: 'post', data: params })
 }
 
-
 // 分配设备ID
 export const setassigndeviceidApi = (params) => {
   return request({ url: '/account/assigndeviceid', method: 'post', data: params })
