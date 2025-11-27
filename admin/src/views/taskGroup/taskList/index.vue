@@ -452,7 +452,9 @@
             style="width: 100%"
           >
             <el-select v-model="confModal.formData.admin_group_id" clearable filterable placeholder="请选择管理员分组">
-              <el-option v-for="item in accountRoleList1" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in accountRoleList1" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item
@@ -472,7 +474,9 @@
             style="width: 100%"
           >
             <el-select v-model="confModal.formData.in_group_id" clearable filterable placeholder="请选择进群分组">
-              <el-option v-for="item in accountRoleList2" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option v-for="item in accountRoleList2" :key="item.value" :label="item.label" :value="item.value" >
+                <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item class="formTitleRules" label="">
@@ -1095,8 +1099,10 @@ export default {
         if (res.msg === 'success') {
           this.accountRoleList1 = res.data.list.map(item => {
             return {
-              label: item.name + '(数量：' + item.count + '，在线：' + item.online_num + ')',
+              label: item.name,
               value: item.group_id,
+              count: item.count,
+              online_num: item.name,
             }
           })
         }
@@ -1108,8 +1114,10 @@ export default {
           if (res.msg === 'success') {
             this.accountRoleList2 = res.data.list.map(item => {
               return {
-                label: item.name + '(数量：' + item.count + '，在线：' + item.online_num + ')',
+                label: item.name,
                 value: item.group_id,
+                count: item.count,
+                online_num: item.name,
               }
             })
           }
