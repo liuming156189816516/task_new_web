@@ -1103,7 +1103,7 @@ export default {
       })
       // 进群号
       setTimeout(() => {
-        getSendMsgGroupApi({ account_role: 1 }).then(res => {
+        getSendMsgGroupApi({ account_role: 2 }).then(res => {
           console.log('进群号', res.data)
           if (res.msg === 'success') {
             this.accountRoleList2 = res.data.list.map(item => {
