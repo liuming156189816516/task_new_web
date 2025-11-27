@@ -79,3 +79,12 @@ export const getDataPackListApi = (params) => {
     data: params
   })
 }
+
+// 获取账号角色数据
+export const getSendMsgGroupApi = (params) => {
+  return request({
+    url: '/task/getsendmsggroup',
+    method: 'post',
+    data: params
+  })
+}

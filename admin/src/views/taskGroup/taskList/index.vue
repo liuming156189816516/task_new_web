@@ -72,7 +72,7 @@
         <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="标题" min-width="120" prop="title">
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" :content="scope.row[scope.column.property]" placement="top">
+            <el-tooltip :content="scope.row[scope.column.property]" class="item" effect="dark" placement="top">
               <span>{{ getLabelByVal(scope.row[scope.column.property], titleList) }}</span>
             </el-tooltip>
           </template>
@@ -153,7 +153,12 @@
         </el-table-column>
         <el-table-column label="标签" min-width="120" prop="tags" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" :content="scope.row[scope.column.property].join(',')" placement="top">
+            <el-tooltip
+              :content="scope.row[scope.column.property].join(',')"
+              class="item"
+              effect="dark"
+              placement="top"
+            >
               <el-tag>
                 {{ getLabelArrByVal(scope.row[scope.column.property], tagsList) }}
               </el-tag>
@@ -199,7 +204,7 @@
             <div v-if="scope.row.release_status==='3'" class="action-btn">
               <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
             </div>
-            <div class="action-btn" v-if="scope.row.release_status !=='3'">
+            <div v-if="scope.row.release_status !=='3'" class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
             <div class="action-btn">
@@ -430,6 +435,46 @@
               <el-option v-for="item in dataPackList" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">管理员分组</div>
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            :rules="[
+              { required: true, message: '请选择管理员分组！', trigger: 'change' },
+            ]"
+            label=""
+            prop="data_pack_id"
+            style="width: 100%"
+          >
+            <el-select v-model="confModal.formData.admin_group_id" clearable filterable placeholder="请选择管理员分组">
+              <el-option v-for="item in accountRoleList1" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">进群分组</div>
+          </el-form-item>
+          <el-form-item
+            v-if="confModal.cloneRow.task_type==='9'"
+            :rules="[
+              { required: true, message: '请选择进群分组！', trigger: 'change' },
+            ]"
+            label=""
+            prop="data_pack_id"
+            style="width: 100%"
+          >
+            <el-select v-model="confModal.formData.in_group_id" clearable filterable placeholder="请选择进群分组">
+              <el-option v-for="item in accountRoleList2" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item class="formTitleRules" label="">
             <div style="font-size: 18px;color: #333333">任务限制</div>
           </el-form-item>
@@ -464,10 +509,10 @@
           >
             <el-switch
               v-model="confModal.formData.is_prefer_local_data"
-              active-value="1"
-              inactive-value="0"
               active-text="是"
+              active-value="1"
               inactive-text="否"
+              inactive-value="0"
             />
           </el-form-item>
         </el-form>
@@ -495,13 +540,14 @@ import {
   editReleaseStatusApi,
   editConfDataApi,
   getBadgeListApi,
-  getDataPackListApi
+  getDataPackListApi,
+  getSendMsgGroupApi
 } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
-import { formatTimestamp ,getLanguagePageList } from '@/filters'
+import { formatTimestamp, getLanguagePageList } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi ,getLanguagePageListApi } from '@/api/common';
+import { uploadFileApi, getLanguagePageListApi } from '@/api/common';
 import sortablejs from 'sortablejs';
 
 export default {
@@ -616,6 +662,8 @@ export default {
           conf: '',
           data_pack_id: '',
           is_prefer_local_data: '1',
+          admin_group_id: '',
+          in_group_id: '',
         },
         rules: {
           conf: [
@@ -625,7 +673,9 @@ export default {
         isLoading: false,
       },
       titleList: [],
-      dataPackList: []
+      dataPackList: [],
+      accountRoleList1: [],
+      accountRoleList2: [],
     }
   },
   mounted() {
@@ -634,6 +684,7 @@ export default {
     this.getBadgeListFun()
     this.getDataPackListFun()
     this.setFullHeight();
+    this.getSendMsgGroupApi()
     window.addEventListener('resize', this.setFullHeight);
     this.initDragSortTableRow(); // 拖拽表格行排序
   },
@@ -692,7 +743,9 @@ export default {
       this.confModal.cloneRow = deepClone(row)
       if (deepClone(row).conf) {
         this.confModal.formData.conf = deepClone(row).conf.message
-        this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id
+        this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id || ''
+        this.confModal.formData.admin_group_id = this.confModal.cloneRow.conf.admin_group_id || ''
+        this.confModal.formData.in_group_id = this.confModal.cloneRow.conf.in_group_id || ''
         this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
       }
       if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
@@ -783,6 +836,8 @@ export default {
           }
           if (taskType === '9') {
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
+            formData.conf.admin_group_id = this.confModal.formData.admin_group_id
+            formData.conf.in_group_id = this.confModal.formData.in_group_id
           }
 
           editConfDataApi(formData).then(res => {
@@ -977,8 +1032,8 @@ export default {
         if (res.msg === 'success') {
           const kay1 = 'server.task.title'
           const kay2 = 'server.task.tag'
-          this.titleList = getLanguagePageList(res.data.content,kay1)
-          this.tagsList = getLanguagePageList(res.data.content,kay2)
+          this.titleList = getLanguagePageList(res.data.content, kay1)
+          this.tagsList = getLanguagePageList(res.data.content, kay2)
         }
       })
     },
@@ -1023,15 +1078,43 @@ export default {
       getDataPackListApi(params).then(res => {
         if (res.msg === 'success') {
           this.dataPackList = []
-            res.data.list.forEach((item, index) => {
-              const val = { label: item.name,value: item.id }
-              if (item.data_type === 3) {
-                this.dataPackList.push(val)
-              }
+          res.data.list.forEach((item, index) => {
+            const val = { label: item.name, value: item.id }
+            if (item.data_type === 3) {
+              this.dataPackList.push(val)
+            }
           })
-          console.log(' this.dataPackLis', this.dataPackList)
         }
       })
+    },
+    // 获取 账号角色
+    getSendMsgGroupApi() {
+      // 管理员
+      getSendMsgGroupApi({ account_role: 1 }).then(res => {
+        console.log('管理员', res.data)
+        if (res.msg === 'success') {
+          this.accountRoleList1 = res.data.list.map(item => {
+            return {
+              label: item.name + '(数量：' + item.count + '，在线：' + item.online_num + ')',
+              value: item.group_id,
+            }
+          })
+        }
+      })
+      // 进群号
+      setTimeout(() => {
+        getSendMsgGroupApi({ account_role: 1 }).then(res => {
+          console.log('进群号', res.data)
+          if (res.msg === 'success') {
+            this.accountRoleList2 = res.data.list.map(item => {
+              return {
+                label: item.name + '(数量：' + item.count + '，在线：' + item.online_num + ')',
+                value: item.group_id,
+              }
+            })
+          }
+        })
+      }, 200)
     },
     // 打开预览图片
     openImageViewFun(row, kay) {
