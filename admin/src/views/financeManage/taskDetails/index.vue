@@ -6,6 +6,7 @@
       <el-form-item>
         <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行记录" />
       </el-form-item>
+      <!--
       <el-form-item>
         <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
           <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
@@ -16,6 +17,7 @@
           <el-option v-for="item in platformList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
+      -->
       <el-form-item>
         <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
       </el-form-item>
@@ -48,7 +50,23 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="任务类型" min-width="150" prop="task_type" show-overflow-tooltip>
+          <el-table-column label="任务类型" min-width="160" prop="task_type" show-overflow-tooltip>
+            <template slot="header">
+              <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'task_type')">
+                <span :class="[(queryData.task_type)>0?'dropdown_title':'']" style="color:#909399"> 任务类型
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item,index) in taskTypeList"
+                    :key="index"
+                    :class="{'dropdown_selected':item.value===queryData.task_type}"
+                    :command="item.value"
+                  >{{ item.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
                 {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
@@ -61,7 +79,24 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
-          <el-table-column label="平台" min-width="100" prop="platform" show-overflow-tooltip>
+          <el-table-column label="平台" min-width="120" prop="platform" show-overflow-tooltip>
+            <template slot="header">
+              <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'platform')">
+                <span :class="[(queryData.platform)>0?'dropdown_title':'']" style="color:#909399"> 平台
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item,index) in platformList"
+                    :key="index"
+                    :class="{'dropdown_selected':item.value===queryData.platform}"
+                    :command="item.value"
+                  >{{ item.label }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </template>
+
             <template slot-scope="scope">
               <span v-if="scope.row[scope.column.property]!=='0'">
                 {{ getLabelByVal(scope.row[scope.column.property], platformList) }}

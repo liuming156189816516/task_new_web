@@ -396,6 +396,7 @@ export const asyncRoutes = [
     ]
   },
 
+  // 账号管理
   {
     path: '/storeroom',
     component: Layout,

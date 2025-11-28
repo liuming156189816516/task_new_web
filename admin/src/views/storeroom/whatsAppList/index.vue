@@ -230,22 +230,22 @@
           @row-click="rowSelectChange"
         >
           <u-table-column :reserve-selection="true" type="selection" width="55" />
-          <u-table-column :label="$t('sys_g021')" prop="head" width="80">
+          <u-table-column label="头像" prop="head" width="80">
             <template slot-scope="scope">
               <el-avatar v-if="scope.row.head" :src="scope.row.head" />
               <el-avatar v-else icon="el-icon-user-solid" />
             </template>
           </u-table-column>
-          <u-table-column :label="$t('sys_g027')" prop="account" width="120" />
-          <u-table-column :label="$t('sys_g022')" min-width="100" prop="nick_name">
+          <u-table-column label="账号" prop="account" width="120" />
+          <u-table-column label="昵称" min-width="100" prop="nick_name">
             <template slot-scope="scope">
               {{ scope.row.nick_name ? scope.row.nick_name : "-" }}
             </template>
           </u-table-column>
-          <u-table-column :label="$t('sys_c022')" min-width="100" prop="status">
+          <u-table-column label="账号状态" min-width="100" prop="status">
             <template slot="header">
               <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,1)">
-                <span :class="[queryData.status?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_c022') }}
+                <span :class="[queryData.status?'dropdown_title':'']" style="color:#909399"> 账号状态
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -255,7 +255,7 @@
                     :class="{'dropdown_selected':idx==queryData.status}"
                     :command="idx"
                   >
-                    {{ item === '' ? $t('sys_l053') : item }}
+                    {{ item === '' ? '全部' : item }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -264,15 +264,10 @@
               <el-tag :type="handleTag(scope.row.status)" size="small"> {{ accountOptions[scope.row.status] }}</el-tag>
             </template>
           </u-table-column>
-          <u-table-column :label="$t('sys_g025')" min-width="100" prop="reason" show-overflow-tooltip>
-            <template slot-scope="scope">
-              <span>{{ scope.row.reason ? scope.row.reason : "-" }}</span>
-            </template>
-          </u-table-column>
-          <u-table-column :label="$t('sys_l057')" min-width="100" prop="account_type">
+          <u-table-column label="账号类型" min-width="100" prop="account_type">
             <template slot="header">
               <el-dropdown size="medium " trigger="click" @command="(command) => handleNewwork(command,3)">
-                <span :class="[queryData.account_type?'dropdown_title':'']" style="color:#909399"> {{ $t('sys_l057') }}
+                <span :class="[queryData.account_type?'dropdown_title':'']" style="color:#909399"> 账号类型
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -282,7 +277,7 @@
                     :class="{'dropdown_selected':idx==queryData.account_type}"
                     :command="idx"
                   >
-                    {{ item === '' ? $t('sys_l053') : item }}
+                    {{ item === '' ? '全部' : item }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -302,24 +297,29 @@
                     :class="{'dropdown_selected':idx==queryData.account_role}"
                     :command="idx"
                   >
-                    {{ item === '' ? $t('sys_l053') : item }}
+                    {{ item === '' ? '全部' : item }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
             <template slot-scope="scope"> {{ accountRoleList[scope.row.account_role] }}</template>
           </u-table-column>
-          <u-table-column :label="$t('sys_g015')" prop="first_login_time" width="180">
+          <u-table-column label="离线原因" min-width="100" prop="reason" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : "-" }}
+              <span>{{ scope.row.reason ? scope.row.reason : "-" }}</span>
             </template>
           </u-table-column>
-          <u-table-column :label="$t('sys_g013')" min-width="160" prop="offline_time">
+          <u-table-column label="离线时间" min-width="160" prop="offline_time">
             <template slot-scope="scope">
               {{ scope.row.offline_time > 0 ? $baseFun.resetTime(scope.row.offline_time * 1000) : "-" }}
             </template>
           </u-table-column>
-          <u-table-column :label="$t('sys_l062')" prop="remark" show-overflow-tooltip width="100">
+          <u-table-column label="入库时间" prop="first_login_time" width="180">
+            <template slot-scope="scope">
+              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : "-" }}
+            </template>
+          </u-table-column>
+          <u-table-column label="备注" prop="remark" show-overflow-tooltip width="100">
             <template slot-scope="scope">
               <div class="remark_ext">{{ scope.row.remark }}</div>
               <div @click.stop="addRemark(scope.row,8)"><i
