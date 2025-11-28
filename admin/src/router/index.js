@@ -238,10 +238,10 @@ export const asyncRoutes = [
   },
   // 用户管理
   {
-    path: '/userManage',
+    path: '/userManageGroup',
     component: Layout,
-    name: 'userManage',
-    meta: { title: '用户管理', icon: 'el-icon-office-building' },
+    name: 'userManageGroup',
+    meta: { title: '注册用户', icon: 'el-icon-office-building' },
     children: [
       {
         path: '/registerUser',
