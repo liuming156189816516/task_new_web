@@ -253,6 +253,7 @@ export default {
       selectIdData: [],
       pageOption: resetPage(),
       taskTypeList: [
+        { label: '全部', value: '0' },
         { label: 'Tiktok-Like', value: '1' },
         { label: 'Tiktok-Follow', value: '2' },
         { label: 'Whatsapp-Send', value: '3' },
@@ -261,6 +262,7 @@ export default {
         { label: 'Whatsapp-Group', value: '9' },
       ],
       platformList: [
+        { label: '全部', value: '0' },
         { label: 'Tiktok', value: '1' },
         { label: 'Whatsapp', value: '2' },
         { label: 'Instagram', value: '3' },
