@@ -391,6 +391,7 @@ export default {
         ],
       },
       platformList: [
+        { label: '全部', value: '0' },
         { label: 'Tiktok', value: '1' },
         { label: 'Whatsapp', value: '2' },
         { label: 'Instagram', value: '3' },

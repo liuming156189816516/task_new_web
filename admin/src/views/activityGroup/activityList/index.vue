@@ -137,7 +137,7 @@
             <div v-if="scope.row.release_status==='3'" class="action-btn">
               <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
             </div>
-            <div class="action-btn" v-if="scope.row.release_status !=='3'">
+            <div v-if="scope.row.release_status !=='3'" class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
             <div class="action-btn">
@@ -297,6 +297,7 @@ export default {
         ],
       },
       categoryList: [
+        { label: '全部', value: '0' },
         { label: 'All', value: '1' },
         { label: 'Limited', value: '2' },
         { label: 'Newbie', value: '3' },
@@ -309,6 +310,7 @@ export default {
         { label: '已发布', value: '3' ,type: 'success' },
       ],
       categoriesList: [
+        { label: '全部', value: '0' },
         { label: 'Sign-In', value: '1' },
       ],
       imgData: {
@@ -316,7 +318,7 @@ export default {
         scr: ''
       },
       titleList: [],
-      descList:[]
+      descList: []
     }
   },
   mounted() {

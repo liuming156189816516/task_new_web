@@ -275,6 +275,7 @@ export default {
         ],
       },
       categoryList: [
+        { label: '全部', value: '0' },
         { label: '首页', value: '1' },
         { label: '活动', value: '2' },
       ],

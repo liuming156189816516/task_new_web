@@ -261,27 +261,19 @@ export const asyncRoutes = [
     meta: { title: '财务管理', icon: 'el-icon-office-building' },
     children: [
       {
-        path: '/billDetails',
-        component: () => import('@/views/financeManage/billDetails'),
-        name: 'billDetails',
-        meta: {
-          title: '账单明细',
-        }
-      },
-      {
-        path: '/manualCorrection',
-        component: () => import('@/views/financeManage/manualCorrection'),
-        name: 'manualCorrection',
-        meta: {
-          title: '人工修正',
-        }
-      },
-      {
         path: '/taskDetails',
         component: () => import('@/views/financeManage/taskDetails'),
         name: 'taskDetails',
         meta: {
           title: '任务明细',
+        }
+      },
+      {
+        path: '/billDetails',
+        component: () => import('@/views/financeManage/billDetails'),
+        name: 'billDetails',
+        meta: {
+          title: '账单明细',
         }
       },
       {
@@ -293,11 +285,11 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '/reportLog',
-        component: () => import('@/views/financeManage/reportLog'),
-        name: 'reportLog',
+        path: '/manualCorrection',
+        component: () => import('@/views/financeManage/manualCorrection'),
+        name: 'manualCorrection',
         meta: {
-          title: '上报日志',
+          title: '人工修正',
         }
       },
       {
@@ -306,6 +298,14 @@ export const asyncRoutes = [
         name: 'executeLog',
         meta: {
           title: '执行日志',
+        }
+      },
+      {
+        path: '/reportLog',
+        component: () => import('@/views/financeManage/reportLog'),
+        name: 'reportLog',
+        meta: {
+          title: '上报日志',
         }
       },
     ]

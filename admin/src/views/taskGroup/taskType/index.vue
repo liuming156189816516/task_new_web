@@ -265,6 +265,7 @@ export default {
         ],
       },
       categoryList: [
+        { label: '全部', value: '0' },
         { label: 'Hot', value: '1' },
         { label: 'Social', value: '2' },
         { label: 'Games', value: '3' },

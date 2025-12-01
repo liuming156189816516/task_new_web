@@ -216,7 +216,7 @@
           ref="serveTable"
           v-loading="loading"
           :data="accountDataList"
-          :height="cliHeight"
+          :height="500||cliHeight"
           :pagination-show="false"
           border
           element-loading-spinner="el-icon-loading"
@@ -670,7 +670,6 @@ export default {
     // 获取列表数据
     getTableDataFun(num) {
       this.loading = true;
-      this.queryData.page = num || this.queryData.page;
       const params = {
         group_id: this.queryData.group_id, // 分组
         account: this.queryData.account, // 账号
@@ -678,6 +677,7 @@ export default {
         account_type: this.queryData.account_type || -1,
         reason: this.queryData.reason,
         limit: this.queryData.limit,
+        page: num || this.queryData.page,
         account_role: this.queryData.account_role || -1,
       }
       getaccountinfolist(params).then(res => {

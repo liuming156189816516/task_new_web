@@ -204,6 +204,7 @@ export default {
         ],
       },
       categoryList: [
+        { label: '全部', value: '0' },
         { label: 'All', value: '1' },
         { label: 'Limited', value: '2' },
         { label: 'Newbie', value: '3' },

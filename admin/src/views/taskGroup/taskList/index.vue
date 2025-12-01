@@ -622,12 +622,14 @@ export default {
         ],
       },
       categoryList: [
+        { label: '全部', value: '0' },
         { label: 'Hot', value: '1' },
         { label: 'Social', value: '2' },
         { label: 'Games', value: '3' },
         { label: 'Others', value: '4' },
       ],
       taskTypeList: [
+        { label: '全部', value: '0' },
         { label: 'Tiktok-Like', value: '1' },
         { label: 'Tiktok-Follow', value: '2' },
         { label: 'Whatsapp-Send', value: '3' },
@@ -636,6 +638,7 @@ export default {
         { label: 'Whatsapp-Group', value: '9' },
       ],
       platformList: [
+        { label: '全部', value: '0' },
         { label: 'tiktok', value: '1' },
         { label: 'whatsapp', value: '2' },
         { label: 'instagram', value: '3' },

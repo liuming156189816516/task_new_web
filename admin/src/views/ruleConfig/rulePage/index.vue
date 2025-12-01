@@ -63,7 +63,7 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="收益规则" min-width="120" prop="type" show-overflow-tooltip>
+        <el-table-column label="规则类型" min-width="120" prop="type" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], typeList) || '-' }}
           </template>
@@ -77,7 +77,7 @@
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]">
               <div v-if="scope.row.content_type==='1'">
-                <el-tooltip class="item" effect="dark" :content="scope.row[scope.column.property]" placement="top">
+                <el-tooltip class="item" effect="dark" :content="getLabelByVal(scope.row[scope.column.property], contentList)" placement="top">
                   <span>{{ getLabelByVal(scope.row[scope.column.property], contentList) }}</span>
                 </el-tooltip>
               </div>
