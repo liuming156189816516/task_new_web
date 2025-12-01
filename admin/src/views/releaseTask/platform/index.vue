@@ -64,6 +64,22 @@
           </template>
         </el-table-column>
         <el-table-column label="平台" min-width="120" prop="platform" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'platform')">
+              <span :class="[Number(queryData.platform)>0?'dropdown_title':'']" style="color:#909399"> 平台
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in platformList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.platform}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], platformList)||'-' }}
           </template>

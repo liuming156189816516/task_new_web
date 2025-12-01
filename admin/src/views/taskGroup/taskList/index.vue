@@ -9,21 +9,6 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择任务分类">
-          <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="queryData.platform" clearable filterable placeholder="请选择平台">
-          <el-option v-for="item in platformList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
-          <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -78,16 +63,64 @@
           </template>
         </el-table-column>
         <el-table-column label="任务分类" min-width="120" prop="category" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'category')">
+              <span :class="[Number(queryData.category)>0?'dropdown_title':'']" style="color:#909399"> 任务分类
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in categoryList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.category}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="平台" min-width="120" prop="platform" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'platform')">
+              <span :class="[Number(queryData.platform)>0?'dropdown_title':'']" style="color:#909399"> 平台
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in platformList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.platform}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], platformList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="任务类型" min-width="180" prop="task_type" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'task_type')">
+              <span :class="[Number(queryData.task_type)>0?'dropdown_title':'']" style="color:#909399"> 任务类型
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in taskTypeList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.task_type}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
           </template>

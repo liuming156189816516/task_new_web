@@ -64,6 +64,22 @@
           </template>
         </el-table-column>
         <el-table-column label="规则类型" min-width="120" prop="type" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'type')">
+              <span :class="[Number(queryData.type)>0?'dropdown_title':'']" style="color:#909399"> 规则类型
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in typeList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.type}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], typeList) || '-' }}
           </template>

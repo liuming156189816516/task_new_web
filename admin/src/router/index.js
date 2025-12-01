@@ -337,7 +337,7 @@ export const asyncRoutes = [
       {
         path: '/dataManagementPage',
         component: () => import('@/views/dataManagement/dataManagementPage'),
-        name: 'platform',
+        name: 'dataManagementPage',
         meta: {
           title: '数据管理',
         }

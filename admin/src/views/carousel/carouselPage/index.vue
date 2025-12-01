@@ -7,11 +7,6 @@
         <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-select v-model="queryData.category" clearable filterable placeholder="请选择类别">
-          <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -64,6 +59,23 @@
           </template>
         </el-table-column>
         <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'category')">
+              <span :class="[Number(queryData.category)>0?'dropdown_title':'']" style="color:#909399"> 类别
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in categoryList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.category}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
           </template>
