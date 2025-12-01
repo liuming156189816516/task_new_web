@@ -131,9 +131,9 @@
           </el-table-column>
           <el-table-column label="失败原因" min-width="200" prop="remark">
             <template slot-scope="scope">
-              <el-tooltip :content="getLabelByVal(scope.row[scope.column.property], titleList)" class="item" effect="dark" placement="top">
+              <el-tooltip :content="scope.row[scope.column.property]" class="item" effect="dark" placement="top">
                 <div style="max-width: 200px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;">
-                  {{ getLabelByVal(scope.row[scope.column.property], titleList) || "-" }}
+                  {{ scope.row[scope.column.property] }}
                 </div>
               </el-tooltip>
             </template>
@@ -315,7 +315,10 @@ export default {
       getwithdrawapprovallist(params).then(res => {
         this.loading = false;
         this.factorModel.total = res.data.total;
-        this.bannerList = res.data.list || [];
+        this.bannerList = res.data.list.map(item => {
+          item.remark = item.remark ? getLabelByVal(item.remark, this.titleList) ? getLabelByVal(item.remark, this.titleList) : item.remark : '-'
+          return item
+        })
         this.bounty_amount = res.data.total_amount || 0;
       })
     },

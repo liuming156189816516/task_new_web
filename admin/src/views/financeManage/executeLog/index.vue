@@ -191,7 +191,7 @@ export default {
         { label: 'Whatsapp-Send', value: '3' },
         { label: 'Sms-Send', value: '4' },
         { label: 'Whatsapp-Send-Auto', value: '7' },
-        { label: 'Whatsapp-Group', value: '99' }
+        { label: 'Whatsapp-Group', value: '9' }
       ],
       pTypeList: [
         { label: '全部', value: '0' },
