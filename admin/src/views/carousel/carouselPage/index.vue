@@ -329,7 +329,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         title: this.queryData.title,
-        category: this.queryData.category,
+        category: this.queryData.category==='0'?'':this.queryData.category,
         release_status: Number(this.queryData.release_status),
       }
       getDataApi(params).then(res => {
