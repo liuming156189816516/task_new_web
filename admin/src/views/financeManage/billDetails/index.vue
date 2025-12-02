@@ -260,13 +260,13 @@ export default {
     handleSelectionChange(arr) {
       this.selectData = arr
       this.selectIdData = arr.map(item => {
-        return item.uid
+        return item.id
       })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
-      if (this.selectIdData.includes(row.uid)) {
+      if (this.selectIdData.includes(row.id)) {
         tableCell.toggleRowSelection(row, false);
         return;
       }

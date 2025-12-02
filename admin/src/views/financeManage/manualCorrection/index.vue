@@ -24,7 +24,7 @@
           :height="cliHeight"
           border
           element-loading-spinner="el-icon-loading"
-          row-key="ID"
+          row-key="id"
           show-body-overflow="title"
           style="width: 100%;"
           use-virtual
@@ -68,11 +68,11 @@
               {{ formatTimestamp(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
-<!--          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">-->
-<!--            <template slot-scope="scope">-->
-<!--              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>-->
-<!--            </template>-->
-<!--          </el-table-column>-->
+          <!--          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">-->
+          <!--            <template slot-scope="scope">-->
+          <!--              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>-->
+          <!--            </template>-->
+          <!--          </el-table-column>-->
         </el-table>
         <div class="layui_page">
           <el-pagination
@@ -274,13 +274,13 @@ export default {
     handleSelectionChange(arr) {
       this.selectData = arr
       this.selectIdData = arr.map(item => {
-        return item.uid
+        return item.id
       })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
-      if (this.selectIdData.includes(row.uid)) {
+      if (this.selectIdData.includes(row.id)) {
         tableCell.toggleRowSelection(row, false);
         return;
       }

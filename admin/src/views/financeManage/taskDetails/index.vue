@@ -2,7 +2,7 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-      <el-tab-pane label="任务明细" name="tabs1">
+      <el-tab-pane key="tabs1" label="任务明细" name="tabs1">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
@@ -38,7 +38,7 @@
               :height="cliHeight"
               border
               element-loading-spinner="el-icon-loading"
-              row-key="ID"
+              row-key="id"
               show-body-overflow="title"
               style="width: 100%;"
               use-virtual
@@ -166,11 +166,13 @@
                   {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
+              <!--
               <el-table-column label="任务配置" min-width="80" prop="conf" show-overflow-tooltip>
                 <template slot-scope="scope">
                   <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>
                 </template>
               </el-table-column>
+              -->
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] }}
@@ -197,7 +199,7 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="拉群任务明细" name="tabs2">
+      <el-tab-pane key="tabs2" label="拉群任务明细" name="tabs2">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
@@ -233,7 +235,7 @@
               :height="cliHeight"
               border
               element-loading-spinner="el-icon-loading"
-              row-key="ID"
+              row-key="id"
               show-body-overflow="title"
               style="width: 100%;"
               use-virtual
@@ -252,6 +254,71 @@ l_account
 
 -->
               <el-table-column label="任务ID" min-width="120" prop="task_id" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群ID" min-width="120" prop="qid" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群名称" min-width="120" prop="name" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群链接" min-width="120" prop="q_url" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群创建者" min-width="120" prop="q_create" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="管理员1进群状态" min-width="140" prop="admin_is_in_group" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? '已进群' : '未进群' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="管理员2进群状态" min-width="140" prop="admin_two_is_in_group" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? '已进群' : '未进群' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群管理员1" min-width="120" prop="admin" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群管理员1的状态" min-width="140" prop="admin_status" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群管理员2" min-width="120" prop="admin_two" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群管理员2的状态" min-width="140" prop="admin_two_status" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="初始化成员" min-width="120" prop="member_list" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="进群成员" min-width="120" prop="q_in_member_list" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="验群人数" min-width="120" prop="member_num" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
                 </template>
@@ -280,74 +347,9 @@ l_account
                   <span v-else>-</span>
                 </template>
               </el-table-column>
-              <el-table-column label="群名称" min-width="120" prop="name" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群管理员1" min-width="120" prop="admin" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群管理员1的状态" min-width="140" prop="admin_status" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群管理员2" min-width="120" prop="admin_two" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群管理员2的状态" min-width="140" prop="admin_two_status" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="管理员1进群状态" min-width="140" prop="admin_is_in_group" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? '已进群' : '未进群' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="管理员2进群状态" min-width="140" prop="admin_two_is_in_group" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? '已进群' : '未进群' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="初始化成员" min-width="120" prop="member_list" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群链接" min-width="120" prop="q_url" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群ID" min-width="120" prop="qid" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="群创建者" min-width="120" prop="q_create" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
-              <el-table-column label="进群成员" min-width="120" prop="q_in_member_list" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-                </template>
-              </el-table-column>
               <el-table-column label="脚本状态" min-width="120" prop="script_status" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ getLabelByVal(scope.row[scope.column.property], taskWsTable.scriptStatusList) }}
-                </template>
-              </el-table-column>
-              <el-table-column label="验群人数" min-width="120" prop="member_num" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
                 </template>
               </el-table-column>
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
@@ -614,13 +616,13 @@ export default {
     handleSelectionChange(arr) {
       this.selectData = arr
       this.selectIdData = arr.map(item => {
-        return item.uid
+        return item.id
       })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
-      if (this.selectIdData.includes(row.uid)) {
+      if (this.selectIdData.includes(row.id)) {
         tableCell.toggleRowSelection(row, false);
         return;
       }
@@ -651,7 +653,7 @@ export default {
         const tableBodyWrapper = this.$refs.serveTableWs.$el.querySelector('.el-table__body-wrapper');
         tableBodyWrapper.scrollTop = 0
       })
-      this.loading = true;
+      this.taskWsTable.loading = true;
       const params = {
         page: num || this.taskWsTable.queryData.page,
         limit: this.taskWsTable.queryData.limit,
@@ -666,12 +668,13 @@ export default {
 
       getTaskWsGroupRecordListApi(params).then(res => {
         if (res.msg === 'success') {
-          this.loading = false;
+          this.taskWsTable.loading = false;
           this.taskWsTable.queryData.total = res.data.total;
           this.taskWsTable.tableData = res.data.list.map(item => {
             item.script_status = item.script_status ? String(item.script_status) : '0'
             item.execute_status = item.execute_status ? String(item.execute_status) : '0'
             item.member_list = item.member_list ? JSON.parse(item.member_list).join(',') : ''
+            item.q_in_member_list = item.q_in_member_list ? JSON.parse(item.q_in_member_list).join(',') : ''
             return item
           });
         }
@@ -723,13 +726,13 @@ export default {
     handleTaskWsSelectionChange(arr) {
       this.taskWsTable.selectData = arr
       this.taskWsTable.selectIdData = arr.map(item => {
-        return item.uid
+        return item.id
       })
     },
     // 单行点击
     rowTaskWsSelectChange(row) {
       const tableCell = this.$refs.serveTableWs;
-      if (this.taskWsTable.selectIdData.includes(row.uid)) {
+      if (this.taskWsTable.selectIdData.includes(row.id)) {
         tableCell.toggleRowSelection(row, false);
         return;
       }
