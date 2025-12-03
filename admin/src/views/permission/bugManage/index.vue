@@ -81,47 +81,11 @@
           </template>
         </el-table-column>
         <el-table-column label="类型" min-width="120" prop="type" sortable="custom">
-          <!--
-          <template slot="header">
-            <el-dropdown trigger="click" style="margin-right: 10px" @command="(val) => handleRowQueryFun(val,'type')">
-              <span :class="[Number(queryData.type)>0?'dropdown_title':'']" style="color:#909399"> 类型
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in typeList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.type}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-          -->
           <template slot-scope="scope">
             <span>{{ getLabelByVal(scope.row[scope.column.property], typeList) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" min-width="120" prop="status" sortable="custom">
-          <!--
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'status')">
-              <span :class="[Number(queryData.status)>0?'dropdown_title':'']" style="color:#909399"> 状态
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in statusList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.status}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-          -->
           <template slot-scope="scope">
             <el-dropdown placement="bottom" @command="changeStatusFun($event,scope.row)">
               <el-tag effect="dark" style="border: none;cursor: pointer" :color="getLabelByVal(scope.row[scope.column.property], statusList,{ value: 'value', label: 'color' })">
@@ -137,47 +101,11 @@
           </template>
         </el-table-column>
         <el-table-column label="开发人员" min-width="120" prop="developers" sortable="custom">
-          <!--
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'developers')">
-              <span :class="[Number(queryData.developers)>0?'dropdown_title':'']" style="color:#909399"> 开发人员
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in developersList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.developers}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-          -->
           <template slot-scope="scope">
             <span>{{ getLabelByVal(scope.row[scope.column.property], developersList) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="创建者" min-width="120" prop="creator" sortable="custom">
-          <!--
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'creator')">
-              <span :class="[Number(queryData.creator)>0?'dropdown_title':'']" style="color:#909399"> 创建者
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in creatorList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.creator}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-          -->
           <template slot-scope="scope">
             <span>{{ getLabelByVal(scope.row[scope.column.property], creatorList) }}</span>
           </template>
@@ -228,22 +156,22 @@
         </el-form-item>
         <el-form-item label="类型:" prop="type">
           <el-select v-model="addModal.formData.type" clearable filterable placeholder="请选择类型:">
-            <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in typeList.filter(item => Number(item.value)>0)" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-select v-model="addModal.formData.status" clearable filterable placeholder="请选择状态:">
-            <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in statusList.filter(item => Number(item.value)>0)" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="开发人员:" prop="developers">
           <el-select v-model="addModal.formData.developers" clearable filterable placeholder="请选择开发人员">
-            <el-option v-for="item in developersList" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in developersList.filter(item => Number(item.value)>0)" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="创建者:" prop="creator">
           <el-select v-model="addModal.formData.creator" clearable filterable placeholder="请选择创建者">
-            <el-option v-for="item in creatorList" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in creatorList.filter(item => Number(item.value)>0)" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
 
@@ -373,7 +301,7 @@ export default {
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        bug_desc: this.queryData.title,
+        bug_desc: this.queryData.bug_desc,
         type: Number(this.queryData.type),
         status: Number(this.queryData.status),
         developers: Number(this.queryData.developers),
