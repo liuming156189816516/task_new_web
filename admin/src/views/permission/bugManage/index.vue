@@ -73,8 +73,8 @@
         @row-click.self="rowSelectChange"
         @sort-change="handleSortChange"
       >
+        <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-
         <el-table-column label="bug描述" min-width="120" prop="bug_desc">
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
