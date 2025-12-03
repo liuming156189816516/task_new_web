@@ -93,7 +93,7 @@
                 <i class="el-icon-arrow-down el-icon&#45;&#45;right" />
               </el-tag>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(item,index) in statusList" :key="index" :command="item.value">{{ item.label }}</el-dropdown-item>
+                <el-dropdown-item v-for="(item,index) in statusList.filter(item => Number(item.value)>0)" :key="index" :command="item.value">{{ item.label }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
 
