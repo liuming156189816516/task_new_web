@@ -204,7 +204,7 @@ export default {
     return {
       queryData: {
         page: 1,
-        limit: 10,
+        limit: 100,
         total: 0,
         bug_desc: '',
         type: '',
