@@ -152,7 +152,7 @@
     >
       <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
         <el-form-item label="bug描述:" prop="bug_desc">
-          <el-input v-model="addModal.formData.bug_desc" placeholder="请输入bug描述" @input="changeInput" />
+          <el-input v-model="addModal.formData.bug_desc" type="textarea" :rows="5" placeholder="请输入bug描述" @input="changeInput" />
         </el-form-item>
         <el-form-item label="类型:" prop="type">
           <el-select v-model="addModal.formData.type" clearable filterable placeholder="请选择类型:">
