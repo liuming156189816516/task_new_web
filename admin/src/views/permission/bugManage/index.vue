@@ -89,7 +89,7 @@
           <template slot-scope="scope">
             <el-dropdown placement="bottom" @command="changeStatusFun($event,scope.row)">
               <el-tag effect="dark" style="border: none;cursor: pointer" :color="getLabelByVal(scope.row[scope.column.property], statusList,{ value: 'value', label: 'color' })">
-                {{ getLabelByVal(scope.row[scope.column.property], statusList) }}
+                {{ getLabelByVal(scope.row[scope.column.property], statusList.filter(item => Number(item.value)>0)) }}
                 <i class="el-icon-arrow-down el-icon&#45;&#45;right" />
               </el-tag>
               <el-dropdown-menu slot="dropdown">
