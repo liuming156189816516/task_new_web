@@ -7,6 +7,27 @@
         <el-input v-model="queryData.bug_desc" size="small" clearable placeholder="请输入bug描述" />
       </el-form-item>
       <el-form-item>
+        <el-select v-model="queryData.type" clearable filterable placeholder="请选择类型">
+          <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="queryData.status" clearable filterable placeholder="请选择状态">
+          <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="queryData.developers" clearable filterable placeholder="请选择开发人员">
+          <el-option v-for="item in developersList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select v-model="queryData.creator" clearable filterable placeholder="请选择创建者">
+          <el-option v-for="item in creatorList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -298,11 +319,13 @@ export default {
         ],
       },
       typeList: [
+        { label: '全部',value: '0' },
         { label: '前端',value: '1' },
         { label: '后端',value: '2' },
         { label: 'app',value: '3' },
       ],
       statusList: [
+        { label: '全部',value: '0' },
         { label: '待解决',value: '1' ,color: '#E6A23C' },
         { label: '解决中',value: '2' ,color: '#409EFF' },
         { label: '已解决',value: '3' ,color: '#67C23A' },
@@ -310,6 +333,7 @@ export default {
         { label: '备忘',value: '5' ,color: '#DCDFE6' },
       ],
       developersList: [
+        { label: '全部',value: '0' },
         { label: '富',value: '1' },
         { label: '亮',value: '2' },
         { label: '明',value: '3' },
@@ -318,6 +342,7 @@ export default {
         { label: '薰',value: '6' },
       ],
       creatorList: [
+        { label: '全部',value: '0' },
         { label: '富',value: '1' },
         { label: '亮',value: '2' },
         { label: '明',value: '3' },
