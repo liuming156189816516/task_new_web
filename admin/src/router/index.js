@@ -421,7 +421,7 @@ export const asyncRoutes = [
       }
     ]
   },
-  //
+
   // 权限配置
   {
     path: '/permission',
@@ -454,6 +454,14 @@ export const asyncRoutes = [
         name: 'menuManage',
         meta: {
           title: '菜单管理'
+        }
+      },
+      {
+        path: '/bugManage',
+        component: () => import('@/views/permission/bugManage'),
+        name: 'bugManage',
+        meta: {
+          title: 'bug管理'
         }
       },
     ]

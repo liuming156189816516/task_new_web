@@ -295,7 +295,7 @@ l_account
               </el-table-column>
               <el-table-column label="群管理员1的状态" min-width="140" prop="admin_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
+                  {{ scope.row[scope.column.property]===1 ? '已设置' : scope.row[scope.column.property]===0? '未设置':'-' }}
                 </template>
               </el-table-column>
               <el-table-column label="群管理员2" min-width="120" prop="admin_two" show-overflow-tooltip>
@@ -305,7 +305,7 @@ l_account
               </el-table-column>
               <el-table-column label="群管理员2的状态" min-width="140" prop="admin_two_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]==='1' ? '已设置' : scope.row[scope.column.property]==='0'? '未设置':'-' }}
+                  {{ scope.row[scope.column.property]===1 ? '已设置' : scope.row[scope.column.property]===0? '未设置':'-' }}
                 </template>
               </el-table-column>
               <el-table-column label="初始化成员" min-width="120" prop="member_list" show-overflow-tooltip>
@@ -320,7 +320,7 @@ l_account
               </el-table-column>
               <el-table-column label="验群人数" min-width="120" prop="member_num" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                  {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
               <el-table-column label="执行状态" min-width="120" prop="execute_status" show-overflow-tooltip>
@@ -514,6 +514,7 @@ export default {
           { label: '全部', value: '0' },
           { label: 'Running', value: '1' },
           { label: 'Timeout', value: '2' },
+          { label: 'Err', value: '3' },
           { label: 'Completed', value: '4' },
         ]
       }

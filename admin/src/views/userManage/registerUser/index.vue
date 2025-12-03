@@ -32,7 +32,7 @@
           :height="cliHeight"
           border
           element-loading-spinner="el-icon-loading"
-          row-key="ID"
+          row-key="uid"
           show-body-overflow="title"
           style="width: 100%;"
           use-virtual
@@ -250,12 +250,12 @@ export default {
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
-      this.selectIdData = arr.map(item => { return item.id })
+      this.selectIdData = arr.map(item => { return item.uid })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
-      if (this.selectIdData.includes(row.id)) {
+      if (this.selectIdData.includes(row.uid)) {
         tableCell.toggleRowSelection(row,false);
         return;
       }

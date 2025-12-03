@@ -120,7 +120,7 @@ export default {
           } else if (this.actionModal.type === 'edit') {
             editDetailsDataApi(formData).then(res => {
               if (res.msg === 'success') {
-                successTips(this, 'success', '編輯成功！')
+                successTips(this, 'success', '编辑成功！')
                 this.$emit('updateDetailDataFun')
               } else {
                 this.actionModal.isLoading = false

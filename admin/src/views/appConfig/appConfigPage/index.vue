@@ -323,7 +323,7 @@ export default {
           } else if (this.addModal.type === 'edit') {
             editDataApi(formData).then(res => {
               if (res.msg === 'success') {
-                successTips(this, 'success', '編輯成功！')
+                successTips(this, 'success', '编辑成功！')
                 this.closeModal()
                 this.getDataListFun()
               }

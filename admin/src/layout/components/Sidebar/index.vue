@@ -66,3 +66,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.scrollbar-wrapper{
+  height:calc( 100% - 50px);
+}
+</style>

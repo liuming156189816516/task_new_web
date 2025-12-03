@@ -215,7 +215,7 @@ export default {
           if (this.addModal.title === '调整积分') {
             editAmountApi(formData).then(res => {
               if (res.msg === 'success') {
-                successTips(this, 'success', '編輯成功！')
+                successTips(this, 'success', '编辑成功！')
                 this.closeModal()
                 this.getDataListFun()
               }

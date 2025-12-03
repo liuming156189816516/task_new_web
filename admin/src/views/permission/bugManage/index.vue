@@ -1,10 +1,10 @@
-<!-- 轮播图 -->
+<!-- bug管理 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.title" clearable placeholder="请输入标题" @input="changeInput" />
+        <el-input v-model="queryData.bug_desc" size="small" clearable placeholder="请输入bug描述" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -44,109 +44,142 @@
         :height="cliHeight"
         border
         element-loading-spinner="el-icon-loading"
-        row-key="ID"
+        row-key="id"
         show-body-overflow="title"
         style="width: 100%;"
         use-virtual
         @selection-change="handleSelectionChange"
-        @row-click="rowSelectChange"
+        @row-click.self="rowSelectChange"
+        @sort-change="handleSortChange"
       >
-        <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="标题" min-width="120" prop="title" show-overflow-tooltip>
+
+        <el-table-column label="bug描述" min-width="120" prop="bug_desc">
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="类别" min-width="120" prop="category" show-overflow-tooltip>
+        <el-table-column label="类型" min-width="120" prop="type" sortable="custom">
+          <!--
           <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'category')">
-              <span :class="[Number(queryData.category)>0?'dropdown_title':'']" style="color:#909399"> 类别
+            <el-dropdown trigger="click" style="margin-right: 10px" @command="(val) => handleRowQueryFun(val,'type')">
+              <span :class="[Number(queryData.type)>0?'dropdown_title':'']" style="color:#909399"> 类型
                 <i class="el-icon-arrow-down el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                  v-for="(item,index) in categoryList"
+                  v-for="(item,index) in typeList"
                   :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.category}"
+                  :class="{'dropdown_selected':item.value===queryData.type}"
                   :command="item.value"
                 >{{ item.label }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
+          -->
+          <template slot-scope="scope">
+            <span>{{ getLabelByVal(scope.row[scope.column.property], typeList) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" min-width="120" prop="status" sortable="custom">
+          <!--
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'status')">
+              <span :class="[Number(queryData.status)>0?'dropdown_title':'']" style="color:#909399"> 状态
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in statusList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.status}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+          -->
+          <template slot-scope="scope">
+            <el-dropdown placement="bottom" @command="changeStatusFun($event,scope.row)">
+              <el-tag effect="dark" style="border: none;cursor: pointer" :color="getLabelByVal(scope.row[scope.column.property], statusList,{ value: 'value', label: 'color' })">
+                {{ getLabelByVal(scope.row[scope.column.property], statusList) }}
+                <i class="el-icon-arrow-down el-icon&#45;&#45;right" />
+              </el-tag>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-for="(item,index) in statusList" :key="index" :command="item.value">{{ item.label }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
 
-          <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+            <span />
           </template>
         </el-table-column>
-        <el-table-column label="跳转类型" min-width="120" prop="deep_type" show-overflow-tooltip>
+        <el-table-column label="开发人员" min-width="120" prop="developers" sortable="custom">
+          <!--
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'developers')">
+              <span :class="[Number(queryData.developers)>0?'dropdown_title':'']" style="color:#909399"> 开发人员
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in developersList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.developers}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+          -->
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], deepTypeList) }}
+            <span>{{ getLabelByVal(scope.row[scope.column.property], developersList) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="跳转地址" min-width="120" prop="deeplink" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+        <el-table-column label="创建者" min-width="120" prop="creator" sortable="custom">
+          <!--
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'creator')">
+              <span :class="[Number(queryData.creator)>0?'dropdown_title':'']" style="color:#909399"> 创建者
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in creatorList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.creator}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
-        </el-table-column>
-        <el-table-column label="正常展示" min-width="120" prop="img" show-overflow-tooltip>
+          -->
           <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img')">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
-            </div>
-            <div v-else>-</div>
-          </template>
-        </el-table-column>
-        <el-table-column label="深色展示" min-width="120" prop="img_dark" show-overflow-tooltip>
-          <template slot-scope="scope">
-            <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'img_dark')">
-              <el-image :src="scope.row[scope.column.property]" style="width: 80px;height: 30px;cursor: pointer;" />
-            </div>
-            <div v-else>-</div>
+            <span>{{ getLabelByVal(scope.row[scope.column.property], creatorList) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ formatTimestamp(scope.row.itime) }}
+            {{ formatTimestamp(scope.row[scope.column.property]) }}
           </template>
         </el-table-column>
-        <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
-              <span :class="[Number(queryData.release_status)>0?'dropdown_title':'']" style="color:#909399"> 发布状态
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in releaseStatusList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.release_status}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
+        <el-table-column label="更新时间" min-width="120" prop="ptime" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList) }}
+            {{ formatTimestamp(scope.row[scope.column.property]) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
+        <el-table-column label="操作" prop="operation" show-overflow-tooltip width="210">
           <template slot-scope="scope">
-            <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
-              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
-            </div>
-            <div v-if="scope.row.release_status==='3'" class="action-btn">
-              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
-            </div>
-            <div v-if="scope.row.release_status !=='3'" class="action-btn">
+            <div v-if="scope.row.release_status!=='3'" class="action-btn">
               <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
-      <div v-show="false" class="layui_page">
+      <div class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -168,50 +201,29 @@
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
-        <el-form-item label="标题:" prop="title">
-          <el-input v-model="addModal.formData.title" placeholder="请输入标题" @input="changeInput" />
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
+        <el-form-item label="bug描述:" prop="bug_desc">
+          <el-input v-model="addModal.formData.bug_desc" placeholder="请输入bug描述" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="类别:" prop="category">
-          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择类别">
-            <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
+        <el-form-item label="类型:" prop="type">
+          <el-select v-model="addModal.formData.type" clearable filterable placeholder="请选择类型:">
+            <el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="跳转类型:" prop="deep_type">
-          <el-select v-model="addModal.formData.deep_type" clearable filterable placeholder="请选择跳转类型">
-            <el-option v-for="item in deepTypeList" :key="item.value" :label="item.label" :value="item.value" />
+        <el-form-item label="状态:" prop="status">
+          <el-select v-model="addModal.formData.status" clearable filterable placeholder="请选择状态:">
+            <el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="跳转地址:" prop="deeplink">
-          <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
+        <el-form-item label="开发人员:" prop="developers">
+          <el-select v-model="addModal.formData.developers" clearable filterable placeholder="请选择开发人员">
+            <el-option v-for="item in developersList" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="正常展示:" prop="img">
-          <div v-if="addModal.formData.img" class="imgBox">
-            <el-image :src="addModal.formData.img" style="width: 120px;height: 120px" />
-            <i class="el-icon-delete icon_del" @click="delImgFun('img')" />
-          </div>
-          <UploadFiles
-            v-else
-            ref="refUploadFiles"
-            :format="['png','jpg','jpeg','webp']"
-            :max-size="100"
-            kay="img"
-            @uploadSuccess="uploadSuccess"
-          />
-        </el-form-item>
-        <el-form-item label="深色展示:" prop="img_dark">
-          <div v-if="addModal.formData.img_dark" class="imgBox">
-            <el-image :src="addModal.formData.img_dark" style="width: 120px;height: 120px" />
-            <i class="el-icon-delete icon_del" @click="delImgFun('img_dark')" />
-          </div>
-          <UploadFiles
-            v-else
-            ref="refUploadFiles"
-            :format="['png','jpg','jpeg','webp']"
-            :max-size="100"
-            kay="img_dark"
-            @uploadSuccess="uploadSuccess"
-          />
+        <el-form-item label="创建者:" prop="creator">
+          <el-select v-model="addModal.formData.creator" clearable filterable placeholder="请选择创建者">
+            <el-option v-for="item in creatorList" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
 
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
@@ -221,35 +233,36 @@
       </el-form>
     </el-dialog>
 
-    <!-- 图片预览 -->
-    <ImagePreview ref="refImagePreview" v-model="imgData.show" :src="imgData.scr" />
   </div>
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi, editSortDataApi ,editReleaseStatusApi } from './api';
+import {
+  getDataApi,
+  addDataApi,
+  editDataApi,
+  delDataApi,
+} from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
-import UploadFiles from '@/components/UploadFiles/UploadFiles'
-import ImagePreview from '@/components/ImagePreview'
-import { uploadFileApi } from '@/api/common';
-import sortablejs from 'sortablejs';
 
 export default {
   name: 'AppConfigPage',
   components: {
-    UploadFiles,
-    ImagePreview
+
   },
   data() {
     return {
       queryData: {
         page: 1,
-        limit: 1000,
+        limit: 10,
         total: 0,
-        title: '',
-        category: '',
-        release_status: null,
+        bug_desc: '',
+        type: '',
+        status: '',
+        developers: '',
+        creator: '',
+        sort: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -258,20 +271,18 @@ export default {
         show: false,
         type: 'add',
         formData: {
-          title: '',
-          category: '',
-          deep_type: '',
-          deeplink: '',
-          img: '',
-          img_dark: '',
+          bug_desc: '',
+          type: '',
+          status: '',
+          developers: '',
+          creator: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
-          deep_type: [{ required: true, message: '请选择跳转类型！', trigger: 'change' }],
-          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
-          img: [{ required: true, message: '请上传图片！', trigger: 'change' }],
-          img_dark: [{ required: false, message: '请上传图片！', trigger: 'change' }],
+          bug_desc: [{ required: true, message: '请输入标题！', trigger: 'change' }],
+          type: [{ required: true, message: '请选择类型！', trigger: 'change' }],
+          status: [{ required: true, message: '请选择状态！', trigger: 'change' }],
+          developers: [{ required: true, message: '请选择开发人员！', trigger: 'change' }],
+          creator: [{ required: true, message: '请选择创建者！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -286,23 +297,33 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
-      categoryList: [
-        { label: '全部', value: '0' },
-        { label: '首页', value: '1' },
-        { label: '活动', value: '2' },
+      typeList: [
+        { label: '前端',value: '1' },
+        { label: '后端',value: '2' },
+        { label: 'app',value: '3' },
       ],
-      deepTypeList: [
-        { label: '内部跳转', value: 'nav' },
+      statusList: [
+        { label: '待解决',value: '1' ,color: '#E6A23C' },
+        { label: '解决中',value: '2' ,color: '#409EFF' },
+        { label: '已解决',value: '3' ,color: '#67C23A' },
+        { label: '已完成',value: '4' ,color: '#909399' },
+        { label: '备忘',value: '5' ,color: '#DCDFE6' },
       ],
-      imgData: {
-        show: false,
-        scr: ''
-      },
-      releaseStatusList: [
-        { label: '全部', value: '0' ,type: 'primary' },
-        { label: '未发布', value: '1' ,type: 'primary' },
-        { label: '已下架', value: '2' ,type: 'primary' },
-        { label: '已发布', value: '3' ,type: 'success' },
+      developersList: [
+        { label: '富',value: '1' },
+        { label: '亮',value: '2' },
+        { label: '明',value: '3' },
+        { label: '杜',value: '4' },
+        { label: '莫',value: '5' },
+        { label: '薰',value: '6' },
+      ],
+      creatorList: [
+        { label: '富',value: '1' },
+        { label: '亮',value: '2' },
+        { label: '明',value: '3' },
+        { label: '杜',value: '4' },
+        { label: '莫',value: '5' },
+        { label: '薰',value: '6' },
       ],
     }
   },
@@ -310,7 +331,6 @@ export default {
     this.getDataListFun(); // 获取列表
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
-    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -328,9 +348,12 @@ export default {
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        title: this.queryData.title,
-        category: this.queryData.category==='0'?'':this.queryData.category,
-        release_status: Number(this.queryData.release_status),
+        bug_desc: this.queryData.title,
+        type: Number(this.queryData.type),
+        status: Number(this.queryData.status),
+        developers: Number(this.queryData.developers),
+        creator: Number(this.queryData.creator),
+        sort: this.queryData.sort,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -338,7 +361,10 @@ export default {
           this.queryData.total = res.data.total;
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
-            item.release_status = item.release_status ? String(item.release_status) : ''
+            item.type = item.type ? String(item.type) : ''
+            item.status = item.status ? String(item.status) : ''
+            item.developers = item.developers ? String(item.developers) : ''
+            item.creator = item.creator ? String(item.creator) : ''
             return item
           })
         }
@@ -355,27 +381,19 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
-    // 修改发布
-    changeReleaseStatusFun(form,val) {
-      const massage = val === 2 ? '下架' : '发布'
-      this.$confirm('确认' + massage + '吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const params = {
-          id: form.id,
-          type: val
+    // 编辑 状态
+    changeStatusFun(val,row) {
+      const formData = deepClone(row)
+      formData.type = formData.type ? Number(formData.type) : 0
+      formData.status = val ? Number(val) : 0
+      formData.developers = formData.developers ? Number(formData.developers) : 0
+      formData.creator = formData.creator ? Number(formData.creator) : 0
+      editDataApi(formData).then(res => {
+        if (res.msg === 'success') {
+          successTips(this, 'success', '编辑成功！')
+          this.getDataListFun()
         }
-        editReleaseStatusApi(params).then(res => {
-          if (res.msg === 'success') {
-            successTips(this, 'success', massage + '成功!')
-            this.getDataListFun()
-          }
-        })
-      }).catch(() => {
-
-      });
+      })
     },
     // 新建 编辑 保存
     addSubmit() {
@@ -383,7 +401,10 @@ export default {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          // formData.sort = formData.sort ? Number(formData.sort) : 0
+          formData.type = formData.type ? Number(formData.type) : 0
+          formData.status = formData.status ? Number(formData.status) : 0
+          formData.developers = formData.developers ? Number(formData.developers) : 0
+          formData.creator = formData.creator ? Number(formData.creator) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -404,39 +425,17 @@ export default {
         }
       })
     },
-    // 上传成功回调
-    uploadSuccess(file, kay) {
-      console.log('file',file)
-      console.log('kay',kay)
-      const formData = new FormData();
-      formData.append('directory', 'carousel');
-      formData.append('file', file);
-      uploadFileApi(formData).then(res => {
-        if (res.msg === 'success') {
-          this.addModal.formData[kay] = res.data.url
-          successTips(this, 'success', '上传成功！')
-          if (this.$refs.refUploadFiles) {
-            this.$refs.refUploadFiles.resetFileFun()
-          }
-        }
-      })
-    },
-    // 删除图片
-    delImgFun(kay) {
-      this.addModal.formData[kay] = ''
-    },
     // 关闭新建
     closeModal() {
       this.addModal.show = false
       this.addModal.isLoading = false
       this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        title: '',
-        category: '',
-        deep_type: '',
-        deeplink: '',
-        img: '',
-        img_dark: '',
+        bug_desc: '',
+        type: '',
+        status: '',
+        developers: '',
+        creator: '',
       }
     },
     // 批量操作
@@ -485,37 +484,9 @@ export default {
         return item.id
       })
     },
-    // 拖拽
-    initDragSortTableRow() {
-      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
-      sortablejs.create(el, {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        setData: (dataTransfer) => {
-        },
-        onEnd: ({ newIndex, oldIndex }) => {
-          if (newIndex === oldIndex) return;
-          let arr = deepClone(this.tableData)
-          const movedItem = arr.splice(oldIndex, 1)[0];
-          arr.splice(newIndex, 0, movedItem);
-          arr = arr.map((item, index) => ({
-            ...item,
-            sort: index + 1,
-          }));
-          const arrID = arr.map((item, index) => {
-            return item.id
-          })
-          editSortDataApi({ ids: arrID }).then(res => {
-            if (res.msg === 'success') {
-              this.getDataListFun()
-            }
-          })
-        },
-      });
-    },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {
@@ -526,16 +497,62 @@ export default {
       }
       tableCell.toggleRowSelection(row, true);
     },
+    // 筛选项
+    handleSortChange({ column, prop, order }) {
+      if (order === 'descending') { // 下降 = 倒序
+        this.queryData.sort = '-' + prop
+        /*
+        switch (prop) {
+          case 'consumption_num': // 消耗量
+            this.queryData.sort = '-' + prop
+            break;
+          case 'exposure_num': // 曝光量
+            this.queryData.sort = '-' + prop
+            break;
+          case 'click_num': // 点击量
+            this.queryData.sort = '-' + prop
+            break;
+          case 'watch_rate': // 完播率
+            this.queryData.sort = '-' + prop
+            break;
+        }
+        */
+      } else if (order === 'ascending') { // 上升 = 正序
+        this.queryData.sort = prop
+        /*
+        switch (prop) {
+          case 'consumption_num': // 消耗量
+            this.queryData.sort = prop
+            break;
+          case 'exposure_num': // 曝光量
+            this.queryData.sort = prop
+            break;
+          case 'click_num': // 点击量
+            this.queryData.sort = prop
+            break;
+          case 'watch_rate': // 完播率
+            this.queryData.sort = prop
+            break;
+        }
+         */
+      } else {
+        this.queryData.sort = ''
+      }
+      this.getDataListFun()
+    },
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
       this.queryData = {
         page: 1,
-        limit: 1000,
+        limit: 10,
         total: 0,
-        title: '',
-        category: '',
-        release_status: null,
+        bug_desc: '',
+        type: '',
+        status: '',
+        developers: '',
+        creator: '',
+        sort: '',
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
@@ -564,11 +581,6 @@ export default {
       // else if (type === 'modal') {
       //
       // }
-    },
-    // 打开预览图片
-    openImageViewFun(row, kay) {
-      this.imgData.show = true
-      this.imgData.scr = row[kay]
     },
     // 处理打开输入框无法输入问题
     changeInput() {

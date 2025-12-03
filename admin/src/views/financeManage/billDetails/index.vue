@@ -34,7 +34,7 @@
           :height="cliHeight"
           border
           element-loading-spinner="el-icon-loading"
-          row-key="task_record_id"
+          row-key="id"
           show-body-overflow="title"
           style="width: 100%;"
           use-virtual
@@ -260,13 +260,13 @@ export default {
     handleSelectionChange(arr) {
       this.selectData = arr
       this.selectIdData = arr.map(item => {
-        return item.task_record_id
+        return item.id
       })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
-      if (this.selectIdData.includes(row.task_record_id)) {
+      if (this.selectIdData.includes(row.id)) {
         tableCell.toggleRowSelection(row, false);
         return;
       }
