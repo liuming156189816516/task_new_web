@@ -26,7 +26,11 @@
           <el-option v-for="item in creatorList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-
+      <el-form-item>
+        <el-select v-model="queryData.del_status" clearable filterable placeholder="请选择删除标志">
+          <el-option v-for="item in delStatusList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
@@ -217,6 +221,7 @@ export default {
         developers: '',
         creator: '',
         sort: '',
+        del_status:''
       },
       pageOption: resetPage(),
       tableData: [],
@@ -286,7 +291,7 @@ export default {
       delStatusList: [
         { label: '全部',value: '-1' },
         { label: '正常',value: '0' },
-        { label: '删除',value: '1' },
+        { label: '已删除',value: '1' },
       ]
     }
   },
@@ -316,6 +321,7 @@ export default {
         status: Number(this.queryData.status),
         developers: Number(this.queryData.developers),
         creator: Number(this.queryData.creator),
+        del_status: Number(this.queryData.del_status),
         sort: this.queryData.sort,
       }
       getDataApi(params).then(res => {
