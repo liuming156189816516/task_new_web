@@ -334,7 +334,7 @@ export default {
             item.status = item.status ? String(item.status) : ''
             item.developers = item.developers ? String(item.developers) : ''
             item.creator = item.creator ? String(item.creator) : ''
-            item.del_status = item.del_status ? String(item.del_status) : ''
+            item.del_status = item.del_status ? String(item.del_status) : '0'
             return item
           })
         }
