@@ -110,6 +110,11 @@
             <span>{{ getLabelByVal(scope.row[scope.column.property], creatorList) }}</span>
           </template>
         </el-table-column>
+        <el-table-column label="删除标志" min-width="120" prop="del_status">
+          <template slot-scope="scope">
+            <span>{{ getLabelByVal(scope.row[scope.column.property], delStatusList) ||'-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ formatTimestamp(scope.row[scope.column.property]) }}
@@ -278,6 +283,11 @@ export default {
         { label: '莫',value: '5' },
         { label: '薰',value: '6' },
       ],
+      delStatusList: [
+        { label: '全部',value: '-1' },
+        { label: '正常',value: '0' },
+        { label: '删除',value: '1' },
+      ]
     }
   },
   mounted() {
@@ -318,6 +328,7 @@ export default {
             item.status = item.status ? String(item.status) : ''
             item.developers = item.developers ? String(item.developers) : ''
             item.creator = item.creator ? String(item.creator) : ''
+            item.del_status = item.del_status ? String(item.del_status) : ''
             return item
           })
         }
