@@ -352,9 +352,11 @@ l_account
                   {{ getLabelByVal(scope.row[scope.column.property], taskWsTable.scriptStatusList) }}
                 </template>
               </el-table-column>
-              <el-table-column label="消息提示" min-width="120" prop="msg_str" show-overflow-tooltip>
+              <el-table-column label="消息提示" min-width="120" prop="msg_str">
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                  <el-tooltip class="item" effect="dark" :content="getLabelByVal(scope.row[scope.column.property], titleList)" placement="top">
+                    <span>{{ getLabelByVal(scope.row[scope.column.property], titleList) }}</span>
+                  </el-tooltip>
                 </template>
               </el-table-column>
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
@@ -427,8 +429,9 @@ l_account
 
 <script>
 import { resetPage, getLabelByVal, deepClone } from '@/utils/index'
-import { formatTimestamp } from '@/filters'
+import { formatTimestamp, getLanguagePageList } from '@/filters'
 import { getTaskRecordListApi, getTaskWsGroupRecordListApi } from './api'
+import { getLanguagePageListApi } from '@/api/common';
 
 export default {
   data() {
@@ -522,13 +525,15 @@ export default {
           { label: 'Err', value: '3' },
           { label: 'Completed', value: '4' },
         ]
-      }
+      },
+      titleList: []
     }
   },
   computed: {},
   watch: {},
   mounted() {
     this.getDataListFun();
+    this.getLanguagePageListFun()
   },
   created() {
     this.setFullHeight();
@@ -744,7 +749,15 @@ export default {
       }
       tableCell.toggleRowSelection(row, true);
     },
-
+    // 获取国际化
+    getLanguagePageListFun() {
+      getLanguagePageListApi({}).then(res => {
+        if (res.msg === 'success') {
+          const kay = 'server.enums'
+          this.titleList = getLanguagePageList(res.data.content,kay)
+        }
+      })
+    },
     // 窗口高度
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 280;
