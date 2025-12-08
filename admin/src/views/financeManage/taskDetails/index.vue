@@ -352,6 +352,11 @@ l_account
                   {{ getLabelByVal(scope.row[scope.column.property], taskWsTable.scriptStatusList) }}
                 </template>
               </el-table-column>
+              <el-table-column label="消息提示" min-width="120" prop="msg_str" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] }}
