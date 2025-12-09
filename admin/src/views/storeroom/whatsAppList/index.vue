@@ -237,6 +237,7 @@
             </template>
           </u-table-column>
           <u-table-column label="账号" prop="account" width="120" />
+          <u-table-column label="LID" prop="lid" width="150" show-overflow-tooltip/>
           <u-table-column label="昵称" min-width="100" prop="nick_name">
             <template slot-scope="scope">
               {{ scope.row.nick_name ? scope.row.nick_name : "-" }}
