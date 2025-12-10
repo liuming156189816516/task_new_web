@@ -4,7 +4,7 @@
       <el-button class="custom_file">选择文件
         <input ref="fileInputRef" title=" " type="file" @change="fileInputFun">
       </el-button>
-      <el-button :disabled="uploadIng" class="startUpload" @click="uploadFile">开始上传文件</el-button>
+      <el-button :disabled="uploadIng" class="startUpload" :loading="uploadIng" @click="uploadFile">开始上传文件</el-button>
     </div>
     <div v-if="successFileList.length" class="successFileNameList">
       <div v-for="(item,index) in successFileList" :key="index" class="fileItem">
@@ -96,12 +96,18 @@ export default {
   },
   computed: {},
   watch: {
-    defaultFileList(value) {
-      if (value.length) {
-        this.successFileList = value
-      }
-    },
-    immediate: true
+    defaultFileList: {
+      handler(value) {
+        console.log('value', value)
+        if (value && value.length) {
+          this.successFileList = value
+        } else {
+          this.successFileList = []
+        }
+      },
+      deep: true,
+      immediate: true
+    }
   },
   methods: {
     // 上传文件
@@ -210,12 +216,6 @@ export default {
       console.log('上传成功回调', data)
       this.successFileList.push(data)
       this.percentage = 100
-    },
-    // 删除
-    delDataFun(item, index) {
-      this.successFileList = []
-      this.fileList = []
-      this.percentage = 0
       this.uploadIng = false
     },
     // 查看
@@ -306,16 +306,17 @@ export default {
   }
 
   .successFileNameList {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+
     .fileItem {
       display: flex;
       justify-content: space-between;
       align-items: center;
       height: 30px;
       font-size: 12px;
-      width: 100%;
       padding: 0 10px;
-      border-radius: 8px;
-      background: rgba(108, 117, 125, 0.1);
 
         .fileIcon{
           margin-right: 15px;
