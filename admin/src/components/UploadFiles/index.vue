@@ -1,30 +1,23 @@
 <template>
-  <div class="container" :style="{'padding':!successFileList.length?'10px':'0'}">
+  <div :style="{'padding':!successFileList.length?'10px':'0'}" class="container">
     <div v-if="!successFileList.length" class="toolBox">
       <el-button class="custom_file">选择文件
         <input ref="fileInputRef" title=" " type="file" @change="fileInputFun">
       </el-button>
-      <el-button class="startUpload" :disabled="uploadIng" @click="uploadFile">开始上传文件</el-button>
+      <el-button :disabled="uploadIng" class="startUpload" @click="uploadFile">开始上传文件</el-button>
     </div>
     <div v-if="successFileList.length" class="successFileNameList">
       <div v-for="(item,index) in successFileList" :key="index" class="fileItem">
-        <div class="">
-          {{ item.file_name }}
-        </div>
-        <div class="iconBox">
-          <!--          <i class="el-icon-remove del" @click="delDataFun(item,index)" />-->
-          <!--          <i class="el-icon-view see" @click="seeDataFun(item,index)" />-->
-          <!--          <i class="el-icon-download download " @click="downloadDataFun(item,index)" />-->
-        </div>
+        <div class="fileIcon"><i class="el-icon-video-camera-solid file_content" @click.stop="openVideoFn(item)" /></div>
       </div>
     </div>
     <div v-else class="fileNameList">
       <div v-for="(item,index) in fileList" :key="index" class="fileItem">
-        <div> {{ item.name }}</div>
+        <div> {{ item[fileConf.name] }}</div>
         <div> 文件大小：{{ item.fileSize }}</div>
       </div>
     </div>
-    <div v-if="!successFileList.length" class="progressBox">
+    <div v-if="!successFileList.length && showProgress" class="progressBox">
       <el-progress
         :percentage="percentage"
         :stroke-width="26"
@@ -36,11 +29,12 @@
 </template>
 
 <script>
-import { mergeFragmentFileApi, uploadFileApi, uploadSliceFileApi } from '@/api/common.js'
+import { mergeFragmentFileApi, uploadSliceFileApi } from '@/api/common.js'
 import { successTips } from '@/utils';
 
 export default {
   name: 'UploadFiles2',
+  components: { },
   props: {
     // 单个文件最大大小（MB）
     maxSize: {
@@ -68,7 +62,19 @@ export default {
         return []
       }
     },
-
+    fileConf: {
+      type: Object,
+      default: () => {
+        return {
+          url: 'url',
+          name: 'name'
+        }
+      }
+    },
+    showProgress: {
+      type: Boolean,
+      required: false
+    }
   },
   data() {
     return {
@@ -197,16 +203,13 @@ export default {
     },
     // 上传视频
     uploadFileFun(file) {
-      const formData = new FormData();
-      formData.append('file', file);
-      uploadFileApi(formData).then(res => {
-        if (res.msg === 'success') {
-          this.successFileList.push(res.data)
-          this.percentage = 100
-          successTips(this, 'success', '上传成功！')
-          this.$emit('uploadSuccess', res.data)
-        }
-      })
+      this.$emit('uploadSuccess', file)
+    },
+    // 上传成功回调
+    uploadSuccessFun(data) {
+      console.log('上传成功回调', data)
+      this.successFileList.push(data)
+      this.percentage = 100
     },
     // 删除
     delDataFun(item, index) {
@@ -227,25 +230,10 @@ export default {
         });
       }
     },
-    // 下载
-    downloadDataFun(item, index) {
-      const fileExtension = item.file_name.match(/\.[^.]+$/)[0].slice(1);
-      let url = ''
-      if (fileExtension === 'zip') {
-        url = `${process.env.VUE_APP_BASE_PATH}:${process.env.VUE_APP_SERVER_PORT}` + item.url
-      } else {
-        url = item.url
-      }
 
-      const link = document.createElement('a');
-      const body = document.querySelector('body');
-      link.href = url;
-      link.setAttribute('download',item.file_name)
-      link.style.display = 'none';
-      body.appendChild(link);
-      link.click();
-      body.removeChild(link);
-      window.URL.revokeObjectURL(link.href);
+    // 打开视频弹窗
+    openVideoFn(row) {
+      this.$emit('openVideoFn',row)
     },
     // 清空数据
     resetFileFun() {
@@ -261,7 +249,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .container {
   width: 100%;
   margin: 0 auto;
@@ -275,7 +262,12 @@ export default {
   .toolBox {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 20px;
+
+    .custom_file {
+      margin: 0;
+    }
 
     .startUpload {
       height: 32px;
@@ -325,25 +317,12 @@ export default {
       border-radius: 8px;
       background: rgba(108, 117, 125, 0.1);
 
-      .iconBox {
-        i {
-          font-size: 16px;
-          cursor: pointer;
-          margin-right: 10px;
+        .fileIcon{
+          margin-right: 15px;
+          &:last-of-type{
+            margin-right: 0;
+          }
         }
-
-        .del {
-          color: red;
-        }
-
-        .see {
-          color: #67c23a;
-        }
-
-        .download {
-          color: rgb(64, 158, 255);
-        }
-      }
     }
 
   }
@@ -359,4 +338,12 @@ export default {
   }
 
 }
+
+.file_content {
+  cursor: pointer;
+  color: #0a76a4;
+  text-decoration: underline;
+  font-size: 26px;
+}
+
 </style>

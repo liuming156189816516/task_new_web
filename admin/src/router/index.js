@@ -149,7 +149,14 @@ export const asyncRoutes = [
           title: '语言包',
         }
       },
-
+      {
+        path: '/tutorialManage',
+        component: () => import('@/views/appConfig/tutorialManage'),
+        name: 'tutorialManage',
+        meta: {
+          title: '教程管理',
+        }
+      },
     ]
   },
   // 轮播图
