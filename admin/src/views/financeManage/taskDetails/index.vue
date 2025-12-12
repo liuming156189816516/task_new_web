@@ -310,12 +310,12 @@ l_account
               </el-table-column>
               <el-table-column label="初始化成员" min-width="120" prop="member_list" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property].join(',') : '-' }}
                 </template>
               </el-table-column>
               <el-table-column label="进群成员" min-width="120" prop="q_in_member_list" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property].join(',') : '-' }}
                 </template>
               </el-table-column>
               <el-table-column label="验群人数" min-width="120" prop="member_num" show-overflow-tooltip>
@@ -684,8 +684,8 @@ export default {
           this.taskWsTable.tableData = res.data.list.map(item => {
             item.script_status = item.script_status ? String(item.script_status) : '0'
             item.execute_status = item.execute_status ? String(item.execute_status) : '0'
-            item.member_list = item.member_list ? JSON.parse(item.member_list).join(',') : ''
-            item.q_in_member_list = item.q_in_member_list ? JSON.parse(item.q_in_member_list).join(',') : ''
+            item.member_list = item.member_list ? JSON.parse(item.member_list): ''
+            item.q_in_member_list = item.q_in_member_list ? JSON.parse(item.q_in_member_list) : ''
             return item
           });
         }
