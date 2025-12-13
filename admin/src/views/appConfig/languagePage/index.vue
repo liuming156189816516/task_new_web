@@ -18,6 +18,9 @@
         <el-input v-model="queryData.val" clearable placeholder="请输入val" @input="changeInput" />
       </el-form-item>
       <el-form-item>
+        <el-input v-model="queryData.remark" clearable placeholder="请输入备注" @input="changeInput" />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -216,6 +219,7 @@ export default {
         category: '',
         key: '',
         val: '',
+        remark: '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -288,6 +292,7 @@ export default {
         category: this.queryData.category,
         key: this.queryData.key,
         val: this.queryData.val,
+        remark:this.queryData.remark
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -444,10 +449,11 @@ export default {
         page: 1,
         limit: 10,
         total: 0,
-        language: '',
+        language: 'en',
         category: '',
         key: '',
         val: '',
+        remark: '',
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
