@@ -302,7 +302,7 @@ export default {
           activitie_icon: [{ required: true, message: '请上传活动图标！', trigger: 'change' }],
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
           desc: [{ required: true, message: '请输入描述！', trigger: 'change' }],
-          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+          deeplink: [{ required: false, message: '请输入跳转地址！', trigger: 'change' }],
           category: [{ required: true, message: '请选择活动分类！', trigger: 'change' }],
         },
         isLoading: false,

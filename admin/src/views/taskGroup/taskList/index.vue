@@ -638,7 +638,7 @@ export default {
           two_icon: [{ required: true, message: '请上传任务右上角图标！', trigger: 'change' }],
           three_icon: [{ required: true, message: '请上传任务左下角图标！', trigger: 'change' }],
           points_icon: [{ required: true, message: '请上传任务中间的积分图标！', trigger: 'change' }],
-          deeplink: [{ required: true, message: '请输入跳转地址！', trigger: 'change' }],
+          deeplink: [{ required: false, message: '请输入跳转地址！', trigger: 'change' }],
           is_recommend: [{ required: true, message: '请选择是否推荐！', trigger: 'change' }],
         },
         isLoading: false,
