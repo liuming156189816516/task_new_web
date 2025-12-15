@@ -9,6 +9,7 @@
     "lint": "eslint --ext .js,.vue src",
     "build:prod": "vue-cli-service build",
     "build:new_test": "vue-cli-service build --mode new_test",
+    "build:task_prod": "vue-cli-service build --mode task_prod",
     "preview": "node build/index.js --preview",
     "new": "plop",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
