@@ -39,7 +39,7 @@
       </el-form-item>
       <el-form-item>
         <el-dropdown trigger="click" @command="(command)=>{handleUpDataOption(command)}">
-          <el-button type="primary"> 更新类型
+          <el-button type="primary"> App更新
             <i class="el-icon-arrow-down el-icon--right" />
           </el-button>
           <el-dropdown-menu slot="dropdown">
@@ -49,7 +49,6 @@
               :key="idx"
               :command="{item,idx}"
             >
-              <i :class="'el-icon-' + item.icon" />
               {{ item.label }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -267,8 +266,8 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
         upDataOption: [
-          { icon: 'edit-outline', label: '更新配置',val: 1 },
-          { icon: 'edit-outline', label: '更新弹窗',val: 2 },
+          { label: '更新配置',val: 1 },
+          { label: '更新弹窗',val: 2 },
         ],
       },
       assetsList: [],

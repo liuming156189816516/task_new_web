@@ -422,19 +422,17 @@
           label-position="top"
           label-width="0"
           size="small"
+          :rules="confRules"
         >
           <el-form-item
-            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'&&confModal.cloneRow.task_type!=='9'"
+            v-show="!['1','2','9'].includes(confModal.cloneRow.task_type)"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">发送文本</div>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type!=='1'&&confModal.cloneRow.task_type!=='2'&&confModal.cloneRow.task_type!=='9'"
-            :rules="[
-              { required: true, message: '请输入发送文本！', trigger: 'change' },
-            ]"
+            v-show="!['1','2','9'].includes(confModal.cloneRow.task_type)"
             label=""
             prop="conf"
             style="width: 100%"
@@ -449,17 +447,14 @@
             />
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
+            v-show="confModal.cloneRow.task_type === '9'"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">数据包配置</div>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
-            :rules="[
-              { required: true, message: '请选择数据包！', trigger: 'change' },
-            ]"
+            v-show="confModal.cloneRow.task_type === '9'"
             label=""
             prop="data_pack_id"
             style="width: 100%"
@@ -469,17 +464,14 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
+            v-show="confModal.cloneRow.task_type === '9'"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">管理员分组</div>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
-            :rules="[
-              { required: true, message: '请选择管理员分组！', trigger: 'change' },
-            ]"
+            v-show="confModal.cloneRow.task_type === '9'"
             label=""
             prop="admin_group_id"
             style="width: 100%"
@@ -491,17 +483,14 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
+            v-show="confModal.cloneRow.task_type === '9'"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">进群分组</div>
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='9'"
-            :rules="[
-              { required: true, message: '请选择进群分组！', trigger: 'change' },
-            ]"
+            v-show="confModal.cloneRow.task_type === '9'"
             label=""
             prop="in_group_id"
             style="width: 100%"
@@ -536,10 +525,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-if="confModal.cloneRow.task_type==='3'||confModal.cloneRow.task_type==='4'||confModal.cloneRow.task_type==='7'"
-            :rules="[
-              { required: true, message: '请选择是否优先取本地数据！', trigger: 'change' },
-            ]"
+            v-show="['3','4','7'].includes(confModal.cloneRow.task_type)"
             label="是否优先取本地数据"
             prop="is_prefer_local_data"
             style="width: 100%"
@@ -553,13 +539,12 @@
             />
           </el-form-item>
 
-          <div v-if="confModal.cloneRow.task_type==='9'" style="width: 100%;">
+          <div v-show="confModal.cloneRow.task_type === '9'" style="width: 100%;">
             <el-form-item class="formTitleRules" label="">
               <div style="font-size: 18px;color: #333333">发送素材配置</div>
             </el-form-item>
             <div class="flex_wrap">
               <el-form-item
-                :rules="[ { required: true, message: '请输入标题！', trigger: 'change' } ]"
                 label="标题"
                 prop="title"
               >
@@ -571,7 +556,6 @@
                 />
               </el-form-item>
               <el-form-item
-                :rules="[ { required: true, message: '请输入图片！', trigger: 'change' } ]"
                 label="图片"
                 prop="image"
               >
@@ -590,7 +574,6 @@
                 />
               </el-form-item>
               <el-form-item
-                :rules="[ { required: true, message: '请输入跳转链接！', trigger: 'change' } ]"
                 label="跳转链接"
                 prop="link"
               >
@@ -602,7 +585,6 @@
                 />
               </el-form-item>
               <el-form-item
-                :rules="[ { required: true, message: '请输入链接类型！', trigger: 'change' } ]"
                 label="链接类型"
                 prop="link_type"
               >
@@ -611,7 +593,6 @@
                 <el-radio v-model="confModal.formData.link_type" :label="3">按钮</el-radio>
               </el-form-item>
               <el-form-item
-                :rules="[ { required: true, message: '请输入描述！', trigger: 'change' } ]"
                 label="描述"
                 prop="desc"
               >
@@ -625,7 +606,6 @@
                 />
               </el-form-item>
               <el-form-item
-                :rules="[ { required: true, message: '请输入文本内容！', trigger: 'change' } ]"
                 label="文本内容"
                 prop="content"
               >
@@ -812,6 +792,33 @@ export default {
       accountRoleList2: [],
     }
   },
+  computed: {
+    confRules() {
+      const type = this.confModal.cloneRow.task_type
+      const rules = {}
+      // 普通文本
+      if (!['1', '2', '9'].includes(type)) {
+        rules.conf = [{ required: true, message: '请输入发送文本', trigger: 'change' }]
+      }
+      // task_type = 9
+      if (type === '9') {
+        rules.data_pack_id = [{ required: true, message: '请选择数据包', trigger: 'change' }]
+        rules.admin_group_id = [{ required: true, message: '请选择管理员分组', trigger: 'change' }]
+        rules.in_group_id = [{ required: true, message: '请选择进群分组', trigger: 'change' }]
+        rules.title = [{ required: true, message: '请输入标题', trigger: 'change' }]
+        rules.image = [{ required: true, message: '请上传图片', trigger: 'change' }]
+        rules.link = [{ required: true, message: '请输入跳转链接', trigger: 'change' }]
+        rules.link_type = [{ required: true, message: '请输入链接类型！', trigger: 'change' }]
+        rules.desc = [{ required: true, message: '请输入描述！', trigger: 'change' }]
+        rules.content = [{ required: true, message: '请输入文本内容', trigger: 'change' }]
+      }
+      if (['3','4','7'].includes(type)) {
+        rules.is_prefer_local_data = [{ required: true, message: '请选择是否优先取本地数据', trigger: 'change' }]
+      }
+
+      return rules
+    }
+  },
   mounted() {
     this.getDataListFun(); // 获取列表
     this.getLanguagePageListFun();
@@ -887,7 +894,6 @@ export default {
           item.value = row.conf.limit_by_level[item.key]
         })
       }
-      console.log('row',row)
       if (deepClone(row).conf && deepClone(row).conf.send_material) {
         this.confModal.formData.title = this.confModal.cloneRow.conf.send_material.title
         this.confModal.formData.image = this.confModal.cloneRow.conf.send_material.image
@@ -1012,7 +1018,6 @@ export default {
 
     // 上传成功回调
     uploadSuccess(file, kay,type) {
-      console.log('kay',kay)
       const formData = new FormData();
       formData.append('directory', type === 'conf' ? 'group-image' : 'task');
       formData.append('file', file);
@@ -1253,7 +1258,6 @@ export default {
     getSendMsgGroupApi() {
       // 管理员
       getSendMsgGroupApi({ account_role: 1 }).then(res => {
-        console.log('管理员', res.data)
         if (res.msg === 'success') {
           this.accountRoleList1 = res.data.list.map(item => {
             return {
@@ -1268,7 +1272,6 @@ export default {
       // 进群号
       setTimeout(() => {
         getSendMsgGroupApi({ account_role: 2 }).then(res => {
-          console.log('进群号', res.data)
           if (res.msg === 'success') {
             this.accountRoleList2 = res.data.list.map(item => {
               return {
