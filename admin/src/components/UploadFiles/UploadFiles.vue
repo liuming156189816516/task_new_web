@@ -49,6 +49,11 @@ export default {
       type: String,
       default: ''
     },
+    // 类型
+    type: {
+      type: String,
+      default: ''
+    },
 
   },
   data() {
@@ -106,7 +111,7 @@ export default {
     },
     // 上传图片
     uploadImgFileFun(file) {
-      this.$emit('uploadSuccess', file,this.kay)
+      this.$emit('uploadSuccess', file,this.kay,this.type)
     },
     // 删除
     delDataFun(item, index) {

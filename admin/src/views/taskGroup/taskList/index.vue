@@ -507,7 +507,7 @@
             style="width: 100%"
           >
             <el-select v-model="confModal.formData.in_group_id" clearable filterable placeholder="请选择进群分组">
-              <el-option v-for="item in accountRoleList2" :key="item.value" :label="item.label" :value="item.value" >
+              <el-option v-for="item in accountRoleList2" :key="item.value" :label="item.label" :value="item.value">
                 <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
               </el-option>
             </el-select>
@@ -552,6 +552,95 @@
               inactive-value="0"
             />
           </el-form-item>
+
+          <div v-if="confModal.cloneRow.task_type==='9'" style="width: 100%;">
+            <el-form-item class="formTitleRules" label="">
+              <div style="font-size: 18px;color: #333333">发送素材配置</div>
+            </el-form-item>
+            <div class="flex_wrap">
+              <el-form-item
+                :rules="[ { required: true, message: '请输入标题！', trigger: 'change' } ]"
+                label="标题"
+                prop="title"
+              >
+                <el-input
+                  v-model="confModal.formData.title"
+                  placeholder="请输入标题"
+                  style="width: 100%"
+                  @input="changeInput"
+                />
+              </el-form-item>
+              <el-form-item
+                :rules="[ { required: true, message: '请输入图片！', trigger: 'change' } ]"
+                label="图片"
+                prop="image"
+              >
+                <div v-if="confModal.formData.image" class="imgBox">
+                  <el-image :src="confModal.formData.image" style="width: 120px;height: 120px" />
+                  <i class="el-icon-delete icon_del" @click="delImgFun('image','conf')" />
+                </div>
+                <UploadFiles
+                  v-else
+                  ref="refUploadFiles"
+                  :format="['png','jpg','jpeg','webp']"
+                  :max-size="100"
+                  kay="image"
+                  type="conf"
+                  @uploadSuccess="uploadSuccess"
+                />
+              </el-form-item>
+              <el-form-item
+                :rules="[ { required: true, message: '请输入跳转链接！', trigger: 'change' } ]"
+                label="跳转链接"
+                prop="link"
+              >
+                <el-input
+                  v-model="confModal.formData.link"
+                  placeholder="请输入跳转链接"
+                  style="width: 100%"
+                  @input="changeInput"
+                />
+              </el-form-item>
+              <el-form-item
+                :rules="[ { required: true, message: '请输入链接类型！', trigger: 'change' } ]"
+                label="链接类型"
+                prop="link_type"
+              >
+                <el-radio v-model="confModal.formData.link_type" :label="1">视频</el-radio>
+                <el-radio v-model="confModal.formData.link_type" :label="2">广告</el-radio>
+                <el-radio v-model="confModal.formData.link_type" :label="3">按钮</el-radio>
+              </el-form-item>
+              <el-form-item
+                :rules="[ { required: true, message: '请输入描述！', trigger: 'change' } ]"
+                label="描述"
+                prop="desc"
+              >
+                <el-input
+                  v-model="confModal.formData.desc"
+                  placeholder="请输入描述"
+                  style="width: 100%"
+                  :autosize="{ minRows: 4, maxRows: 10}"
+                  type="textarea"
+                  @input="changeInput"
+                />
+              </el-form-item>
+              <el-form-item
+                :rules="[ { required: true, message: '请输入文本内容！', trigger: 'change' } ]"
+                label="文本内容"
+                prop="content"
+              >
+                <el-input
+                  v-model="confModal.formData.content"
+                  placeholder="请输入文本内容"
+                  style="width: 100%"
+                  :autosize="{ minRows: 4, maxRows: 10}"
+                  type="textarea"
+                  @input="changeInput"
+                />
+              </el-form-item>
+            </div>
+
+          </div>
         </el-form>
       </div>
       <div slot="footer">
@@ -704,6 +793,12 @@ export default {
           is_prefer_local_data: '1',
           admin_group_id: '',
           in_group_id: '',
+          title: '',
+          image: '',
+          link: '',
+          desc: '',
+          link_type: 1,
+          content: '',
         },
         rules: {
           conf: [
@@ -793,6 +888,15 @@ export default {
           item.value = row.conf.limit_by_level[item.key]
         })
       }
+      console.log('row',row)
+      if (deepClone(row).conf && deepClone(row).conf.send_material) {
+        this.confModal.formData.title = this.confModal.cloneRow.conf.send_material.title
+        this.confModal.formData.image = this.confModal.cloneRow.conf.send_material.image
+        this.confModal.formData.link = this.confModal.cloneRow.conf.send_material.link
+        this.confModal.formData.desc = this.confModal.cloneRow.conf.send_material.desc
+        this.confModal.formData.link_type = this.confModal.cloneRow.conf.send_material.link_type
+        this.confModal.formData.content = this.confModal.cloneRow.conf.send_material.content
+      }
     },
     // 修改发布
     changeReleaseStatusFun(form, val) {
@@ -863,7 +967,8 @@ export default {
           const formData = {
             id: this.confModal.cloneRow.id,
             conf: {
-              limit_by_level: levelData
+              limit_by_level: levelData,
+              send_material: {}
             }
           }
           const taskType = this.confModal.cloneRow.task_type
@@ -878,6 +983,13 @@ export default {
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
             formData.conf.admin_group_id = this.confModal.formData.admin_group_id
             formData.conf.in_group_id = this.confModal.formData.in_group_id
+
+            formData.conf.send_material.title = this.confModal.formData.title
+            formData.conf.send_material.image = this.confModal.formData.image
+            formData.conf.send_material.link = this.confModal.formData.link
+            formData.conf.send_material.desc = this.confModal.formData.desc
+            formData.conf.send_material.link_type = this.confModal.formData.link_type
+            formData.conf.send_material.content = this.confModal.formData.content
           }
 
           editConfDataApi(formData).then(res => {
@@ -898,13 +1010,18 @@ export default {
     },
 
     // 上传成功回调
-    uploadSuccess(file, kay) {
+    uploadSuccess(file, kay,type) {
+      console.log('kay',kay)
       const formData = new FormData();
-      formData.append('directory', 'task');
+      formData.append('directory', type === 'conf' ? 'group-image' : 'task');
       formData.append('file', file);
       uploadFileApi(formData).then(res => {
         if (res.msg === 'success') {
-          this.addModal.formData[kay] = res.data.url
+          if (type === 'conf') {
+            this.confModal.formData[kay] = res.data.url
+          } else {
+            this.addModal.formData[kay] = res.data.url
+          }
           successTips(this, 'success', '上传成功！')
           if (this.$refs.refUploadFiles) {
             this.$refs.refUploadFiles.resetFileFun()
@@ -913,8 +1030,12 @@ export default {
       })
     },
     // 删除图片
-    delImgFun(kay) {
-      this.addModal.formData[kay] = ''
+    delImgFun(kay,type) {
+      if (type === 'conf') {
+        this.confModal.formData[kay] = ''
+      } else {
+        this.addModal.formData[kay] = ''
+      }
     },
     // 关闭新建
     closeModal() {
@@ -1278,5 +1399,11 @@ export default {
     }
 
   }
+}
+
+.flex_wrap{
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 </style>

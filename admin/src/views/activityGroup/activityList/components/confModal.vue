@@ -87,7 +87,9 @@ export default {
     open(row) {
       this.configModal.show = true
       this.cloneRow = deepClone(row)
-      this.configModal.formData = this.cloneRow.conf.daily_points
+      if (deepClone(row).conf && deepClone(row).conf.daily_points) {
+        this.configModal.formData = this.cloneRow.conf.daily_points
+      }
     },
     // 关闭页面
     closePageModal() {
