@@ -37,6 +37,24 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-form-item>
+      <el-form-item>
+        <el-dropdown trigger="click" @command="(command)=>{handleUpDataOption(command)}">
+          <el-button type="primary"> 更新类型
+            <i class="el-icon-arrow-down el-icon--right" />
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="(item, idx) in setBatchData.upDataOption"
+              v-show="item.label"
+              :key="idx"
+              :command="{item,idx}"
+            >
+              <i :class="'el-icon-' + item.icon" />
+              {{ item.label }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-form-item>
     </el-form>
     <!-- 列表 -->
     <div class="tableContent">
@@ -186,7 +204,7 @@
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi, upAppDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
 import { formatTimestamp } from '@/filters'
 import {
@@ -248,6 +266,10 @@ export default {
         batchOption: [
           { icon: 'delete', label: '批量删除' },
         ],
+        upDataOption: [
+          { icon: 'edit-outline', label: '更新配置',val: 1 },
+          { icon: 'edit-outline', label: '更新弹窗',val: 2 },
+        ],
       },
       assetsList: [],
       themeList: [],
@@ -289,7 +311,6 @@ export default {
           this.tableData = res.data.list.map(item => {
             return item
           });
-
         }
       })
     },
@@ -358,6 +379,19 @@ export default {
       if (command.item.label === '批量删除') {
         this.delDataFun()
       }
+    },
+    // 更新类型
+    handleUpDataOption(command) {
+      console.log('command',command)
+      const params = {
+        up_type: command.item.val
+      }
+      upAppDataApi(params).then(res => {
+        if (res.msg === 'success') {
+          successTips(this)
+          this.getDataListFun()
+        }
+      })
     },
     // 删除
     delDataFun() {

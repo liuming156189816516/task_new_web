@@ -35,3 +35,13 @@ export const delDataApi = (params) => {
     data: params
   })
 }
+
+// 更新类型
+export const upAppDataApi = (params) => {
+  return request({
+    url: '/meta/upapp',
+    method: 'post',
+    data: params
+  })
+}
+1
