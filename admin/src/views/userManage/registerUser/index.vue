@@ -193,10 +193,9 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      this.page = num || this.page;
       const params = {
-        page: this.page,
-        limit: this.limit,
+        page: num || this.queryData.page,
+        limit: this.queryData.limit,
         account: this.queryData.account,
         country: this.queryData.country,
         account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,

@@ -649,7 +649,7 @@ import {
   getSendMsgGroupApi
 } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal, getLabelArrByVal, getImageExtension } from '@/utils';
-import { formatTimestamp, getLanguagePageList } from '@/filters'
+import { formatTimestamp, getLanguagePageList, trimOuterSpace } from '@/filters'
 import UploadFiles from '@/components/UploadFiles/UploadFiles'
 import ImagePreview from '@/components/ImagePreview'
 import { uploadFileApi, getLanguagePageListApi } from '@/api/common';
@@ -979,7 +979,7 @@ export default {
           const taskType = this.confModal.cloneRow.task_type
 
           if (taskType !== '1' && taskType !== '2' && taskType !== '9') {
-            formData.conf.message = this.confModal.formData.conf
+            formData.conf.message = trimOuterSpace(this.confModal.formData.conf)
           }
           if (taskType === '3' || taskType === '4' || taskType === '7') {
             formData.conf.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'

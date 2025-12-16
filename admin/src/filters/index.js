@@ -169,3 +169,13 @@ export function getLanguagePageList(data,kay) {
   });
   return value
 }
+
+/**
+ * 只去掉字符串前后空格（不影响中间内容）
+ * @param {string} str
+ * @returns {string}
+ */
+export function trimOuterSpace(str) {
+  if (typeof str !== 'string') return str;
+  return str.trim();
+}

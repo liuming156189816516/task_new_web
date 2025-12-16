@@ -10,6 +10,15 @@
         <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行ID" style="width:180px;" @input="changeInput" />
       </el-form-item>
       <el-form-item>
+        <el-input
+          v-model="queryData.l_account"
+          clearable
+          placeholder="请输入所属用户"
+          style="width:180px;"
+          @input="changeInput"
+        />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -107,6 +116,11 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
+        <el-table-column label="所属用户" min-width="120" prop="l_account" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ $time(scope.row.itime) }}
@@ -152,6 +166,7 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
+        l_account:''
       },
       pageOption: resetPage(),
       tableData: [],
@@ -211,7 +226,8 @@ export default {
         limit: this.queryData.limit,
         task_type: Number(this.queryData.task_type),
         report_id: this.queryData.report_id,
-        uniqueid: this.queryData.uniqueid
+        uniqueid: this.queryData.uniqueid,
+        l_account: this.queryData.l_account
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -296,6 +312,7 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
+        l_account:''
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
