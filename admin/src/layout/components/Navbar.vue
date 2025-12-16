@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <div class="right-menu">
-      <div class="serveic_img" @click="jumpServeTg" v-if="isServe">
+      <div v-if="isServe" class="serveic_img" @click="jumpServeTg">
         <span class="icon_img">
           <img src="../../assets/tg_icon.png" alt="" srcset="">
         </span>
@@ -11,7 +11,17 @@
       </div>
 
       <error-log class="errLog-container right-menu-item hover-effect" />
-
+      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+        <div class="avatar-wrapper">
+          <span class="user-name">国家：{{ getLabelByVal(itemZonesVal,itemZonesData.options) }}</span>
+          <i class="el-icon-arrow-down" />
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item v-for="(item,index) in itemZonesData.options " :key="index" @click.native="clickItemZoneFun(item)">
+            <span style="display:block;">{{ item.label }}</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <i class="el-icon-user" />
@@ -35,48 +45,36 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
-import ErrorLog from '@/components/ErrorLog'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
-
+import { getLabelByVal } from '@/utils';
 export default {
-  components: {
-    Breadcrumb,
-    Hamburger,
-    ErrorLog,
-    Screenfull,
-    SizeSelect,
-    Search
-  },
+  components: { },
   data() {
     return {
       langeIdx: 0,
+      itemZonesData: {
+        options: [
+          { label: '北京',value: 'Asia/Shanghai' },
+          { label: '巴西',value: 'America/Sao_Paulo' },
+          { label: '马来西亚',value: 'Asia/Kuala_Lumpur' },
+        ]
+      },
     }
   },
   computed: {
     ...mapGetters(['sidebar','userInfo']),
-    expireTime(){
-      let expireTime = this.userInfo;
-      let currentTimeStamp = Math.floor(Date.now() / 1000);
-      let timeDifference = expireTime.valid_time - currentTimeStamp;
-      var hoursDifference = timeDifference / (60 * 60);
-      if (hoursDifference <= 24 && expireTime.account!="admin") {
-        return true;
-      }
-      return false;
+    expireTime() {
+      const expireTime = this.userInfo;
+      const currentTimeStamp = Math.floor(Date.now() / 1000);
+      const timeDifference = expireTime.valid_time - currentTimeStamp;
+      const hoursDifference = timeDifference / (60 * 60);
+      return hoursDifference <= 24 && expireTime.account !== 'admin';
     },
-    isServe(){
-      let isShow;
-      if(process.env.VUE_APP_OUTDIR=='prod'){
-        isShow = true;
-      }else{
-        isShow = false;
-      }
-      return isShow;
-    }
+    isServe() {
+      return process.env.VUE_APP_OUTDIR === 'prod';
+    },
+    itemZonesVal() {
+      return this.$store.getters['timeZone/currentTimeZone']
+    },
   },
   methods: {
     async logout() {
@@ -84,19 +82,19 @@ export default {
       // this.$router.replace('/login')
       location.reload();
     },
-    jumpServeTg(){
+    jumpServeTg() {
       window.open(process.env.VUE_APP_TG,'_blank');
-    }
+    },
+    // 切换时区
+    clickItemZoneFun(item) {
+      this.$setTimeZone(item.value)
+      console.log('item',item)
+    },
+    getLabelByVal
   }
 }
 </script>
 <style>
-.expire_tips {
-  color: #f56c6c !important;
-  animation: blink 1.5s infinite;
-  transition: opacity 0.5s ease-in-out;
-}
-
 @keyframes blink {
   0% {
     opacity: 1;
@@ -110,68 +108,6 @@ export default {
     opacity: 1;
   }
 }
-
-.el-collapse-item__header {
-  display: flex;
-  height: 36px;
-  padding-left: 10px;
-  align-items: center;
-  justify-content: center;
-  border-bottom: transparent !important;
-
-  .el-collapse-item__arrow {
-    margin: 0;
-    transform: rotate(180deg);
-  }
-
-  .el-collapse-item__arrow.is-active {
-    transform: rotate(90deg);
-  }
-}
-
-.el-collapse-item__wrap {
-  display: flex;
-  border: none;
-  justify-content: center;
-
-  .el-collapse-item__content {
-    display: flex;
-    width: 100%;
-    line-height: 1;
-    padding-bottom: 0;
-    align-items: center;
-    flex-direction: column;
-    background-color: aliceblue;
-
-    &>div {
-      width: 100%;
-      display: flex;
-      padding: 8px 0;
-      cursor: pointer;
-      justify-content: center;
-    }
-
-    &>div:hover {
-      background-color: #DBEEFF;
-    }
-
-    &>div:nth-child(1) {
-      border-bottom: 1px solid #fff;
-    }
-  }
-}
-
-.el-dropdown-menu__item--divided {
-  margin-top: 0;
-}
-
-/* .el-collapse-item__wrap{
-    display: flex;
-    width: 100%;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-  } */
 </style>
 
 <style lang="scss" scoped>

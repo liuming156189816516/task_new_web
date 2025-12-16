@@ -86,7 +86,7 @@
           </el-table-column>
           <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ formatTimestamp(scope.row[scope.column.property]) }}
+              {{ $time(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
         </el-table>

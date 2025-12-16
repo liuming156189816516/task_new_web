@@ -153,12 +153,12 @@
               </el-table-column>
               <el-table-column label="执行时间" min-width="150" prop="execute_time" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ formatTimestamp(scope.row[scope.column.property]) }}
+                  {{ $time(scope.row[scope.column.property]) }}
                 </template>
               </el-table-column>
               <el-table-column label="结算时间" min-width="150" prop="settle_time" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ formatTimestamp(scope.row[scope.column.property]) }}
+                  {{ $time(scope.row[scope.column.property]) }}
                 </template>
               </el-table-column>
               <el-table-column label="任务奖励" min-width="80" prop="reward" show-overflow-tooltip>
@@ -180,7 +180,7 @@
               </el-table-column>
               <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ formatTimestamp(scope.row[scope.column.property]) }}
+                  {{ $time(scope.row[scope.column.property]) }}
                 </template>
               </el-table-column>
             </el-table>
@@ -366,7 +366,7 @@ l_account
               </el-table-column>
               <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ formatTimestamp(scope.row[scope.column.property]) }}
+                  {{ $time(scope.row[scope.column.property]) }}
                 </template>
               </el-table-column>
             </el-table>
