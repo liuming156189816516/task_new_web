@@ -73,7 +73,7 @@
         </el-table-column>
         <el-table-column prop="itime" label="创建时间" min-width="120" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ $time(scope.row.itime) }}
+            {{ $time(scope.row[scope.column.property]) }}
           </template>
         </el-table-column>
         <el-table-column prop="operation" label="操作" width="180" show-overflow-tooltip>
@@ -204,7 +204,7 @@
           </el-table-column>
           <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ $time(scope.row.itime) }}
+              {{ $time(scope.row[scope.column.property]) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" prop="operation" show-overflow-tooltip min-width="100">

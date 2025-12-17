@@ -1,12 +1,10 @@
-<!-- 活动分类 -->
+<!-- 通用配置 -->
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
-        <el-select v-model="queryData.title" clearable filterable placeholder="请选择标题">
-          <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
+        <el-input v-model="queryData.key" clearable placeholder="请输入配置项" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -46,7 +44,7 @@
         :height="cliHeight"
         border
         element-loading-spinner="el-icon-loading"
-        row-key="ID"
+        row-key="id"
         show-body-overflow="title"
         style="width: 100%;"
         use-virtual
@@ -55,53 +53,19 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="标题" min-width="120" prop="title">
+        <el-table-column label="配置项" min-width="120" prop="key" show-overflow-tooltip>
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" :content="scope.row[scope.column.property]" placement="top">
-              <span>{{ getLabelByVal(scope.row[scope.column.property], titleList) }}</span>
-            </el-tooltip>
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="分类" min-width="120" prop="category" show-overflow-tooltip>
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'category')">
-              <span :class="[Number(queryData.category)>0?'dropdown_title':'']" style="color:#909399"> 分类
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in categoryList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.category}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
+        <el-table-column label="值" min-width="120" prop="value" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList)||'-' }}
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="发布状态" min-width="120" prop="release_status" show-overflow-tooltip>
-          <template slot="header">
-            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'release_status')">
-              <span :class="[Number(queryData.release_status)>0?'dropdown_title':'']" style="color:#909399"> 发布状态
-                <i class="el-icon-arrow-down el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="(item,index) in releaseStatusList"
-                  :key="index"
-                  :class="{'dropdown_selected':item.value===queryData.release_status}"
-                  :command="item.value"
-                >{{ item.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
+        <el-table-column label="描述" min-width="120" prop="remark" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], releaseStatusList) }}
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -111,19 +75,11 @@
         </el-table-column>
         <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
           <template slot-scope="scope">
-            <div v-if="scope.row.release_status==='1' || scope.row.release_status==='2'" class="action-btn">
-              <el-button size="small" type="success" @click="changeReleaseStatusFun(scope.row,1)">发布</el-button>
-            </div>
-            <div v-if="scope.row.release_status==='3'" class="action-btn">
-              <el-button size="small" type="primary" @click="changeReleaseStatusFun(scope.row,2)">下架</el-button>
-            </div>
-            <div v-if="scope.row.release_status !=='3'" class="action-btn">
-              <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
-            </div>
+            <el-button size="small" type="primary" @click.stop="editOpenFun(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div v-if="false" class="layui_page">
+      <div class="layui_page">
         <el-pagination
           :current-page.sync="queryData.page"
           :page-size="queryData.limit"
@@ -135,6 +91,7 @@
           @current-change="changePageCurrent($event,'table')"
         />
       </div>
+
     </div>
     <!-- 添加 编辑 -->
     <el-dialog
@@ -145,16 +102,15 @@
       width="500px"
       @close="closeModal"
     >
-      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="120px" size="small">
-        <el-form-item label="标题:" prop="title">
-          <el-select v-model="addModal.formData.title" clearable filterable placeholder="请选择标题">
-            <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+      <el-form ref="refAddModal" :model="addModal.formData" :rules="addModal.rules" label-width="100px" size="small">
+        <el-form-item label="配置项:" prop="key">
+          <el-input v-model="addModal.formData.key" placeholder="请输入配置项" @input="changeInput" />
         </el-form-item>
-        <el-form-item label="分类:" prop="category">
-          <el-select v-model="addModal.formData.category" clearable filterable placeholder="请选择分类">
-            <el-option v-for="item in categoryList" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
+        <el-form-item label="值:" prop="value">
+          <el-input v-model="addModal.formData.value" placeholder="请输入值" @input="changeInput" />
+        </el-form-item>
+        <el-form-item label="描述:" prop="remark">
+          <el-input v-model="addModal.formData.remark" placeholder="请输入描述" @input="changeInput" />
         </el-form-item>
         <el-form-item class="el-item-bottom" label-width="0" style="text-align:center;">
           <el-button @click="closeModal">取消</el-button>
@@ -162,44 +118,40 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getDataApi, addDataApi, editDataApi, delDataApi ,editSortDataApi ,editReleaseStatusApi } from './api';
+import { getDataApi, addDataApi, editDataApi, delDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
-import { formatTimestamp, getLanguagePageList } from '@/filters'
-import sortablejs from 'sortablejs';
-import { getLanguagePageListApi } from '@/api/common';
+import { formatTimestamp } from '@/filters'
 
 export default {
-  name: 'ActivityType',
-  components: {
-  },
+  name: 'GeneralConf',
   data() {
     return {
       queryData: {
         page: 1,
-        limit: 1000,
+        limit: 10,
         total: 0,
-        title: '',
-        category: '',
-        release_status: null,
+        key: '',
       },
       pageOption: resetPage(),
+      formData: {},
       tableData: [],
       cliHeight: null,
       addModal: {
         show: false,
         type: 'add',
         formData: {
-          title: '',
-          category: '',
+          key: '',
+          value: '',
+          remark: '',
         },
         rules: {
-          title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
-          category: [{ required: true, message: '请选择分类！', trigger: 'change' }],
+          key: [{ required: true, message: '请输入配置项！', trigger: 'change' }],
+          value: [{ required: true, message: '请输入值！', trigger: 'change' }],
+          remark: [{ required: true, message: '请输入描述！', trigger: 'change' }],
         },
         isLoading: false,
       },
@@ -214,28 +166,12 @@ export default {
           { icon: 'delete', label: '批量删除' },
         ],
       },
-      categoryList: [
-        { label: '全部', value: '0' },
-        { label: 'All', value: '1' },
-        { label: 'Limited', value: '2' },
-        { label: 'Newbie', value: '3' },
-        { label: 'Hot', value: '4' },
-      ],
-      releaseStatusList: [
-        { label: '全部', value: '0' ,type: 'primary' },
-        { label: '未发布', value: '1' ,type: 'primary' },
-        { label: '已下架', value: '2' ,type: 'primary' },
-        { label: '已发布', value: '3' ,type: 'success' },
-      ],
-      titleList: []
     }
   },
   mounted() {
     this.getDataListFun(); // 获取列表
-    this.getLanguagePageListFun(); // 标题
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
-    this.initDragSortTableRow(); // 拖拽表格行排序
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.setFullHeight);
@@ -248,25 +184,19 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      this.tableData = []
       this.queryData.page = num || this.queryData.page;
       const params = {
         page: this.queryData.page,
         limit: this.queryData.limit,
-        title: this.queryData.title,
-        category: Number(this.queryData.category),
-        release_status: Number(this.queryData.release_status),
+        key: this.queryData.key,
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
           this.loading = false;
           this.queryData.total = res.data.total;
-          const data = deepClone(res.data.list)
-          this.tableData = data.map(item => {
-            item.release_status = item.release_status ? String(item.release_status) : ''
-            item.category = item.category ? String(item.category) : ''
+          this.tableData = res.data.list.map(item => {
             return item
-          })
+          });
         }
       })
     },
@@ -281,35 +211,14 @@ export default {
       this.addModal.type = 'edit'
       this.addModal.formData = deepClone(row)
     },
-    // 修改发布
-    changeReleaseStatusFun(form,val) {
-      const massage = val === 2 ? '下架' : '发布'
-      this.$confirm('确认' + massage + '吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        const params = {
-          id: form.id,
-          type: val
-        }
-        editReleaseStatusApi(params).then(res => {
-          if (res.msg === 'success') {
-            successTips(this, 'success', massage + '成功!')
-            this.getDataListFun()
-          }
-        })
-      }).catch(() => {
-
-      });
-    },
     // 新建 编辑 保存
     addSubmit() {
       this.$refs.refAddModal.validate((v) => {
         if (v) {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
-          formData.category = formData.category ? Number(formData.category) : 0
+          formData.ttl = formData.ttl ? Number(formData.ttl) : ''
+          console.log('formData', formData)
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -336,8 +245,9 @@ export default {
       this.addModal.isLoading = false
       this.$refs.refAddModal.resetFields();
       this.addModal.formData = {
-        title: '',
-        category: '',
+        key: '',
+        value: '',
+        remark: '',
       }
     },
     // 批量操作
@@ -379,6 +289,7 @@ export default {
         this.$message({ type: 'info', message: '已取消' });
       })
     },
+
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
@@ -386,37 +297,9 @@ export default {
         return item.id
       })
     },
-    // 拖拽
-    initDragSortTableRow() {
-      const el = this.$refs.serveTable.$el.querySelector('.el-table__body-wrapper tbody');
-      sortablejs.create(el, {
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        setData: (dataTransfer) => {
-        },
-        onEnd: ({ newIndex, oldIndex }) => {
-          if (newIndex === oldIndex) return;
-          let arr = deepClone(this.tableData)
-          const movedItem = arr.splice(oldIndex, 1)[0];
-          arr.splice(newIndex, 0, movedItem);
-          arr = arr.map((item, index) => ({
-            ...item,
-            sort: index + 1,
-          }));
-          const arrID = arr.map((item, index) => {
-            return item.id
-          })
-          editSortDataApi({ ids: arrID }).then(res => {
-            if (res.msg === 'success') {
-              this.getDataListFun()
-            }
-          })
-        },
-      });
-    },
     // 窗口高度
     setFullHeight() {
-      this.cliHeight = document.documentElement.clientHeight - 240;
+      this.cliHeight = document.documentElement.clientHeight - 280;
     },
     // 单行点击
     rowSelectChange(row) {
@@ -430,21 +313,9 @@ export default {
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
-      this.queryData = {
-        page: 1,
-        limit: 1000,
-        total: 0,
-        title: '',
-        category: '',
-        release_status: null,
-      }
+      this.queryData.host = ''
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
-    },
-    // 表头筛选
-    handleRowQueryFun(val,kay) {
-      this.queryData[kay] = val;
-      this.getDataListFun(1)
     },
     // 分页 切换
     changePageSize(val, type) {
@@ -466,15 +337,6 @@ export default {
       //
       // }
     },
-    // 获取国际化
-    getLanguagePageListFun() {
-      getLanguagePageListApi({}).then(res => {
-        if (res.msg === 'success') {
-          const kay = 'server.activitycategories.title'
-          this.titleList = getLanguagePageList(res.data.content,kay)
-        }
-      })
-    },
     // 处理打开输入框无法输入问题
     changeInput() {
       this.$forceUpdate()
@@ -495,31 +357,5 @@ export default {
   color: rgba(255, 0, 0, .8);
   border-color: #dcdfe6;
   background-color: transparent;
-}
-
-.imgBox {
-  position: relative;
-
-  .icon_del {
-    cursor: pointer;
-    color: red;
-    position: absolute;
-    font-size: 22px;
-    left: 130px;
-    top: 38%;
-  }
-}
-
-.ghostClass {
-  background-color: #ecf5ff;
-
-  td {
-    border-bottom-color: #409eff;
-  }
-}
-
-.tableContentLoading {
-  text-align: center;
-  margin: 50px 0;
 }
 </style>

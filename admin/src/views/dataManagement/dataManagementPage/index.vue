@@ -64,7 +64,7 @@
           </el-table-column>
           <el-table-column :label="$t('sys_c008')" min-width="148" prop="expire_time">
             <template slot-scope="scope">
-              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : 0 }}
+              {{ scope.row[scope.column.property] > 0 ? $baseFun.resetTime(scope.row[scope.column.property] * 1000) : 0 }}
             </template>
           </el-table-column>
           <el-table-column :label="$t('sys_c010')" width="268">

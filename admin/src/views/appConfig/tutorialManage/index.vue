@@ -60,6 +60,11 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
+        <el-table-column label="类别" min-width="120" prop="category">
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
+          </template>
+        </el-table-column>
         <el-table-column label="名称" min-width="120" prop="name">
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -141,6 +146,9 @@
         <el-form-item label="名称:" prop="name">
           <el-input v-model="addModal.formData.name" placeholder="请输入名称" @input="changeInput" />
         </el-form-item>
+        <el-form-item label="类别" prop="category">
+          <el-radio v-for="(item,index) in categoryList" :key="index" v-model="addModal.formData.category" :label="item.value">{{ item.label }}</el-radio>
+        </el-form-item>
         <el-form-item label="语言:" prop="locale">
           <el-input v-model="addModal.formData.locale" placeholder="请输入语言" @input="changeInput" />
         </el-form-item>
@@ -220,6 +228,7 @@ export default {
         type: 'add',
         formData: {
           name: '',
+          category: '1',
           locale: '',
           device_brand: '',
           task_type: '',
@@ -227,13 +236,19 @@ export default {
         },
         rules: {
           name: [{ required: true, message: '请输入名称！', trigger: 'change' }],
+          category: [{ required: true, message: '请选择类别！', trigger: 'change' }],
           locale: [{ required: true, message: '请输入语言！', trigger: 'change' }],
           device_brand: [{ required: true, message: '请输入手机厂商！', trigger: 'change' }],
           task_type: [{ required: true, message: '请选择任务类型！', trigger: 'change' }],
           url: [{ required: true, message: '请上传教程视频！', trigger: 'change' }],
         },
         isLoading: false,
+
       },
+      categoryList: [
+        { value: '1',label: '授权教程' },
+        { value: '2',label: '任务教程' },
+      ], // 类别列表
       selectData: [], // 选择列表
       selectIdData: [], // 选择列表id
       loading: false,
@@ -296,6 +311,7 @@ export default {
           const data = deepClone(res.data.list)
           this.tableData = data.map(item => {
             item.task_type = item.task_type ? String(item.task_type) : ''
+            item.category = item.category ? String(item.category) : ''
             return item
           })
         }
@@ -344,6 +360,7 @@ export default {
           this.addModal.isLoading = true
           const formData = deepClone(this.addModal.formData)
           formData.task_type = formData.task_type ? Number(formData.task_type) : 0
+          formData.category = formData.category ? Number(formData.category) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {

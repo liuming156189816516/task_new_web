@@ -140,7 +140,7 @@
           </el-table-column>
           <el-table-column align="center" label="创建时间" prop="itime" width="160">
             <template slot-scope="scope">
-              {{ scope.row.itime > 0 ? $baseFun.resetTime(scope.row.itime * 1000) : "~" }}
+              {{ scope.row[scope.column.property] > 0 ? $baseFun.resetTime(scope.row[scope.column.property] * 1000) : "~" }}
             </template>
           </el-table-column>
           <el-table-column align="center" label="更新时间" prop="ptime" width="160">

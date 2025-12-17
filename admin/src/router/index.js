@@ -157,6 +157,14 @@ export const asyncRoutes = [
           title: '教程管理',
         }
       },
+      {
+        path: '/generalConf',
+        component: () => import('@/views/appConfig/generalConf'),
+        name: 'generalConf',
+        meta: {
+          title: '通用配置',
+        }
+      },
     ]
   },
   // 轮播图
