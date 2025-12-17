@@ -7,9 +7,6 @@
         <el-input v-model="queryData.report_id" clearable placeholder="请输入上报ID" style="width:180px;" @input="changeInput" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行ID" style="width:180px;" @input="changeInput" />
-      </el-form-item>
-      <el-form-item>
         <el-input
           v-model="queryData.l_account"
           clearable
@@ -91,7 +88,17 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="执行ID" min-width="120" prop="uniqueid" show-overflow-tooltip>
+        <el-table-column label="X-MTLS-Verified" min-width="120" prop="X-MTLS-Verified" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="cf-ip" min-width="120" prop="cf-ip" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="cf-country" min-width="120" prop="cf-country" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -166,7 +173,7 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
-        l_account:''
+        l_account: ''
       },
       pageOption: resetPage(),
       tableData: [],
@@ -312,7 +319,7 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
-        l_account:''
+        l_account: ''
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
