@@ -6,10 +6,10 @@
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
-            <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行记录" />
+            <el-input v-model="queryData.id" clearable placeholder="请输入任务ID" />
           </el-form-item>
           <el-form-item>
-            <el-input v-model="queryData.id" clearable placeholder="请输入任务ID" />
+            <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行记录" />
           </el-form-item>
           <el-form-item>
             <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
