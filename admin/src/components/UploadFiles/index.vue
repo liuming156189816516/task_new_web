@@ -9,6 +9,7 @@
     <div v-if="successFileList.length" class="successFileNameList">
       <div v-for="(item,index) in successFileList" :key="index" class="fileItem">
         <div class="fileIcon"><i class="el-icon-video-camera-solid file_content" @click.stop="openVideoFn(item)" /></div>
+        <div class="fileDel"><i class="el-icon-delete" @click.stop="delFileFun(item,index)" /></div>
       </div>
     </div>
     <div v-else class="fileNameList">
@@ -98,7 +99,6 @@ export default {
   watch: {
     defaultFileList: {
       handler(value) {
-        console.log('value', value)
         if (value && value.length) {
           this.successFileList = value
         } else {
@@ -235,6 +235,10 @@ export default {
     openVideoFn(row) {
       this.$emit('openVideoFn',row)
     },
+    // 删除 视频
+    delFileFun(index) {
+      this.resetFileFun()
+    },
     // 清空数据
     resetFileFun() {
       this.percentage = 0
@@ -324,6 +328,14 @@ export default {
             margin-right: 0;
           }
         }
+      .fileDel{
+        margin-left: 40px;
+        color: red;
+        font-size: 18px;
+        i{
+          cursor: pointer;
+        }
+      }
     }
 
   }

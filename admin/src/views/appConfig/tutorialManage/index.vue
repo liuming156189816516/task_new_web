@@ -330,7 +330,6 @@ export default {
       this.videoFile = [
         { url: row.url,name: row.name }
       ]
-      console.log('this.videoFile',this.videoFile)
     },
     // 上传成功回调
     uploadSuccess(file) {

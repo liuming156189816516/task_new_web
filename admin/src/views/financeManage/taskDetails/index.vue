@@ -47,6 +47,11 @@
             >
               <el-table-column type="selection" width="55" />
               <el-table-column label="序号" type="index" width="60" />
+              <el-table-column label="任务ID" min-width="120" prop="id" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
               <el-table-column label="执行记录" min-width="120" prop="uniqueid" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
@@ -244,15 +249,6 @@
             >
               <el-table-column type="selection" width="55" />
               <el-table-column label="序号" type="index" width="60" />
-              <!--
-task_id
-name
-q_url
-qid
-q_create
-l_account
-
--->
               <el-table-column label="任务ID" min-width="120" prop="task_id" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
