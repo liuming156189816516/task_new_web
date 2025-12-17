@@ -25,7 +25,7 @@ let isRelogin = false
  */
 const service = axios.create({
   baseURL,
-  timeout: 15000
+  timeout: 60000
 })
 
 /**
