@@ -60,14 +60,14 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
-        <el-table-column label="类别" min-width="120" prop="category">
-          <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], categoryList) }}
-          </template>
-        </el-table-column>
         <el-table-column label="名称" min-width="120" prop="name">
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="类别" min-width="120" prop="category">
+          <template slot-scope="scope">
+            {{ getLabelByVal(scope.row[scope.column.property], categoryList)||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="语言" min-width="120" prop="locale">
@@ -99,7 +99,7 @@
           </template>
           <template slot-scope="scope">
             <span v-if="scope.row[scope.column.property]!=='0'">
-              {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) }}
+              {{ getLabelByVal(scope.row[scope.column.property], taskTypeList)||'-' }}
             </span>
             <span v-else>-</span>
           </template>
