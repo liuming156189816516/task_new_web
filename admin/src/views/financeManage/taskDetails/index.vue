@@ -8,18 +8,9 @@
           <el-form-item>
             <el-input v-model="queryData.uniqueid" clearable placeholder="请输入执行记录" />
           </el-form-item>
-          <!--
           <el-form-item>
-            <el-select v-model="queryData.task_type" clearable filterable placeholder="请选择任务类型">
-              <el-option v-for="item in taskTypeList" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
+            <el-input v-model="queryData.id" clearable placeholder="请输入任务ID" />
           </el-form-item>
-          <el-form-item>
-            <el-select v-model="queryData.platform" clearable filterable placeholder="请选择平台">
-              <el-option v-for="item in platformList" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-          </el-form-item>
-          -->
           <el-form-item>
             <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
           </el-form-item>
@@ -442,7 +433,8 @@ export default {
         platform: '',
         execute_status: '',
         settle_status: '',
-        l_account: ''
+        l_account: '',
+        id: '',
       },
       tableData: [],
       cliHeight: null,
@@ -562,6 +554,7 @@ export default {
         platform: this.queryData.platform ? Number(this.queryData.platform) : 0,
         execute_status: this.queryData.execute_status ? Number(this.queryData.execute_status) : 0,
         settle_status: this.queryData.settle_status ? Number(this.queryData.settle_status) : 0,
+        id: this.queryData.id,
       }
 
       getTaskRecordListApi(params).then(res => {
@@ -582,7 +575,7 @@ export default {
     restQueryBtn() {
       this.queryData = {
         page: 1,
-        limit: 20,
+        limit: 10,
         total: 0,
         uniqueid: '',
         task_type: '',
@@ -590,6 +583,7 @@ export default {
         execute_status: '',
         settle_status: '',
         l_account: '',
+        id: '',
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
@@ -680,7 +674,7 @@ export default {
           this.taskWsTable.tableData = res.data.list.map(item => {
             item.script_status = item.script_status ? String(item.script_status) : '0'
             item.execute_status = item.execute_status ? String(item.execute_status) : '0'
-            item.member_list = item.member_list ? JSON.parse(item.member_list): ''
+            item.member_list = item.member_list ? JSON.parse(item.member_list) : ''
             item.q_in_member_list = item.q_in_member_list ? JSON.parse(item.q_in_member_list) : ''
             return item
           });
