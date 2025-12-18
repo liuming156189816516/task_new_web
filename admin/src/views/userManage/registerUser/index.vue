@@ -4,16 +4,26 @@
     <!-- 筛选条件 -->
     <el-form size="small" :inline="true" style="margin-top: 10px;">
       <el-form-item>
-        <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" />
+        <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" style="width: 200px" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.account" clearable placeholder="请输入账号" />
+        <el-input v-model="queryData.account" clearable placeholder="请输入账号" style="width: 200px" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.country" clearable placeholder="请输入国家" />
+        <el-input v-model="queryData.country" clearable placeholder="请输入国家" style="width: 200px" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.level" clearable type="number" placeholder="请输入等级" />
+        <el-input v-model="queryData.level" clearable type="number" placeholder="请输入等级" style="width: 200px" />
+      </el-form-item>
+      <el-form-item>
+        <el-date-picker
+          v-model="queryData.time"
+          end-placeholder="结束日期"
+          range-separator="至"
+          start-placeholder="开始日期"
+          style="width: 350px"
+          type="datetimerange"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="warning" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(2)">批量拉黑</el-button>
@@ -123,9 +133,9 @@
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
-          <el-table-column label="注册时间" min-width="120" prop="itime" show-overflow-tooltip>
+          <el-table-column label="注册时间" min-width="160" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-               {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
             </template>
           </el-table-column>
         </el-table>
@@ -147,8 +157,8 @@
 </template>
 
 <script>
-import { successTips, resetPage, getLabelByVal } from '@/utils/index'
-import { formatTimestamp } from '@/filters'
+import { successTips, resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
+import { formatDateTime, formatTimestamp } from '@/filters'
 import { getappuserlist,blacklist } from './api'
 export default {
   data() {
@@ -161,6 +171,7 @@ export default {
         country: '',
         account_id: '',
         level: null,
+        time: []
       },
       tableData: [],
       cliHeight: null,
@@ -193,6 +204,8 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
+      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
@@ -200,6 +213,10 @@ export default {
         country: this.queryData.country,
         account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
         level: Number(this.queryData.level)
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
       }
       getappuserlist(params).then(res => {
         if (res.msg === 'success') {
@@ -222,6 +239,7 @@ export default {
         country: '',
         account_id: '',
         level: null,
+        time: [],
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
