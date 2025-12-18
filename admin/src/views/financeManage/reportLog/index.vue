@@ -238,8 +238,8 @@ export default {
     getDataListFun(num) {
       this.loading = true;
       this.tableData = []
-      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
-      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
+      const startTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,

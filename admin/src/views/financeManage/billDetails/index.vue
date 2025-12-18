@@ -193,16 +193,18 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      const startTime = zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000
-      const endTime = zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000
+      const startTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
         task_record_id: this.queryData.task_record_id,
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
-        start_time: startTime,
-        end_time: endTime,
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
       }
       getBillRecordListApi(params).then(res => {
         if (res.msg === 'success') {
