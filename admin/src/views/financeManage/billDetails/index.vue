@@ -15,8 +15,8 @@
           end-placeholder="结束日期"
           range-separator="至"
           start-placeholder="开始日期"
-          style="width: 250px"
-          type="daterange"
+          style="width: 400px"
+          type="datetimerange"
         />
       </el-form-item>
       <el-form-item>
@@ -86,7 +86,7 @@
           </el-table-column>
           <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ $time(scope.row[scope.column.property]) }}
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
             </template>
           </el-table-column>
         </el-table>
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { resetPage, getLabelByVal, } from '@/utils/index'
+import { resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
 import { formatTimestamp, formatDateTime } from '@/filters'
 import { getBillRecordListApi } from './api'
 
@@ -123,6 +123,7 @@ export default {
         task_record_id: '',
         l_account: '',
         time: [],
+        timeNum: []
       },
       tableData: [],
       cliHeight: null,
@@ -174,7 +175,7 @@ export default {
   mounted() {
     const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
     const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
-    this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
+    this.queryData.time = [startTime, endTime]
     this.getDataListFun();
   },
   created() {
@@ -192,18 +193,17 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
-      const startTime = formatDateTime(new Date(this.queryData.time[0]), 'YYYY-MM-DD') + ' 00:00:00'
-      const endTime = formatDateTime(new Date(this.queryData.time[1]), 'YYYY-MM-DD') + ' 23:59:59'
+      const startTime = zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000
+      const endTime = zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
         task_record_id: this.queryData.task_record_id,
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
-        start_time: Number(new Date(startTime)) / 1000,
-        end_time: Number(new Date(endTime)) / 1000,
+        start_time: startTime,
+        end_time: endTime,
       }
-
       getBillRecordListApi(params).then(res => {
         if (res.msg === 'success') {
           this.loading = false;

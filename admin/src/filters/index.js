@@ -158,6 +158,7 @@ export function formatDateTime(date = new Date(), format = 'YYYY-MM-DD HH:mm:ss'
 }
 
 /**
+ * 国际化转化数据
  * @param {object} data
  * @param {string} kay
  */

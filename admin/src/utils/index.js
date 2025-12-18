@@ -1,14 +1,10 @@
-/**
- * Created by PanJiaChen on 16/11/18.
- */
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import store from '@/store'
 
-/**
- * Parse the time to string
- * @param {(Object|string|number)} time
- * @param {string} cFormat
- * @returns {string | null}
- */
-import i18n from '@/locale'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 export function resetPage(page) {
   return [10, 20, 50, 100, 200, 500, 1000]
@@ -28,6 +24,12 @@ export function moneyCut(amount, limit = 2) {
   return `${a.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${b}`
 }
 
+/**
+ * Parse the time to string
+ * @param {(Object|string|number)} time
+ * @param {string} cFormat
+ * @returns {string | null}
+ */
 export function parseTime(time, cFormat) {
   if (arguments.length === 0 || !time) {
     return null
@@ -1461,3 +1463,64 @@ export function getImageExtension(url) {
     return null;
   }
 }
+
+/**
+ * 获取系统默认时区（统一出口）
+ */
+function getDefaultTimeZone() {
+  // 1️⃣ Vuex（首选）
+  const fromStore =
+    store?.getters?.['timeZone/currentTimeZone']
+
+  if (fromStore) return fromStore
+
+  // 2️⃣ localStorage（刷新 / 首屏）
+  const fromStorage =
+    localStorage.getItem('__GLOBAL_TIME_ZONE__')
+
+  if (fromStorage) return fromStorage
+
+  // 3️⃣ 兜底
+  return dayjs.tz.guess()
+}
+
+/**
+ * 指定时区时间 → 时间戳（返回时间戳）  相同时间->不同时间戳 ps:时区不同时间戳不同
+ * @param {string} dateStr - 'YYYY-MM-DD HH:mm:ss'
+ * @param {'ms' | 's'} unit
+ */
+export function zonedTimeToTimestamp(
+  dateStr,
+  unit = 'ms'
+) {
+  const timeZone = getDefaultTimeZone()
+
+  const d = dayjs.tz(
+    dateStr,
+    'YYYY-MM-DD HH:mm:ss',
+    timeZone
+  )
+
+  return unit === 's'
+    ? d.unix()
+    : d.valueOf()
+}
+
+/**
+ * 时间戳 → 指定时区时间(返回日期)  不同时间戳->相同时间
+ * @param {number} timestamp
+ * @param {string} format
+ */
+export function timestampToZonedTime(
+  timestamp,
+  format = 'YYYY-MM-DD HH:mm:ss'
+) {
+  const timeZone = getDefaultTimeZone()
+  const isSecond = String(timestamp).length === 10
+
+  return dayjs
+    .utc(isSecond ? timestamp * 1000 : timestamp)
+    .tz(timeZone)
+    .format(format)
+}
+
