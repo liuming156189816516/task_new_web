@@ -16,6 +16,16 @@
         />
       </el-form-item>
       <el-form-item>
+        <el-date-picker
+          v-model="queryData.time"
+          end-placeholder="结束日期"
+          range-separator="至"
+          start-placeholder="开始日期"
+          style="width: 380px"
+          type="datetimerange"
+        />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -128,12 +138,12 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
+        <el-table-column label="创建时间" min-width="160" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
         </el-table-column>
-        <el-table-column label="更新时间" min-width="120" prop="ptime" show-overflow-tooltip>
+        <el-table-column label="更新时间" min-width="160" prop="ptime" show-overflow-tooltip>
           <template slot-scope="scope">
              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
@@ -157,8 +167,8 @@
 
 <script>
 import { getDataApi, delDataApi } from './api';
-import { deepClone, resetPage, successTips, getLabelByVal } from '@/utils';
-import { formatTimestamp } from '@/filters'
+import {deepClone, resetPage, successTips, getLabelByVal, zonedTimeToTimestamp} from '@/utils';
+import {formatDateTime, formatTimestamp} from '@/filters'
 
 export default {
   name: 'ActivityType',
@@ -173,7 +183,8 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
-        l_account: ''
+        l_account: '',
+        time:[]
       },
       pageOption: resetPage(),
       tableData: [],
@@ -227,14 +238,19 @@ export default {
     getDataListFun(num) {
       this.loading = true;
       this.tableData = []
-      this.queryData.page = num || this.queryData.page;
+      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
-        page: this.queryData.page,
+        page: num || this.queryData.page,
         limit: this.queryData.limit,
         task_type: Number(this.queryData.task_type),
         report_id: this.queryData.report_id,
         uniqueid: this.queryData.uniqueid,
         l_account: this.queryData.l_account
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -319,7 +335,8 @@ export default {
         task_type: '',
         report_id: '',
         uniqueid: '',
-        l_account: ''
+        l_account: '',
+        time: [],
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();

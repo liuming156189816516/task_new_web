@@ -4,24 +4,34 @@
     <div class="condition_warp select_warp">
       <el-form inline size="small">
         <el-form-item>
-          <el-input v-model="factorModel.account" clearable placeholder="请输入用户账号" style="width:180px;" />
+          <el-input v-model="queryData.account" clearable placeholder="请输入用户账号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="factorModel.country" clearable placeholder="请输入国家" style="width:180px;" />
+          <el-input v-model="queryData.country" clearable placeholder="请输入国家" style="width:180px;" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="factorModel.user_withdraw_id" clearable type="number" placeholder="请输入提现编号" style="width:180px;" />
+          <el-input v-model="queryData.user_withdraw_id" clearable type="number" placeholder="请输入提现编号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="factorModel.card_no" clearable placeholder="请输入提现账号" style="width:180px;" />
+          <el-input v-model="queryData.card_no" clearable placeholder="请输入提现账号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="factorModel.card_id" clearable placeholder="请输入订单号" style="width:180px;" />
+          <el-input v-model="queryData.card_id" clearable placeholder="请输入订单号" style="width:180px;" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="factorModel.start_amount" clearable placeholder="开始金额" style="width:110px;" />
+          <el-input v-model="queryData.start_amount" clearable placeholder="开始金额" style="width:110px;" />
           -
-          <el-input v-model="factorModel.end_amount" clearable placeholder="结束金额" style="width:110px;" />
+          <el-input v-model="queryData.end_amount" clearable placeholder="结束金额" style="width:110px;" />
+        </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="queryData.time"
+            end-placeholder="结束日期"
+            range-separator="至"
+            start-placeholder="开始日期"
+            style="width: 400px"
+            type="datetimerange"
+          />
         </el-form-item>
         <el-form-item>
           <el-button icon="el-icon-search" size="small" type="primary" @click="getPayOrderList(1)">
@@ -81,14 +91,14 @@
           <el-table-column label="状态" min-width="100" prop="status">
             <template slot="header">
               <el-dropdown size="medium " trigger="click" @command="(command) => handleStatus(command)">
-                <span :class="[factorModel.status?'dropdown_title':'']" style="color:#909399">状态
+                <span :class="[queryData.status?'dropdown_title':'']" style="color:#909399">状态
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
                     v-for="(item,idx) in payOptions"
                     :key="idx"
-                    :class="{'dropdown_selected':idx==factorModel.status}"
+                    :class="{'dropdown_selected':idx==queryData.status}"
                     :command="idx"
                   >
                     {{ item == '' ? '全部' : item }}
@@ -105,14 +115,14 @@
           <el-table-column label="审批状态" min-width="100" prop="status">
             <template slot="header">
               <el-dropdown size="medium " trigger="click" @command="(command) => handleApply(command)">
-                <span :class="[factorModel.apy_status?'dropdown_title':'']" style="color:#909399">审批状态
+                <span :class="[queryData.apy_status?'dropdown_title':'']" style="color:#909399">审批状态
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
                     v-for="(item,idx) in applyOption"
                     :key="idx"
-                    :class="{'dropdown_selected':idx==factorModel.apy_status}"
+                    :class="{'dropdown_selected':idx==queryData.apy_status}"
                     :command="idx"
                   >
                     {{ item == '' ? '全部' : item }}
@@ -140,22 +150,22 @@
           </el-table-column>
           <el-table-column align="center" label="创建时间" prop="itime" width="160">
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property] > 0 ? $baseFun.resetTime(scope.row[scope.column.property] * 1000) : "~" }}
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
             </template>
           </el-table-column>
           <el-table-column align="center" label="更新时间" prop="ptime" width="160">
             <template slot-scope="scope">
-              {{ scope.row.ptime > 0 ? $baseFun.resetTime(scope.row.ptime * 1000) : "~" }}
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
             </template>
           </el-table-column>
 
         </el-table>
         <div class="layui_page">
           <el-pagination
-            :current-page.sync="factorModel.page"
-            :page-size="factorModel.limit"
+            :current-page.sync="queryData.page"
+            :page-size="queryData.limit"
             :page-sizes="pageOption"
-            :total="factorModel.total"
+            :total="queryData.total"
             background
             layout="total, sizes, prev, pager, next, jumper"
             @size-change="limitChange"
@@ -198,31 +208,31 @@
 </template>
 
 <script>
-import { getLabelByVal, resetPage } from '@/utils'
+import { getLabelByVal, resetPage ,zonedTimeToTimestamp } from '@/utils'
 import { getwithdrawapprovallist, doapproval } from './api'
 import withdrawConfig from './components/withdrawConfig'
 import { getLanguagePageListApi } from '@/api/common';
-import { getLanguagePageList } from '@/filters';
+import { getLanguagePageList ,formatDateTime } from '@/filters';
 export default {
   components: {
     withdrawConfig
   },
   data() {
     return {
-      factorModel: {
-        status: 0,
-        card_no: '',
-        task_name: '',
+      queryData: {
         account: '',
-        apy_status: '',
-        total: 0,
-        offset: 1,
-        limit: 10,
+        country: '',
+        user_withdraw_id: null,
+        card_no: '',
         card_id: '',
         start_amount: '',
         end_amount: '',
-        country: '',
-        user_withdraw_id: null
+        status: 0,
+        apy_status: '',
+        total: 0,
+        page: 1,
+        limit: 10,
+        time: [],
       },
       type: 0,
       cliHeight: null,
@@ -266,7 +276,6 @@ export default {
       if (val === false) {
         this.$refs.sendForm.resetFields();
         this.sendForm.id = '';
-        this.sendForm.task_name = '';
         this.sendForm.file_url = '';
         this.sendForm.link = '';
         this.sendForm.remark = '';
@@ -284,43 +293,61 @@ export default {
     window.removeEventListener('resize', this.setFullHeight);
   },
   methods: {
-    // 重置
-    restQueryBtn() {
-      this.factorModel.card_no = '';
-      this.factorModel.account = '';
-      this.factorModel.apy_status = '';
-      this.factorModel.card_id = '';
-      this.factorModel.start_amount = '';
-      this.factorModel.end_amount = '';
-      this.getPayOrderList(1)
-      this.$refs.serveTable.clearSelection();
-    },
     // 获取订单列表
     getPayOrderList(num) {
       this.loading = true;
-      this.factorModel.page = num || this.factorModel.page;
+      this.queryData.page = num || this.queryData.page;
+      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
-        id: this.factorModel.card_id,
-        page: this.factorModel.page,
-        limit: this.factorModel.limit,
-        status: this.factorModel.status,
-        card_no: this.factorModel.card_no,
-        account: this.factorModel.account,
-        approval_status: this.factorModel.apy_status || -1,
-        start_amount: Number(this.factorModel.start_amount) || -1,
-        end_amount: Number(this.factorModel.end_amount) || -1,
-        country: this.factorModel.country,
-        user_withdraw_id: Number(this.factorModel.user_withdraw_id) || -1,
+        id: this.queryData.card_id,
+        page: this.queryData.page,
+        limit: this.queryData.limit,
+        status: this.queryData.status,
+        card_no: this.queryData.card_no,
+        account: this.queryData.account,
+        approval_status: this.queryData.apy_status || -1,
+        start_amount: Number(this.queryData.start_amount) || -1,
+        end_amount: Number(this.queryData.end_amount) || -1,
+        country: this.queryData.country,
+        user_withdraw_id: Number(this.queryData.user_withdraw_id) || -1,
       }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
+      }
+
       getwithdrawapprovallist(params).then(res => {
-        this.loading = false;
-        this.factorModel.total = res.data.total;
-        this.bannerList = res.data.list.map(item => {
-          item.remark = item.remark ? getLabelByVal(item.remark, this.titleList) ? getLabelByVal(item.remark, this.titleList) : item.remark : '-'
-          return item
-        })
-        this.bounty_amount = res.data.total_amount || 0;
+        if (res.msg === 'success') {
+          this.loading = false;
+          this.queryData.total = res.data.total;
+          this.bannerList = res.data.list.map(item => {
+            item.remark = item.remark ? getLabelByVal(item.remark, this.titleList) ? getLabelByVal(item.remark, this.titleList) : item.remark : '-'
+            return item
+          })
+          this.bounty_amount = res.data.total_amount || 0;
+        }
       })
+    },
+    // 重置
+    restQueryBtn() {
+      this.queryData = {
+        account: '',
+        country: '',
+        user_withdraw_id: null,
+        card_no: '',
+        card_id: '',
+        start_amount: '',
+        end_amount: '',
+        status: 0,
+        apy_status: '',
+        total: 0,
+        page: 1,
+        limit: 10,
+        time: [],
+      }
+      this.getPayOrderList(1)
+      this.$refs.serveTable.clearSelection();
     },
     // 提现配置
     openWithdrawFun() {
@@ -353,12 +380,11 @@ export default {
       }
     },
     handleApply(val) {
-      console.log(val);
-      this.factorModel.apy_status = val;
+      this.queryData.apy_status = val;
       this.getPayOrderList();
     },
     handleStatus(val) {
-      this.factorModel.status = val;
+      this.queryData.status = val;
       this.getPayOrderList();
     },
     // 获取国际化
@@ -372,12 +398,12 @@ export default {
     },
     // 页数量
     limitChange(val) {
-      this.factorModel.limit = val;
+      this.queryData.limit = val;
       this.getPayOrderList()
     },
     // 页码
     offsetChange(val) {
-      this.factorModel.offset = val;
+      this.queryData.page = val;
       this.getPayOrderList()
     },
     // 批量审批

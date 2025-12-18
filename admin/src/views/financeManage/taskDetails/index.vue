@@ -15,6 +15,16 @@
             <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
           </el-form-item>
           <el-form-item>
+            <el-date-picker
+              v-model="queryData.time"
+              end-placeholder="结束日期"
+              range-separator="至"
+              start-placeholder="开始日期"
+              style="width: 400px"
+              type="datetimerange"
+            />
+          </el-form-item>
+          <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
           </el-form-item>
@@ -149,7 +159,7 @@
               </el-table-column>
               <el-table-column label="执行时间" min-width="150" prop="execute_time" show-overflow-tooltip>
                 <template slot-scope="scope">
-                   {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
                 </template>
               </el-table-column>
               <el-table-column label="结算时间" min-width="150" prop="settle_time" show-overflow-tooltip>
@@ -162,13 +172,6 @@
                   {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
-              <!--
-              <el-table-column label="任务配置" min-width="80" prop="conf" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  <el-button size="small" type="primary" @click.stop="confOpenFun(scope.row)">配置</el-button>
-                </template>
-              </el-table-column>
-              -->
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row[scope.column.property] }}
@@ -176,7 +179,7 @@
               </el-table-column>
               <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                   {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
                 </template>
               </el-table-column>
             </el-table>
@@ -217,6 +220,16 @@
             <el-input v-model="taskWsTable.queryData.l_account" clearable placeholder="请输入所属用户" />
           </el-form-item>
           <el-form-item>
+            <el-date-picker
+              v-model="taskWsTable.queryData.time"
+              end-placeholder="结束日期"
+              range-separator="至"
+              start-placeholder="开始日期"
+              style="width: 500px"
+              type="datetimerange"
+            />
+          </el-form-item>
+          <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getTaskWsGroupRecordListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restTaskWsQueryBtn">重置</el-button>
           </el-form-item>
@@ -228,7 +241,7 @@
               ref="serveTableWs"
               v-loading="taskWsTable.loading"
               :data="taskWsTable.tableData"
-              :height="cliHeight"
+              :height="cliHeight -50"
               border
               element-loading-spinner="el-icon-loading"
               row-key="id"
@@ -351,9 +364,9 @@
                   {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
-              <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
+              <el-table-column label="创建时间" min-width="180" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                   {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
                 </template>
               </el-table-column>
             </el-table>
@@ -415,8 +428,8 @@
 </template>
 
 <script>
-import { resetPage, getLabelByVal, deepClone } from '@/utils/index'
-import { formatTimestamp, getLanguagePageList } from '@/filters'
+import { resetPage, getLabelByVal, deepClone,zonedTimeToTimestamp } from '@/utils/index'
+import { formatDateTime, formatTimestamp, getLanguagePageList } from '@/filters'
 import { getTaskRecordListApi, getTaskWsGroupRecordListApi } from './api'
 import { getLanguagePageListApi } from '@/api/common';
 
@@ -435,6 +448,7 @@ export default {
         settle_status: '',
         l_account: '',
         id: '',
+        time: []
       },
       tableData: [],
       cliHeight: null,
@@ -494,6 +508,7 @@ export default {
           qid: '',
           q_create: '',
           l_account: '',
+          time: []
         },
         tableData: [],
         loading: false,
@@ -535,7 +550,7 @@ export default {
       if (tab.label === '任务明细') {
         this.getDataListFun(1)
       } else if (tab.label === '拉群任务明细') {
-        this.getTaskWsGroupRecordListFun()
+        this.getTaskWsGroupRecordListFun(1)
       }
     },
     // 获取 任务明细 列表
@@ -545,6 +560,8 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
+      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
@@ -555,6 +572,10 @@ export default {
         execute_status: this.queryData.execute_status ? Number(this.queryData.execute_status) : 0,
         settle_status: this.queryData.settle_status ? Number(this.queryData.settle_status) : 0,
         id: this.queryData.id,
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
       }
 
       getTaskRecordListApi(params).then(res => {
@@ -584,6 +605,7 @@ export default {
         settle_status: '',
         l_account: '',
         id: '',
+        time: [],
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
@@ -655,6 +677,8 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.taskWsTable.loading = true;
+      const startTime = this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[0]))) / 1000 : ''
+      const endTime = this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.taskWsTable.queryData.page,
         limit: this.taskWsTable.queryData.limit,
@@ -666,7 +690,10 @@ export default {
         q_create: this.taskWsTable.queryData.q_create,
         l_account: this.taskWsTable.queryData.l_account,
       }
-
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
+      }
       getTaskWsGroupRecordListApi(params).then(res => {
         if (res.msg === 'success') {
           this.taskWsTable.loading = false;
@@ -694,6 +721,7 @@ export default {
         qid: '',
         q_create: '',
         l_account: '',
+        time: [],
       };
       this.getTaskWsGroupRecordListFun(1)
       this.$refs.serveTableWs.clearSelection();

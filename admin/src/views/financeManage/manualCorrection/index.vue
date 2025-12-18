@@ -7,6 +7,16 @@
         <el-input v-model="queryData.app_account_id" type="number" clearable placeholder="请输入用户账号ID" @input="changeInput" />
       </el-form-item>
       <el-form-item>
+        <el-date-picker
+          v-model="queryData.time"
+          end-placeholder="结束日期"
+          range-separator="至"
+          start-placeholder="开始日期"
+          style="width: 380px"
+          type="datetimerange"
+        />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -65,14 +75,9 @@
           </el-table-column>
           <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-               {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
             </template>
           </el-table-column>
-          <!--          <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">-->
-          <!--            <template slot-scope="scope">-->
-          <!--              <el-button size="small" type="primary" @click.stop="openEditAmountFun(scope.row,'调整积分')">调整积分</el-button>-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
         </el-table>
         <div class="layui_page">
           <el-pagination
@@ -122,8 +127,8 @@
 </template>
 
 <script>
-import { resetPage, getLabelByVal, deepClone, successTips, } from '@/utils/index'
-import { formatTimestamp } from '@/filters'
+import { resetPage, getLabelByVal, deepClone, successTips, zonedTimeToTimestamp, } from '@/utils/index'
+import { formatDateTime, formatTimestamp } from '@/filters'
 import { getRecordReviseListApi, editAmountApi } from './api'
 
 export default {
@@ -135,6 +140,7 @@ export default {
         limit: 20,
         total: 0,
         app_account_id: null,
+        time: []
       },
       tableData: [],
       cliHeight: null,
@@ -180,10 +186,16 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.loading = true;
+      const startTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
         app_account_id: Number(this.queryData.app_account_id) ,
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
       }
       getRecordReviseListApi(params).then(res => {
         if (res.msg === 'success') {
@@ -242,6 +254,7 @@ export default {
         limit: 20,
         total: 0,
         app_account_id: null,
+        time: [],
       };
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
