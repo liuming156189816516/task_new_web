@@ -373,7 +373,7 @@
                 </template>
               </el-table-column>
               <el-table-column label="群原因" min-width="120" prop="group_reason" show-overflow-tooltip>
-                <template slot-scope="scope">>
+                <template slot-scope="scope">
                   {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
                 </template>
               </el-table-column>
