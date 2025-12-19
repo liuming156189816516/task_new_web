@@ -26,6 +26,9 @@
         />
       </el-form-item>
       <el-form-item>
+        <el-input v-model="queryData['cf-ip']" clearable placeholder="请输入cf-ip" style="width:180px;" @input="changeInput" />
+      </el-form-item>
+      <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
@@ -140,12 +143,12 @@
         </el-table-column>
         <el-table-column label="创建时间" min-width="160" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
-             {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+            {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
         </el-table-column>
         <el-table-column label="更新时间" min-width="160" prop="ptime" show-overflow-tooltip>
           <template slot-scope="scope">
-             {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+            {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
         </el-table-column>
       </el-table>
@@ -167,8 +170,8 @@
 
 <script>
 import { getDataApi, delDataApi } from './api';
-import {deepClone, resetPage, successTips, getLabelByVal, zonedTimeToTimestamp} from '@/utils';
-import {formatDateTime, formatTimestamp} from '@/filters'
+import { deepClone, resetPage, successTips, getLabelByVal, zonedTimeToTimestamp } from '@/utils';
+import { formatDateTime, formatTimestamp } from '@/filters'
 
 export default {
   name: 'ActivityType',
@@ -184,7 +187,8 @@ export default {
         report_id: '',
         uniqueid: '',
         l_account: '',
-        time:[]
+        time: [],
+        'cf-ip': '',
       },
       pageOption: resetPage(),
       tableData: [],
@@ -238,15 +242,16 @@ export default {
     getDataListFun(num) {
       this.loading = true;
       this.tableData = []
-      const startTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
-      const endTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
+      const startTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
         task_type: Number(this.queryData.task_type),
         report_id: this.queryData.report_id,
         uniqueid: this.queryData.uniqueid,
-        l_account: this.queryData.l_account
+        l_account: this.queryData.l_account,
+        'cf-ip': this.queryData['cf-ip']
       }
       if (startTime && endTime) {
         params.start_time = startTime

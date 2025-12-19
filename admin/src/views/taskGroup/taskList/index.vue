@@ -584,14 +584,7 @@
                   @input="changeInput"
                 />
               </el-form-item>
-              <el-form-item
-                label="链接类型"
-                prop="link_type"
-              >
-                <el-radio v-model="confModal.formData.link_type" :label="1">视频</el-radio>
-                <el-radio v-model="confModal.formData.link_type" :label="2">广告</el-radio>
-                <el-radio v-model="confModal.formData.link_type" :label="3">按钮</el-radio>
-              </el-form-item>
+              -
               <el-form-item
                 label="描述"
                 prop="desc"
