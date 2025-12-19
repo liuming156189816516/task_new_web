@@ -379,7 +379,7 @@
               </el-table-column>
 
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
-                <template slot-scope="scope">>
+                <template slot-scope="scope">
                   {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
                 </template>
               </el-table-column>
@@ -551,7 +551,7 @@ export default {
         ],
         groupStatusList: [
           { label: '全部', value: '0' },
-          { label: '正常', value: '-1' },
+          { label: '正常', value: '1' },
           { label: '异常', value: '2' },
         ]
       },
