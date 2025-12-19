@@ -225,9 +225,17 @@
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
-              style="width: 500px"
+              style="width: 455px"
               type="datetimerange"
             />
+          </el-form-item>
+          <el-form-item>
+            <el-select v-model="taskWsTable.queryData.group_status" clearable filterable placeholder="请选择群状态">
+              <el-option v-for="item in taskWsTable.groupStatusList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="taskWsTable.queryData.group_reason" clearable placeholder="请输入群原因" />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getTaskWsGroupRecordListFun(1)">查询</el-button>
@@ -359,9 +367,20 @@
                   </el-tooltip>
                 </template>
               </el-table-column>
-              <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
+              <el-table-column label="群状态" min-width="120" prop="group_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] }}
+                  {{ scope.row[scope.column.property]!=='0'?getLabelByVal(scope.row[scope.column.property], taskWsTable.groupStatusList):'-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群原因" min-width="120" prop="group_reason" show-overflow-tooltip>
+                <template slot-scope="scope">>
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+
+              <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
+                <template slot-scope="scope">>
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
                 </template>
               </el-table-column>
               <el-table-column label="创建时间" min-width="180" prop="itime" show-overflow-tooltip>
@@ -508,6 +527,8 @@ export default {
           qid: '',
           q_create: '',
           l_account: '',
+          group_status: '',
+          group_reason: '',
           time: []
         },
         tableData: [],
@@ -527,6 +548,11 @@ export default {
           { label: 'Timeout', value: '2' },
           { label: 'Err', value: '3' },
           { label: 'Completed', value: '4' },
+        ],
+        groupStatusList: [
+          { label: '全部', value: '0' },
+          { label: '正常', value: '-1' },
+          { label: '异常', value: '2' },
         ]
       },
       titleList: []
@@ -689,6 +715,8 @@ export default {
         qid: this.taskWsTable.queryData.qid,
         q_create: this.taskWsTable.queryData.q_create,
         l_account: this.taskWsTable.queryData.l_account,
+        group_status: Number(this.taskWsTable.queryData.group_status),
+        group_reason: this.taskWsTable.queryData.group_reason,
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -703,6 +731,7 @@ export default {
             item.execute_status = item.execute_status ? String(item.execute_status) : '0'
             item.member_list = item.member_list ? JSON.parse(item.member_list) : ''
             item.q_in_member_list = item.q_in_member_list ? JSON.parse(item.q_in_member_list) : ''
+            item.group_status = item.group_status ? String(item.group_status) : '0'
             return item
           });
         }
