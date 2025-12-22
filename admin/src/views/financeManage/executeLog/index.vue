@@ -81,11 +81,11 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="执行ID" min-width="120" prop="uniqueid" show-overflow-tooltip>
-          <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
-          </template>
-        </el-table-column>
+<!--        <el-table-column label="执行ID" min-width="120" prop="uniqueid" show-overflow-tooltip>-->
+<!--          <template slot-scope="scope">-->
+<!--            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column label="任务类型" min-width="120" prop="task_type" show-overflow-tooltip>
           <template slot="header">
             <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'task_type')">
