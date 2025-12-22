@@ -69,6 +69,7 @@
         use-virtual
         @selection-change="handleSelectionChange"
         @row-click="rowSelectChange"
+        @cell-click="cellClickFun"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column label="序号" type="index" width="60" />
@@ -175,6 +176,20 @@
         />
       </div>
     </div>
+
+    <!-- JSON 配置 -->
+    <el-dialog
+      :title="configData.title"
+      center
+      :visible.sync="configData.show"
+      :close-on-click-modal="false"
+      width="80%"
+      @close="closeConfigModal"
+    >
+      <div style="height: 75vh">
+        <jsonEditorTool ref="refJsonEditorToo" v-model="configData.value" :show-footer="false" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -182,10 +197,12 @@
 import { getDataApi, delDataApi } from './api';
 import { deepClone, resetPage, successTips, getLabelByVal, zonedTimeToTimestamp } from '@/utils';
 import { formatDateTime, formatTimestamp } from '@/filters'
+import jsonEditorTool from '@/components/jsonEditorTool'
 
 export default {
   name: 'ActivityType',
   components: {
+    jsonEditorTool
   },
   data() {
     return {
@@ -236,6 +253,12 @@ export default {
         { label: 'CANCELLED', value: '11' },
         { label: 'RETRY_LATER', value: '12' },
       ],
+      configData: {
+        title: '',
+        show: false,
+        formData: {},
+        value: null
+      },
 
     }
   },
@@ -343,6 +366,29 @@ export default {
       }
       tableCell.toggleRowSelection(row, true);
     },
+    // 单元格点击
+    cellClickFun(row,column) {
+      console.log('row',row)
+      console.log('column',column)
+      if (column.label === '源数据') {
+        if (row.source_json) {
+          this.configData.title = column.label
+          this.configData.show = true
+          this.configData.value = JSON.parse(row.source_json)
+        } else {
+          this.$message.warning('源数据为空')
+        }
+      }
+      if (column.label === 'activity') {
+        if (row.activity) {
+          this.configData.title = column.label
+          this.configData.show = true
+          this.configData.value = JSON.parse(row.activity)
+        } else {
+          this.$message.warning('activity为空')
+        }
+      }
+    },
     // 重置
     restQueryBtn() {
       this.selectIdData = [];
@@ -361,6 +407,13 @@ export default {
       this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
+    },
+    // 关闭配置
+    closeConfigModal() {
+      this.configData.show = false
+      this.configData.formData = {}
+      this.configData.value = null
+      this.$refs.refJsonEditorToo.closeClearFun()
     },
     // 表头筛选
     handleRowQueryFun(val,kay) {
