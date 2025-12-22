@@ -134,7 +134,8 @@
         </el-table-column>
         <el-table-column label="源数据" min-width="120" prop="source_json" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <span v-if="scope.row[scope.column.property]" class="clickPointer">{{ scope.row[scope.column.property] }}</span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column label="version" min-width="120" prop="version" show-overflow-tooltip>
@@ -144,7 +145,8 @@
         </el-table-column>
         <el-table-column label="activity" min-width="120" prop="activity" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            <span v-if="scope.row[scope.column.property]" class="clickPointer">{{ scope.row[scope.column.property] }}</span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
         <el-table-column label="所属用户" min-width="120" prop="l_account" show-overflow-tooltip>
@@ -486,5 +488,11 @@ export default {
 .tableContentLoading {
   text-align: center;
   margin: 50px 0;
+}
+
+.clickPointer{
+  color: #409eff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 </style>
