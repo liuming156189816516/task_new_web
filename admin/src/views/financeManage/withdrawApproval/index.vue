@@ -284,7 +284,10 @@ export default {
     }
   },
   mounted() {
-    this.getPayOrderList();
+    const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+    const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+    this.queryData.time = [startTime, endTime]
+    this.getPayOrderList(1);
     this.setFullHeight();
     this.getLanguagePageListFun()
     window.addEventListener('resize', this.setFullHeight);
@@ -297,8 +300,8 @@ export default {
     getPayOrderList(num) {
       this.loading = true;
       this.queryData.page = num || this.queryData.page;
-      const startTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
-      const endTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
+      const startTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
+      const endTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         id: this.queryData.card_id,
         page: this.queryData.page,
@@ -346,6 +349,9 @@ export default {
         limit: 10,
         time: [],
       }
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getPayOrderList(1)
       this.$refs.serveTable.clearSelection();
     },

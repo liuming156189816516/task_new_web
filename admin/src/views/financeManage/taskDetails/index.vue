@@ -561,6 +561,10 @@ export default {
   computed: {},
   watch: {},
   mounted() {
+    const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+    const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+    this.queryData.time = [startTime, endTime]
+    this.taskWsTable.queryData.time = [startTime, endTime]
     this.getDataListFun();
     this.getLanguagePageListFun()
   },
@@ -633,6 +637,9 @@ export default {
         id: '',
         time: [],
       };
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },
@@ -752,6 +759,9 @@ export default {
         l_account: '',
         time: [],
       };
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.taskWsTable.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getTaskWsGroupRecordListFun(1)
       this.$refs.serveTableWs.clearSelection();
     },

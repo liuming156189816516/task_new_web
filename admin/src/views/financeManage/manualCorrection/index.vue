@@ -169,7 +169,10 @@ export default {
   computed: {},
   watch: {},
   mounted() {
-    this.getDataListFun();
+    const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+    const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+    this.queryData.time = [startTime, endTime]
+    this.getDataListFun(1);
   },
   created() {
     this.setFullHeight();
@@ -256,6 +259,9 @@ export default {
         app_account_id: null,
         time: [],
       };
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },

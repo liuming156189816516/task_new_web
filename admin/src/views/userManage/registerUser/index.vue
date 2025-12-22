@@ -188,8 +188,13 @@ export default {
   computed: {},
   watch: {
   },
+  mounted() {
+    const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+    const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+    this.queryData.time = [startTime, endTime]
+    this.getDataListFun(1);
+  },
   created() {
-    this.getDataListFun();
     this.setFullHeight();
     window.addEventListener('resize', this.setFullHeight);
   },
@@ -205,7 +210,7 @@ export default {
       })
       this.loading = true;
       const startTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[0]))) / 1000 : ''
-      const endTime =this.queryData.time &&  this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
+      const endTime = this.queryData.time && this.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.queryData.page,
         limit: this.queryData.limit,
@@ -241,6 +246,9 @@ export default {
         level: null,
         time: [],
       };
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
     },
