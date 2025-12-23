@@ -15,18 +15,21 @@
         <el-table-column label="登录人数" min-width="100" prop="login_num" />
         <el-table-column label="当天新增活跃用户" min-width="140" prop="today_new_active_user_num" />
         <el-table-column label="当天活跃用户" min-width="120" prop="today_active_user_num" />
-        <el-table-column label="ws私发任务数" min-width="120" prop="ws_send_task_num" />
-        <el-table-column label="ws自动私发任务数" min-width="140" prop="ws_send_auto_task_num" />
-        <el-table-column label="ws拉群任务数" min-width="120" prop="ws_create_group_task_num" />
-        <el-table-column label="短信任务数" min-width="100" prop="sms_task_num" />
-        <el-table-column label="ws私发资源数" min-width="120" prop="ws_send_data_num" />
-        <el-table-column label="ws自动私发资源数" min-width="140" prop="ws_send_auto_data_num" />
-        <el-table-column label="ws拉群资源数" min-width="120" prop="ws_create_group_data_num" />
-        <el-table-column label="短信资源数" min-width="100" prop="sms_data_num" />
-        <el-table-column label="ws私发赏金" min-width="100" prop="ws_send_bounty_amount" />
-        <el-table-column label="ws自动私发赏金" min-width="140" prop="ws_send_auto_bounty_amount" />
-        <el-table-column label="ws拉群赏金" min-width="100" prop="ws_create_group_bounty_amount" />
-        <el-table-column label="短信赏金" min-width="100" prop="sms_bounty_amount" />
+        <el-table-column label="ws私发/s自动私发/ws拉群/短信任务数" min-width="300" prop="ws_send_task_num">
+          <template slot-scope="scope">
+            {{ scope.row.ws_send_task_num+"/"+scope.row.ws_send_auto_task_num+"/"+scope.row.ws_create_group_task_num+"/"+scope.row.sms_task_num }}
+          </template>
+        </el-table-column>
+        <el-table-column label="ws私发/ws自动私发/ws拉群/短信资源数" min-width="300" prop="ws_send_data_num">
+          <template slot-scope="scope">
+            {{ scope.row.ws_send_data_num+"/"+scope.row.ws_send_auto_data_num+"/"+scope.row.ws_create_group_data_num+"/"+scope.row.sms_data_num }}
+          </template>
+        </el-table-column>
+        <el-table-column label="ws私发/ws自动私发/ws拉群/短信赏金" min-width="300" prop="ws_send_bounty_amount">
+          <template slot-scope="scope">
+            {{ scope.row.ws_send_bounty_amount+"/"+scope.row.ws_send_auto_bounty_amount+"/"+scope.row.ws_create_group_bounty_amount+"/"+scope.row.sms_bounty_amount }}
+          </template>
+        </el-table-column>
         <el-table-column label="佣金" min-width="100" prop="commission_amount" />
         <el-table-column label="提现人数" min-width="100" prop="withdraw_user_num" />
         <el-table-column label="提现扣款" min-width="100" prop="withdraw_amount" />
@@ -69,28 +72,30 @@
           style="width: 100%;"
           use-virtual
         >
-          <el-table-column label="主键ID" min-width="140" prop="id" show-overflow-tooltip />
+          <el-table-column label="统计时间" min-width="140" prop="statis_time_str" />
           <el-table-column label="新增注册" min-width="100" prop="register_num" />
           <el-table-column label="登录人数" min-width="100" prop="login_num" />
           <el-table-column label="当天新增活跃用户" min-width="140" prop="today_new_active_user_num" />
           <el-table-column label="当天活跃用户" min-width="120" prop="today_active_user_num" />
-          <el-table-column label="ws私发任务数" min-width="120" prop="ws_send_task_num" />
-          <el-table-column label="ws自动私发任务数" min-width="140" prop="ws_send_auto_task_num" />
-          <el-table-column label="ws拉群任务数" min-width="120" prop="ws_create_group_task_num" />
-          <el-table-column label="短信任务数" min-width="100" prop="sms_task_num" />
-          <el-table-column label="ws私发资源数" min-width="120" prop="ws_send_data_num" />
-          <el-table-column label="ws自动私发资源数" min-width="140" prop="ws_send_auto_data_num" />
-          <el-table-column label="ws拉群资源数" min-width="120" prop="ws_create_group_data_num" />
-          <el-table-column label="短信资源数" min-width="100" prop="sms_data_num" />
-          <el-table-column label="ws私发赏金" min-width="100" prop="ws_send_bounty_amount" />
-          <el-table-column label="ws自动私发赏金" min-width="140" prop="ws_send_auto_bounty_amount" />
-          <el-table-column label="ws拉群赏金" min-width="100" prop="ws_create_group_bounty_amount" />
-          <el-table-column label="短信赏金" min-width="100" prop="sms_bounty_amount" />
+          <el-table-column label="ws私发/s自动私发/ws拉群/短信任务数" min-width="300" prop="ws_send_task_num">
+            <template slot-scope="scope">
+              {{ scope.row.ws_send_task_num+"/"+scope.row.ws_send_auto_task_num+"/"+scope.row.ws_create_group_task_num+"/"+scope.row.sms_task_num }}
+            </template>
+          </el-table-column>
+          <el-table-column label="ws私发/ws自动私发/ws拉群/短信资源数" min-width="300" prop="ws_send_data_num">
+            <template slot-scope="scope">
+              {{ scope.row.ws_send_data_num+"/"+scope.row.ws_send_auto_data_num+"/"+scope.row.ws_create_group_data_num+"/"+scope.row.sms_data_num }}
+            </template>
+          </el-table-column>
+          <el-table-column label="ws私发/ws自动私发/ws拉群/短信赏金" min-width="300" prop="ws_send_bounty_amount">
+            <template slot-scope="scope">
+              {{ scope.row.ws_send_bounty_amount+"/"+scope.row.ws_send_auto_bounty_amount+"/"+scope.row.ws_create_group_bounty_amount+"/"+scope.row.sms_bounty_amount }}
+            </template>
+          </el-table-column>
           <el-table-column label="佣金" min-width="100" prop="commission_amount" />
           <el-table-column label="提现人数" min-width="100" prop="withdraw_user_num" />
           <el-table-column label="提现扣款" min-width="100" prop="withdraw_amount" />
           <el-table-column label="人工调整" min-width="100" prop="adjust_amount" />
-          <el-table-column label="统计时间 年月日" min-width="140" prop="statis_time_str" />
           <el-table-column label="统计时间" min-width="160" prop="statis_time" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
