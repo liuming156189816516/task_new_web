@@ -69,7 +69,7 @@
           style="width: 100%;"
           use-virtual
         >
-          <el-table-column label="主键ID" min-width="100" prop="id" />
+          <el-table-column label="主键ID" min-width="140" prop="id" show-overflow-tooltip />
           <el-table-column label="新增注册" min-width="100" prop="register_num" />
           <el-table-column label="登录人数" min-width="100" prop="login_num" />
           <el-table-column label="当天新增活跃用户" min-width="140" prop="today_new_active_user_num" />
@@ -91,7 +91,11 @@
           <el-table-column label="提现扣款" min-width="100" prop="withdraw_amount" />
           <el-table-column label="人工调整" min-width="100" prop="adjust_amount" />
           <el-table-column label="统计时间 年月日" min-width="140" prop="statis_time_str" />
-          <el-table-column label="统计时间" min-width="100" prop="statis_time" />
+          <el-table-column label="统计时间" min-width="160" prop="statis_time" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+            </template>
+          </el-table-column>
         </el-table>
         <div class="layui_page">
           <el-pagination
