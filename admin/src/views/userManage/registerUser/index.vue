@@ -2,44 +2,51 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form :inline="true" size="small" style="margin-top: 10px;">
-      <el-form-item>
-        <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" style="width: 200px" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.account" clearable placeholder="请输入账号" style="width: 200px" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.country" clearable placeholder="请输入国家" style="width: 200px" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.level" clearable placeholder="请输入等级" style="width: 200px" type="number" />
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" />
-      </el-form-item>
-      <el-form-item>
-        <el-date-picker
-          v-model="queryData.time"
-          end-placeholder="结束日期"
-          range-separator="至"
-          start-placeholder="开始日期"
-          style="width: 350px"
-          type="datetimerange"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="warning" @click="pullBlackBtn(2)">
-          批量拉黑
-        </el-button>
-        <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="success" @click="pullBlackBtn(1)">
-          批量启用
-        </el-button>
-        <el-button :disabled="selectIdData.length===0" type="primary" @click="batchExportFun">批量导出
-        </el-button>
-        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
-        <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
-      </el-form-item>
+    <el-form :inline="true" size="small" style="margin-top: 10px;display: flex;justify-content: space-between">
+      <div>
+        <el-form-item>
+          <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="queryData.account" clearable placeholder="请输入账号" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="queryData.country" clearable placeholder="请输入国家" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="queryData.level" clearable placeholder="请输入等级" style="width: 200px" type="number" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="queryData.time"
+            end-placeholder="结束日期"
+            range-separator="至"
+            start-placeholder="开始日期"
+            style="width: 350px"
+            type="datetimerange"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="warning" @click="pullBlackBtn(2)">
+            批量拉黑
+          </el-button>
+          <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="success" @click="pullBlackBtn(1)">
+            批量启用
+          </el-button>
+          <el-button :disabled="selectIdData.length===0" type="primary" @click="batchExportFun">批量导出
+          </el-button>
+          <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
+          <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item>
+          <el-button type="primary" @click="openPieModal">品牌统计</el-button>
+        </el-form-item>
+      </div>
     </el-form>
     <!-- 列表 -->
     <div class="content_main">
@@ -167,15 +174,31 @@
         </div>
       </div>
     </div>
+
+    <!-- 品牌统计 -->
+    <el-dialog
+      :close-on-click-modal="false"
+      title="品牌统计"
+      :visible.sync="pieModal.show"
+      center
+      width="700px"
+      class="actionModal"
+      @close="closePieModal"
+    >
+      <pieChart width="100%" height="400px" :list="pieModal.list" :name="pieModal.name" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { successTips, resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp } from '@/filters'
-import { getappuserlist, blacklist, batchExportApi } from './api'
-
+import { getappuserlist, blacklist, batchExportApi ,randStatisticsAPi} from './api'
+import pieChart from '@/components/echarts/PieChart.vue'
 export default {
+  components: {
+    pieChart
+  },
   data() {
     return {
       queryData: {
@@ -198,7 +221,12 @@ export default {
       statusList: [
         { label: '正常', value: '1', type: 'success' },
         { label: '禁用', value: '2', type: 'danger' },
-      ]
+      ],
+      pieModal: {
+        show: false,
+        name: '品牌统计',
+        list: [],
+      }
     }
   },
   computed: {},
@@ -267,6 +295,20 @@ export default {
       this.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
+    },
+    // 打开品牌统计
+    openPieModal() {
+      this.pieModal.show = true
+      randStatisticsAPi({}).then(res=>{
+        if (res.msg === 'success') {
+          this.pieModal.list = res.data.list
+          console.log('res',res)
+        }
+      })
+    },
+    //
+    closePieModal() {
+      this.pieModal.show = false
     },
     // 分页 切换
     changePageSize(val, type) {

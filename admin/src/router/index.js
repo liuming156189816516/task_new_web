@@ -323,6 +323,15 @@ export const asyncRoutes = [
           title: '上报日志',
         }
       },
+      {
+        path: '/reportLog',
+        component: () => import('@/views/financeManage/reportLog'),
+        name: 'reportLog',
+        meta: {
+          title: '数据统计',
+        }
+      },
+
     ]
   },
   // 发布任务

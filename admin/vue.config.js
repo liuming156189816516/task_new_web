@@ -37,10 +37,10 @@ module.exports = {
         // target: 'https://fanyi-api.baidu.com',  // 设置代理的目标URL
         // target: 'https://api.niutrans.com',  // 设置代理的目标URL
         // target: 'http://54.255.54.247:9000',  // 设置代理的目标URL
-        target: 'http://54.254.103.133:9000',  // 设置代理的目标URL
+        target: 'http://54.254.103.133:9000', // 设置代理的目标URL
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''  // 将请求中的/api路径替换为空
+          '^/api': '' // 将请求中的/api路径替换为空
         }
       }
     }
@@ -49,25 +49,25 @@ module.exports = {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
-    //关闭 webpack 的性能提示
+    // 关闭 webpack 的性能提示
     output: {
       filename: `static/js/[name].${timeStamp}js`, // 输出的bundle文件名
       chunkFilename: `static/js/[name].${timeStamp}.js` // 输出的chunk文件名
     },
     performance: {
       hints: 'warning',
-      //入口起点的最大体积
+      // 入口起点的最大体积
       maxEntrypointSize: 50000000,
-      //生成文件的最大体积
+      // 生成文件的最大体积
       maxAssetSize: 30000000,
-      //只给出 js 文件的性能提示
-      assetFilter: function (assetFilename) {
+      // 只给出 js 文件的性能提示
+      assetFilter: function(assetFilename) {
         return assetFilename.endsWith('.js');
       }
     },
     resolve: {
       alias: {
-        '@': resolve('src')
+        '@': path.resolve(__dirname, 'src')
       }
     }
   },

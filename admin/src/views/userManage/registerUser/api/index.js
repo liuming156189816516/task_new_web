@@ -26,3 +26,12 @@ export const batchExportApi = (params) => {
     data: params
   })
 }
+
+// 操作
+export const randStatisticsAPi = (params) => {
+  return request({
+    url: '/adminmember/statuserbydevicebrand',
+    method: 'post',
+    data: params
+  })
+}
