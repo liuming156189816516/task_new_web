@@ -447,14 +447,14 @@
             />
           </el-form-item>
           <el-form-item
-            v-show="confModal.cloneRow.task_type === '9'"
+            v-show="['9','7','3','4'].includes(confModal.cloneRow.task_type)"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">数据包配置</div>
           </el-form-item>
           <el-form-item
-            v-show="confModal.cloneRow.task_type === '9'"
+            v-show="['9','7','3','4'].includes(confModal.cloneRow.task_type)"
             label=""
             prop="data_pack_id"
             style="width: 100%"
@@ -525,7 +525,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-show="['3','4','7'].includes(confModal.cloneRow.task_type)"
+            v-show="[].includes(confModal.cloneRow.task_type)"
             label="是否优先取本地数据"
             prop="is_prefer_local_data"
             style="width: 100%"
@@ -806,7 +806,8 @@ export default {
         rules.content = [{ required: true, message: '请输入文本内容', trigger: 'change' }]
       }
       if (['3','4','7'].includes(type)) {
-        rules.is_prefer_local_data = [{ required: true, message: '请选择是否优先取本地数据', trigger: 'change' }]
+        rules.data_pack_id = [{ required: true, message: '请选择数据包', trigger: 'change' }]
+        // rules.is_prefer_local_data = [{ required: true, message: '请选择是否优先取本地数据', trigger: 'change' }]
       }
 
       return rules
@@ -976,6 +977,7 @@ export default {
           }
           if (taskType === '3' || taskType === '4' || taskType === '7') {
             formData.conf.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'
+            formData.conf.data_pack_id = this.confModal.formData.data_pack_id
           }
           if (taskType === '9') {
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
