@@ -16,7 +16,7 @@
         <el-input v-model="queryData.level" clearable placeholder="请输入等级" style="width: 200px" type="number" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" type="number" />
+        <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" />
       </el-form-item>
       <el-form-item>
         <el-date-picker
