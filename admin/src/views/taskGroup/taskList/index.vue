@@ -226,7 +226,7 @@
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
-             {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+            {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" prop="operation" show-overflow-tooltip width="240">
@@ -817,7 +817,6 @@ export default {
     this.getDataListFun(); // 获取列表
     this.getLanguagePageListFun();
     this.getBadgeListFun()
-    this.getDataPackListFun()
     this.setFullHeight();
     this.getSendMsgGroupApi()
     window.addEventListener('resize', this.setFullHeight);
@@ -876,6 +875,7 @@ export default {
     confOpenFun(row) {
       this.confModal.show = true
       this.confModal.cloneRow = deepClone(row)
+      let type = 3
       if (deepClone(row).conf) {
         this.confModal.formData.conf = deepClone(row).conf.message
         this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id || ''
@@ -896,6 +896,13 @@ export default {
         this.confModal.formData.link_type = this.confModal.cloneRow.conf.send_material.link_type
         this.confModal.formData.content = this.confModal.cloneRow.conf.send_material.content
       }
+      if (['7','3'].includes(row.task_type)) {
+        type = 1
+      }
+      if (['4'].includes(row.task_type)) {
+        type = 2
+      }
+      this.getDataPackListFun(type)
     },
     // 修改发布
     changeReleaseStatusFun(form, val) {
@@ -1232,7 +1239,7 @@ export default {
       })
     },
     // 获取 徽章列表 配置 等级列表
-    getDataPackListFun() {
+    getDataPackListFun(type) {
       const params = {
         page: 1,
         limit: 1000,
@@ -1242,7 +1249,7 @@ export default {
           this.dataPackList = []
           res.data.list.forEach((item, index) => {
             const val = { label: item.name, value: item.id }
-            if (item.data_type === 3) {
+            if (item.data_type === type) {
               this.dataPackList.push(val)
             }
           })

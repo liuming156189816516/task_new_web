@@ -324,9 +324,9 @@ export const asyncRoutes = [
         }
       },
       {
-        path: '/reportLog',
-        component: () => import('@/views/financeManage/reportLog'),
-        name: 'reportLog',
+        path: '/dataStatistics',
+        component: () => import('@/views/financeManage/dataStatistics'),
+        name: 'dataStatistics',
         meta: {
           title: '数据统计',
         }
