@@ -181,11 +181,11 @@
       title="品牌统计"
       :visible.sync="pieModal.show"
       center
-      width="700px"
+      width="60%"
       class="actionModal"
       @close="closePieModal"
     >
-      <pieChart width="100%" height="400px" :list="pieModal.list" :name="pieModal.name" />
+      <pieChart width="100%" :height="cliHeight+'px'" :list="pieModal.list" :name="pieModal.name" />
     </el-dialog>
   </div>
 </template>
