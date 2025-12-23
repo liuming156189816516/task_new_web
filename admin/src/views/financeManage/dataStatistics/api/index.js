@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 列表
+// 数据统计列表
 export const getStatisticsList = (params) => {
   return request({
     url: '/statis/getstatislist',
@@ -9,7 +9,7 @@ export const getStatisticsList = (params) => {
   })
 }
 
-// 列表
+// 当日统计数据
 export const getTodayStatisticsInfo = (params) => {
   return request({
     url: '/statis/gettodaystatisinfo',
