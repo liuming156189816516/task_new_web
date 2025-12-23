@@ -492,17 +492,17 @@ export default {
         { label: 'Sms', value: '4' },
       ],
       executeStatusList: [
-        { label: '全部', value: '0' },
-        { label: 'Running', value: '1' },
-        { label: 'Timeout', value: '2' },
-        { label: 'Err', value: '3' },
-        { label: 'Completed', value: '4' },
+        { label: '全部', en: '全部',value: '0' },
+        { label: '执行中',en: 'Running', value: '1' },
+        { label: '已超时',en: 'Timeout', value: '2' },
+        { label: '失败', en: 'Err',value: '3' },
+        { label: '已完成', en: 'Completed',value: '4' },
       ],
       settleStatusList: [
-        { label: '全部', value: '0' },
-        { label: 'Settling', value: '1' },
-        { label: 'Unsettled', value: '2' },
-        { label: 'Settled', value: '3' },
+        { label: '全部', en: '全部',value: '0' },
+        { label: '结算中',en: 'Settling', value: '1' },
+        { label: '未结算',en: 'Unsettled', value: '2' },
+        { label: '已结算',en: 'Settled', value: '3' },
       ],
       confModal: {
         show: false,
@@ -710,8 +710,9 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.taskWsTable.loading = true;
-      const startTime = this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[0]))) / 1000 : ''
-      const endTime = this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[1]))) / 1000 : ''
+      console.log('this.taskWsTable.queryData.time',this.taskWsTable.queryData.time)
+      const startTime = this.taskWsTable.queryData.time && this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[0]))) / 1000 : ''
+      const endTime = this.taskWsTable.queryData.time && this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[1]))) / 1000 : ''
       const params = {
         page: num || this.taskWsTable.queryData.page,
         limit: this.taskWsTable.queryData.limit,

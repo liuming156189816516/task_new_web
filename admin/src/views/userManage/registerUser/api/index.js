@@ -17,3 +17,12 @@ export const blacklist = (params) => {
     data: params
   })
 }
+
+// 操作
+export const batchExportApi = (params) => {
+  return request({
+    url: '/adminmember/exportappuseraccount',
+    method: 'post',
+    data: params
+  })
+}

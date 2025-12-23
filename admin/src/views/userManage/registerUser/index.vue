@@ -2,7 +2,7 @@
 <template>
   <div style="width:100%;height: 100%; float: left; position: relative;">
     <!-- 筛选条件 -->
-    <el-form size="small" :inline="true" style="margin-top: 10px;">
+    <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
         <el-input v-model="queryData.account_id" clearable placeholder="请输入账号ID" style="width: 200px" />
       </el-form-item>
@@ -13,7 +13,10 @@
         <el-input v-model="queryData.country" clearable placeholder="请输入国家" style="width: 200px" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.level" clearable type="number" placeholder="请输入等级" style="width: 200px" />
+        <el-input v-model="queryData.level" clearable placeholder="请输入等级" style="width: 200px" type="number" />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" type="number" />
       </el-form-item>
       <el-form-item>
         <el-date-picker
@@ -26,9 +29,15 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="warning" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(2)">批量拉黑</el-button>
-        <el-button type="success" :disabled="selectIdData.length===0" icon="el-icon-user" @click="pullBlackBtn(1)">批量启用</el-button>
-        <el-button type="primary" icon="el-icon-search" @click="getDataListFun(1)">查询</el-button>
+        <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="warning" @click="pullBlackBtn(2)">
+          批量拉黑
+        </el-button>
+        <el-button :disabled="selectIdData.length===0" icon="el-icon-user" type="success" @click="pullBlackBtn(1)">
+          批量启用
+        </el-button>
+        <el-button :disabled="selectIdData.length===0" type="primary" @click="batchExportFun">批量导出
+        </el-button>
+        <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
         <el-button icon="el-icon-refresh-right" @click="restQueryBtn">重置</el-button>
       </el-form-item>
     </el-form>
@@ -133,9 +142,14 @@
               {{ scope.row[scope.column.property] }}
             </template>
           </el-table-column>
+          <el-table-column label="上级账号" min-width="120" prop="f_account" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="注册时间" min-width="160" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
-              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+              {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
             </template>
           </el-table-column>
         </el-table>
@@ -159,7 +173,8 @@
 <script>
 import { successTips, resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp } from '@/filters'
-import { getappuserlist,blacklist } from './api'
+import { getappuserlist, blacklist, batchExportApi } from './api'
+
 export default {
   data() {
     return {
@@ -170,6 +185,7 @@ export default {
         account: '',
         country: '',
         account_id: '',
+        f_account: '',
         level: null,
         time: []
       },
@@ -180,14 +196,13 @@ export default {
       selectIdData: [],
       pageOption: resetPage(),
       statusList: [
-        { label: '正常' ,value: '1' ,type: 'success' },
-        { label: '禁用' ,value: '2' ,type: 'danger' },
+        { label: '正常', value: '1', type: 'success' },
+        { label: '禁用', value: '2', type: 'danger' },
       ]
     }
   },
   computed: {},
-  watch: {
-  },
+  watch: {},
   mounted() {
     const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
     const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
@@ -217,7 +232,8 @@ export default {
         account: this.queryData.account,
         country: this.queryData.country,
         account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
-        level: Number(this.queryData.level)
+        level: Number(this.queryData.level),
+        f_account: this.queryData.f_account
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -275,16 +291,18 @@ export default {
     // 选择项
     handleSelectionChange(arr) {
       this.selectData = arr
-      this.selectIdData = arr.map(item => { return item.uid })
+      this.selectIdData = arr.map(item => {
+        return item.uid
+      })
     },
     // 单行点击
     rowSelectChange(row) {
       const tableCell = this.$refs.serveTable;
       if (this.selectIdData.includes(row.uid)) {
-        tableCell.toggleRowSelection(row,false);
+        tableCell.toggleRowSelection(row, false);
         return;
       }
-      tableCell.toggleRowSelection(row,true);
+      tableCell.toggleRowSelection(row, true);
     },
     // 操作
     pullBlackBtn(val) {
@@ -296,7 +314,7 @@ export default {
         beforeClose: function(action, instance, done) {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
-            blacklist({ ptype: val,ids: that.selectIdData }).then(res => {
+            blacklist({ ptype: val, ids: that.selectIdData }).then(res => {
               instance.confirmButtonLoading = false;
               if (res.code !== 0) return;
               that.getDataListFun();
@@ -312,6 +330,17 @@ export default {
         that.$message({ type: 'info', message: '已取消' });
       })
     },
+    // 批量导出
+    batchExportFun() {
+      const params = {
+        Ids: this.selectIdData
+      }
+      batchExportApi(params).then(res => {
+        if (res.msg === 'success') {
+          window.location.href = res.data.url
+        }
+      })
+    },
     // 窗口高度
     setFullHeight() {
       this.cliHeight = document.documentElement.clientHeight - 240;
@@ -322,7 +351,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 ::v-deep .el-card__body {
   width: 100%;
   height: 118px;
@@ -334,7 +363,7 @@ export default {
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
 
-  &>div {
+  & > div {
     flex: 1;
   }
 
@@ -364,7 +393,8 @@ export default {
     }
   }
 }
-.level_01{
+
+.level_01 {
   display: flex;
   color: #C0C4CC;
   align-items: center;
@@ -374,12 +404,14 @@ export default {
   position: relative;
   border-radius: 4px;
   border: 1px solid #DCDFE6;
-  .level_01_1{
+
+  .level_01_1 {
     color: #606266;
     font-size: 13px;
     margin-left: 10px;
   }
-  .screen_t_02{
+
+  .screen_t_02 {
     width: 20px;
     height: 20px;
     color: #fff;
@@ -391,7 +423,8 @@ export default {
     margin-left: 5px;
     background-color: #409eff;
   }
-  .down_01{
+
+  .down_01 {
     width: 500px;
     height: 40px;
     position: absolute;
@@ -402,7 +435,8 @@ export default {
     background-color: #FFFFFF;
     -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    .down_01_01{
+
+    .down_01_01 {
       position: absolute;
       display: block;
       width: 0;
@@ -419,7 +453,8 @@ export default {
       -webkit-filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03));
       filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03));
     }
-    .down_01_01::after{
+
+    .down_01_01::after {
       position: absolute;
       display: block;
       width: 0;
@@ -429,31 +464,38 @@ export default {
     }
   }
 }
-.level_01:hover{
+
+.level_01:hover {
   border-color: #C0C4CC;
 }
-.custom_popover{
-  .screen_01{
+
+.custom_popover {
+  .screen_01 {
     color: #209cdf;
     display: flex;
-    .screen_t_01{
+
+    .screen_t_01 {
       display: flex;
       opacity: .7;
       align-items: center;
       cursor: pointer;
-      i{
+
+      i {
         margin-right: 5px;
       }
     }
-    .screen_t_01:nth-child(1){
+
+    .screen_t_01:nth-child(1) {
       margin-right: 20px;
     }
-    .screen_t_01:hover{
+
+    .screen_t_01:hover {
       opacity: 1;
     }
   }
-  .select_02{
-    .el-icon-close{
+
+  .select_02 {
+    .el-icon-close {
       font-size: 14px;
       color: #f56c6c;
       font-weight: bold;
@@ -461,12 +503,14 @@ export default {
     }
   }
 }
-.level_01_01{
+
+.level_01_01 {
   width: 100%;
   display: flex;
   font-size: 12px;
   margin-bottom: 10px;
-  .level_01_02{
+
+  .level_01_02 {
     color: #409eff;
     display: flex;
     align-items: center;
@@ -476,7 +520,8 @@ export default {
     width: max-content;
     margin-right: 10px;
     background-color: #ecf5ff;
-    .el-icon-error{
+
+    .el-icon-error {
       color: #409eff;
       font-size: 17px;
       cursor: pointer;
@@ -484,9 +529,11 @@ export default {
     }
   }
 }
-::v-deep .el-form-item{
+
+::v-deep .el-form-item {
   margin-bottom: 10px;
 }
+
 ::v-deep .el-radio-group {
   margin-top: -2px;
 }
@@ -529,12 +576,14 @@ export default {
   display: flex;
   width: 100%;
   justify-content: space-between;
+
   .group_content {
     width: 100%;
     overflow-x: auto;
   }
 }
-.group_tips{
+
+.group_tips {
   display: flex;
   color: #f56c6c;
   font-size: 12px;
@@ -594,6 +643,7 @@ export default {
   overflow-y: auto;
   flex-shrink: 0;
   flex-wrap: wrap;
+
   .group_item {
     display: flex;
     width: 100%;
@@ -605,13 +655,16 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 0 8px 0 12px;
+
     .group_name {
       width: 80%;
       display: flex;
       align-items: center;
+
       .left_icon {
         margin-right: 6px;
       }
+
       .group_text {
         max-width: 90%;
         overflow: hidden;
@@ -638,8 +691,7 @@ export default {
         align-items: center;
         justify-content: center;
         // background-color: darkgreen;
-        border: 1px solid #ebeef5;
-      ;
+        border: 1px solid #ebeef5;;
         -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
 
@@ -677,11 +729,13 @@ export default {
   color: #67c23a;
   background-color: #f0f9eb;
 }
-.close_inherit, .add_inherit{
+
+.close_inherit, .add_inherit {
   display: flex;
   width: 100%;
   justify-content: center;
-  .close_desc{
+
+  .close_desc {
     display: flex;
     height: max-content;
     color: #606266;
@@ -693,35 +747,42 @@ export default {
     flex-direction: column;
     border: 1px solid #dcdcdc;
   }
-  .footer_btn{
+
+  .footer_btn {
     display: flex;
     margin-top: 20px;
     justify-content: center;
   }
 }
-.add_inherit{
-  justify-content:space-between;
-  .table_group{
+
+.add_inherit {
+  justify-content: space-between;
+
+  .table_group {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
   }
-  .table_ele{
+
+  .table_ele {
     width: 100%;
     height: 100%;
     // display: flex;
     flex-grow: 2;
     flex-direction: column;
-    .tab_check_warp{
+
+    .tab_check_warp {
       margin: 12px 0 20px 10px;
     }
   }
 }
-.seat_class{
-  border:1px solid #e0e0e0;
+
+.seat_class {
+  border: 1px solid #e0e0e0;
   padding: 10px;
   border-radius: 10px;
-  .seat_item{
+
+  .seat_item {
     display: flex;
     align-items: center;
     height: 28px;
@@ -729,10 +790,11 @@ export default {
     color: #409eff;
     background: #ecf5ff;
     border-radius: 4px;
-    border:1px solid #b3d8ff;
+    border: 1px solid #b3d8ff;
   }
 }
-.loading_icon{
+
+.loading_icon {
   margin-top: 10px;
 }
 </style>
