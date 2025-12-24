@@ -404,7 +404,7 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane key="tabs3" label="分析群任务明细" name="tabs3">
+      <el-tab-pane key="tabs3" label="分享群任务明细" name="tabs3">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
