@@ -582,7 +582,7 @@ export default {
       return ['', this.$t('sys_l067'), this.$t('sys_l068'), '验群号']
     },
     accountRoleList() {
-      return ['', '管理员', '进群号']
+      return ['', '管理员', '进群号', '验群号']
     },
     accountOptions() {
       return ['', this.$t('sys_g032'), this.$t('sys_g033'), this.$t('sys_g034'), this.$t('sys_g035'), this.$t('sys_g036')]
