@@ -404,52 +404,154 @@
           </div>
         </div>
       </el-tab-pane>
-    </el-tabs>
-    <!-- 配置 -->
-    <el-dialog
-      :close-on-click-modal="false"
-      :visible.sync="confModal.show"
-      center
-      class="actionConfModal"
-      title="配置"
-      width="500px"
-      @close="closeConfModal"
-    >
-      <div :style="{maxHeight:cliHeight-100+'px'}" class="content">
-        <el-form
-          ref="refConfModal"
-          :model="confModal.formData"
-          :rules="confModal.rules"
-          label-position="top"
-          label-width="0"
-          size="small"
-        >
-          <el-form-item label="配置:" prop="conf">
-            <el-input
-              v-model="confModal.formData.conf"
-              :autosize="{ minRows: 4, maxRows: 10}"
-              :readonly="true"
-              placeholder="请输入配置"
-              style="width: 100%"
-              type="textarea"
-              @input="changeInput"
+      <el-tab-pane key="tabs3" label="分析群任务明细" name="tabs3">
+        <!-- 筛选条件 -->
+        <el-form :inline="true" size="small" style="margin-top: 10px;">
+          <el-form-item>
+            <el-input v-model="taskWsShareTable.queryData.task_id" clearable placeholder="请输入任务ID" />
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="taskWsShareTable.queryData.q_url" clearable placeholder="请输入群链接" />
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="taskWsShareTable.queryData.l_account" clearable placeholder="请输入所属用户" />
+          </el-form-item>
+
+          <el-form-item>
+            <el-input v-model="taskWsShareTable.queryData.reason" clearable placeholder="请输入原因" />
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker
+              v-model="taskWsShareTable.queryData.time"
+              end-placeholder="结束日期"
+              range-separator="至"
+              start-placeholder="开始日期"
+              style="width: 455px"
+              type="datetimerange"
             />
           </el-form-item>
+          <el-form-item>
+            <el-button icon="el-icon-search" type="primary" @click="getTaskWsShareGroupRecordListFun(1)">查询</el-button>
+            <el-button icon="el-icon-refresh-right" @click="restTaskWsShareQueryBtn">重置</el-button>
+          </el-form-item>
         </el-form>
-      </div>
-      <div slot="footer">
-        <div class="el-item-bottom" style="text-align:center;">
-          <el-button @click="closeConfModal">关闭</el-button>
+        <!-- 列表 -->
+        <div class="content_main">
+          <div class="group_content">
+            <el-table
+              ref="serveTableWs"
+              v-loading="taskWsShareTable.loading"
+              :data="taskWsShareTable.tableData"
+              :height="cliHeight -50"
+              border
+              element-loading-spinner="el-icon-loading"
+              row-key="id"
+              show-body-overflow="title"
+              style="width: 100%;"
+              use-virtual
+              @selection-change="handleTaskWsShareSelectionChange"
+              @row-click="rowTaskWsShareSelectChange"
+            >
+              <el-table-column type="selection" width="55" />
+              <el-table-column label="序号" type="index" width="60" />
+              <el-table-column label="任务ID" min-width="120" prop="task_id" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="营销账号" min-width="120" prop="ad_account" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群链接" min-width="120" prop="q_url" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="执行状态" min-width="120" prop="execute_status" show-overflow-tooltip>
+                <template slot="header">
+                  <el-dropdown trigger="click" @command="(val) => handleTaskWsShareRowQueryFun(val,'execute_status')">
+                    <span :class="[(taskWsShareTable.queryData.execute_status)>0?'dropdown_title':'']" style="color:#909399"> 执行状态
+                      <i class="el-icon-arrow-down el-icon--right" />
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item
+                        v-for="(item,index) in taskWsShareTable.executeStatusList"
+                        :key="index"
+                        :class="{'dropdown_selected':item.value===taskWsShareTable.queryData.execute_status}"
+                        :command="item.value"
+                      >{{ item.label }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </template>
+                <template slot-scope="scope">
+                  <span v-if="scope.row[scope.column.property]!=='0'">
+                    {{ getLabelByVal(scope.row[scope.column.property], taskWsShareTable.executeStatusList) }}
+                  </span>
+                  <span v-else>-</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="群ID" min-width="120" prop="qid" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群创建者" min-width="120" prop="q_create" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="群成员" min-width="120" prop="q_in_member_list" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="验群人数" min-width="120" prop="member_num" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] }}
+                </template>
+              </el-table-column>
+              <el-table-column label="原因" min-width="120" prop="reason" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                </template>
+              </el-table-column>
+              <el-table-column label="创建时间" min-width="180" prop="itime" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="layui_page">
+              <el-pagination
+                :current-page.sync="taskWsShareTable.queryData.page"
+                :page-size="taskWsShareTable.queryData.limit"
+                :page-sizes="taskWsShareTable.pageOption"
+                :total="taskWsShareTable.queryData.total"
+                background
+                layout="total, sizes, prev, pager, next, jumper"
+                @size-change="changeTaskWsSharePageSize($event,'table')"
+                @current-change="changeTaskWsSharePageCurrent($event,'table')"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-    </el-dialog>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import { resetPage, getLabelByVal, deepClone,zonedTimeToTimestamp } from '@/utils/index'
+import { resetPage, getLabelByVal,zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp, getLanguagePageList } from '@/filters'
-import { getTaskRecordListApi, getTaskWsGroupRecordListApi } from './api'
+import { getTaskRecordListApi, getTaskWsGroupRecordListApi, getTaskWsShareGroupRecordListApi } from './api'
 import { getLanguagePageListApi } from '@/api/common';
 
 export default {
@@ -556,6 +658,31 @@ export default {
           { label: '异常', value: '2' },
         ]
       },
+      taskWsShareTable: {
+        queryData: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          task_id: '',
+          execute_status: '',
+          q_url: '',
+          l_account: '',
+          reason: '',
+          time: []
+        },
+        tableData: [],
+        loading: false,
+        selectData: [],
+        selectIdData: [],
+        statusList: [],
+        executeStatusList: [
+          { label: '全部', value: '0' },
+          { label: 'Running', value: '1' },
+          { label: 'Timeout ', value: '2' },
+          { label: 'Err', value: '3' },
+          { label: 'Completed', value: '4' },
+        ],
+      },
       titleList: []
     }
   },
@@ -566,6 +693,7 @@ export default {
     const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
     this.queryData.time = [startTime, endTime]
     this.taskWsTable.queryData.time = [startTime, endTime]
+    this.taskWsShareTable.queryData.time = [startTime, endTime]
     this.getDataListFun();
     this.getLanguagePageListFun()
   },
@@ -582,6 +710,8 @@ export default {
         this.getDataListFun(1)
       } else if (tab.label === '拉群任务明细') {
         this.getTaskWsGroupRecordListFun(1)
+      } else if (tab.label === '分析群任务明细') {
+        this.getTaskWsShareGroupRecordListFun(1)
       }
     },
     // 获取 任务明细 列表
@@ -684,24 +814,6 @@ export default {
         return;
       }
       tableCell.toggleRowSelection(row, true);
-    },
-    // 打开配置
-    confOpenFun(row) {
-      this.confModal.show = true
-      this.confModal.type = 'edit'
-      this.confModal.cloneRow = deepClone(row)
-      if (deepClone(row).conf && deepClone(row).conf.message) {
-        this.confModal.formData.conf = deepClone(row).conf.message
-      }
-    },
-    // 关闭 配置
-    closeConfModal() {
-      this.confModal.show = false
-      this.confModal.isLoading = false
-      this.$refs.refConfModal.resetFields();
-      this.confModal.formData = {
-        conf: '',
-      }
     },
 
     // 获取 拉群任务明细 列表
@@ -808,6 +920,104 @@ export default {
       }
       tableCell.toggleRowSelection(row, true);
     },
+
+    // 获取 拉群任务明细 列表
+    getTaskWsShareGroupRecordListFun(num) {
+      this.$nextTick(() => {
+        const tableBodyWrapper = this.$refs.serveTableWs.$el.querySelector('.el-table__body-wrapper');
+        tableBodyWrapper.scrollTop = 0
+      })
+      this.taskWsShareTable.loading = true;
+      console.log('this.taskWsShareTable.queryData.time',this.taskWsShareTable.queryData.time)
+      const startTime = this.taskWsShareTable.queryData.time && this.taskWsShareTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsShareTable.queryData.time[0]))) / 1000 : ''
+      const endTime = this.taskWsShareTable.queryData.time && this.taskWsShareTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsShareTable.queryData.time[1]))) / 1000 : ''
+      const params = {
+        page: num || this.taskWsShareTable.queryData.page,
+        limit: this.taskWsShareTable.queryData.limit,
+        task_id: this.taskWsShareTable.queryData.task_id,
+        execute_status: this.taskWsShareTable.queryData.execute_status ? Number(this.taskWsShareTable.queryData.execute_status) : 0,
+        q_url: this.taskWsShareTable.queryData.q_url,
+        l_account: this.taskWsShareTable.queryData.l_account,
+        reason: this.taskWsShareTable.queryData.reason,
+      }
+      if (startTime && endTime) {
+        params.start_time = startTime
+        params.end_time = endTime
+      }
+      getTaskWsShareGroupRecordListApi(params).then(res => {
+        if (res.msg === 'success') {
+          this.taskWsShareTable.loading = false;
+          this.taskWsShareTable.queryData.total = res.data.total;
+          this.taskWsShareTable.tableData = res.data.list.map(item => {
+            item.execute_status = item.execute_status ? String(item.execute_status) : '0'
+            return item
+          });
+        }
+      })
+    },
+    // 重置
+    restTaskWsShareQueryBtn() {
+      this.taskWsShareTable.queryData = {
+        page: 1,
+        limit: 10,
+        total: 0,
+        task_id: '',
+        execute_status: '',
+        name: '',
+        q_url: '',
+        qid: '',
+        q_create: '',
+        l_account: '',
+        time: [],
+      };
+      const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
+      const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
+      this.taskWsShareTable.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
+      this.getTaskWsShareGroupRecordListFun(1)
+      this.$refs.serveTableWs.clearSelection();
+    },
+    // 行筛选
+    handleTaskWsShareRowQueryFun(val, kay) {
+      this.taskWsShareTable.queryData[kay] = val;
+      this.getTaskWsShareGroupRecordListFun(1)
+    },
+    // 分页 切换
+    changeTaskWsSharePageSize(val, type) {
+      if (type === 'table') {
+        this.taskWsShareTable.queryData.limit = val;
+        this.getTaskWsShareGroupRecordListFun();
+      }
+      // else if (type === 'modal') {
+      //
+      // }
+    },
+    // 页码
+    changeTaskWsSharePageCurrent(val, type) {
+      if (type === 'table') {
+        this.taskWsShareTable.queryData.page = val;
+        this.getTaskWsShareGroupRecordListFun();
+      }
+      // else if (type === 'modal') {
+      //
+      // }
+    },
+    // 选择项
+    handleTaskWsShareSelectionChange(arr) {
+      this.taskWsShareTable.selectData = arr
+      this.taskWsShareTable.selectIdData = arr.map(item => {
+        return item.id
+      })
+    },
+    // 单行点击
+    rowTaskWsShareSelectChange(row) {
+      const tableCell = this.$refs.serveTableWs;
+      if (this.taskWsShareTable.selectIdData.includes(row.id)) {
+        tableCell.toggleRowSelection(row, false);
+        return;
+      }
+      tableCell.toggleRowSelection(row, true);
+    },
+
     // 获取国际化
     getLanguagePageListFun() {
       getLanguagePageListApi({}).then(res => {

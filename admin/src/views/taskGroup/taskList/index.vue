@@ -122,7 +122,7 @@
             </el-dropdown>
           </template>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
+            {{ scope.row[scope.column.property] }} -- {{ getLabelByVal(scope.row[scope.column.property], taskTypeList) || '-' }}
           </template>
         </el-table-column>
         <el-table-column label="任务图标" min-width="120" prop="task_icon" show-overflow-tooltip>
@@ -425,14 +425,14 @@
           :rules="confRules"
         >
           <el-form-item
-            v-show="!['1','2','9'].includes(confModal.cloneRow.task_type)"
+            v-show="['3', '4', '7'].includes(confModal.cloneRow.task_type)"
             class="formTitleRules"
             label=""
           >
             <div style="font-size: 18px;color: #333333">发送文本</div>
           </el-form-item>
           <el-form-item
-            v-show="!['1','2','9'].includes(confModal.cloneRow.task_type)"
+            v-show="['3', '4', '7'].includes(confModal.cloneRow.task_type)"
             label=""
             prop="conf"
             style="width: 100%"
@@ -478,6 +478,25 @@
           >
             <el-select v-model="confModal.formData.admin_group_id" clearable filterable placeholder="请选择管理员分组">
               <el-option v-for="item in accountRoleList1" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="confModal.cloneRow.task_type === '10'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">验群分组</div>
+          </el-form-item>
+          <el-form-item
+            v-show="confModal.cloneRow.task_type === '10'"
+            label=""
+            prop="share_group_id"
+            style="width: 100%"
+          >
+            <el-select v-model="confModal.formData.share_group_id" clearable filterable placeholder="请选择验群分组">
+              <el-option v-for="item in accountRoleList3" :key="item.value" :label="item.label" :value="item.value">
                 <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
               </el-option>
             </el-select>
@@ -539,7 +558,7 @@
             />
           </el-form-item>
 
-          <div v-show="confModal.cloneRow.task_type === '9'" style="width: 100%;">
+          <div v-show="['9','10'].includes(confModal.cloneRow.task_type)" style="width: 100%;">
             <el-form-item class="formTitleRules" label="">
               <div style="font-size: 18px;color: #333333">发送素材配置</div>
             </el-form-item>
@@ -584,7 +603,6 @@
                   @input="changeInput"
                 />
               </el-form-item>
-              -
               <el-form-item
                 label="描述"
                 prop="desc"
@@ -765,6 +783,7 @@ export default {
           data_pack_id: '',
           is_prefer_local_data: '1',
           admin_group_id: '',
+          share_group_id: '',
           in_group_id: '',
           title: '',
           image: '',
@@ -784,6 +803,7 @@ export default {
       dataPackList: [],
       accountRoleList1: [],
       accountRoleList2: [],
+      accountRoleList3: [],
     }
   },
   computed: {
@@ -791,14 +811,12 @@ export default {
       const type = this.confModal.cloneRow.task_type
       const rules = {}
       // 普通文本
-      if (!['1', '2', '9'].includes(type)) {
+      if (['3', '4', '7'].includes(type)) {
         rules.conf = [{ required: true, message: '请输入发送文本', trigger: 'change' }]
-      }
-      // task_type = 9
-      if (type === '9') {
         rules.data_pack_id = [{ required: true, message: '请选择数据包', trigger: 'change' }]
-        rules.admin_group_id = [{ required: true, message: '请选择管理员分组', trigger: 'change' }]
-        rules.in_group_id = [{ required: true, message: '请选择进群分组', trigger: 'change' }]
+      }
+
+      if (['9', '10'].includes(type)) {
         rules.title = [{ required: true, message: '请输入标题', trigger: 'change' }]
         rules.image = [{ required: true, message: '请上传图片', trigger: 'change' }]
         rules.link = [{ required: true, message: '请输入跳转链接', trigger: 'change' }]
@@ -806,11 +824,15 @@ export default {
         rules.desc = [{ required: true, message: '请输入描述！', trigger: 'change' }]
         rules.content = [{ required: true, message: '请输入文本内容', trigger: 'change' }]
       }
-      if (['3','4','7'].includes(type)) {
-        rules.data_pack_id = [{ required: true, message: '请选择数据包', trigger: 'change' }]
-        // rules.is_prefer_local_data = [{ required: true, message: '请选择是否优先取本地数据', trigger: 'change' }]
+      if (type === '10') {
+        rules.share_group_id = [{ required: true, message: '请选择验群分组', trigger: 'change' }]
       }
 
+      if (type === '9') {
+        rules.data_pack_id = [{ required: true, message: '请选择数据包', trigger: 'change' }]
+        rules.admin_group_id = [{ required: true, message: '请选择管理员分组', trigger: 'change' }]
+        rules.in_group_id = [{ required: true, message: '请选择进群分组', trigger: 'change' }]
+      }
       return rules
     }
   },
@@ -882,6 +904,7 @@ export default {
         this.confModal.formData.data_pack_id = this.confModal.cloneRow.conf.data_pack_id || ''
         this.confModal.formData.admin_group_id = this.confModal.cloneRow.conf.admin_group_id || ''
         this.confModal.formData.in_group_id = this.confModal.cloneRow.conf.in_group_id || ''
+        this.confModal.formData.share_group_id = this.confModal.cloneRow.conf.share_group_id || ''
         this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
       }
       if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
@@ -897,6 +920,15 @@ export default {
         this.confModal.formData.link_type = this.confModal.cloneRow.conf.send_material.link_type
         this.confModal.formData.content = this.confModal.cloneRow.conf.send_material.content
       }
+      if (deepClone(row).conf && deepClone(row).conf.share_send_material) {
+        this.confModal.formData.title = this.confModal.cloneRow.conf.share_send_material.title
+        this.confModal.formData.image = this.confModal.cloneRow.conf.share_send_material.image
+        this.confModal.formData.link = this.confModal.cloneRow.conf.share_send_material.link
+        this.confModal.formData.desc = this.confModal.cloneRow.conf.share_send_material.desc
+        this.confModal.formData.link_type = this.confModal.cloneRow.conf.share_send_material.link_type
+        this.confModal.formData.content = this.confModal.cloneRow.conf.share_send_material.content
+      }
+
       if (['7','3'].includes(row.task_type)) {
         type = 1
       }
@@ -975,29 +1007,37 @@ export default {
             id: this.confModal.cloneRow.id,
             conf: {
               limit_by_level: levelData,
-              send_material: {}
             }
           }
           const taskType = this.confModal.cloneRow.task_type
 
-          if (taskType !== '1' && taskType !== '2' && taskType !== '9') {
+          if (['3', '4', '7'].includes(taskType)) {
             formData.conf.message = trimOuterSpace(this.confModal.formData.conf)
-          }
-          if (taskType === '3' || taskType === '4' || taskType === '7') {
-            formData.conf.is_prefer_local_data = this.confModal.formData.is_prefer_local_data === '1'
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
           }
+
           if (taskType === '9') {
+            formData.conf.send_material = {}
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
             formData.conf.admin_group_id = this.confModal.formData.admin_group_id
             formData.conf.in_group_id = this.confModal.formData.in_group_id
-
             formData.conf.send_material.title = this.confModal.formData.title
             formData.conf.send_material.image = this.confModal.formData.image
             formData.conf.send_material.link = this.confModal.formData.link
             formData.conf.send_material.desc = this.confModal.formData.desc
             formData.conf.send_material.link_type = this.confModal.formData.link_type
             formData.conf.send_material.content = this.confModal.formData.content
+          }
+
+          if (taskType === '10') {
+            formData.conf.share_send_material = {}
+            formData.conf.share_group_id = this.confModal.formData.share_group_id
+            formData.conf.share_send_material.title = this.confModal.formData.title
+            formData.conf.share_send_material.image = this.confModal.formData.image
+            formData.conf.share_send_material.link = this.confModal.formData.link
+            formData.conf.share_send_material.desc = this.confModal.formData.desc
+            formData.conf.share_send_material.link_type = this.confModal.formData.link_type
+            formData.conf.share_send_material.content = this.confModal.formData.content
           }
 
           editConfDataApi(formData).then(res => {
@@ -1287,6 +1327,21 @@ export default {
           }
         })
       }, 200)
+      // 进群号
+      setTimeout(() => {
+        getSendMsgGroupApi({ account_role: 3 }).then(res => {
+          if (res.msg === 'success') {
+            this.accountRoleList3 = res.data.list.map(item => {
+              return {
+                label: item.name,
+                value: item.group_id,
+                count: item.count,
+                online_num: item.online_num,
+              }
+            })
+          }
+        })
+      }, 400)
     },
     // 打开预览图片
     openImageViewFun(row, kay) {

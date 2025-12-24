@@ -312,7 +312,7 @@ export default {
         report_id: this.queryData.report_id,
         uniqueid: this.queryData.uniqueid,
         l_account: this.queryData.l_account,
-        code: this.queryData.code,
+        code: Number(this.queryData.code),
         'cf-ip': this.queryData['cf-ip']
       }
       if (startTime && endTime) {
