@@ -488,7 +488,7 @@ export default {
       return ['', this.$t('sys_mat044'), this.$t('sys_q108')]
     },
     accountRoleList() {
-      return ['', '管理员', '进群号']
+      return ['', '管理员', '进群号', '验群号']
     },
     protOption() {
       return [this.$t('sys_l121'), this.$t('sys_l111'), this.$t('sys_l115'), this.$t('sys_l122')]

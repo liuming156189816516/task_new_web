@@ -483,6 +483,7 @@ export default {
         { label: 'Sms-Send', value: '4' },
         { label: 'Whatsapp-Send-Auto', value: '7' },
         { label: 'Whatsapp-Group', value: '9' },
+        { label: 'Share-Group', value: '10' },
       ],
       platformList: [
         { label: '全部', value: '0' },

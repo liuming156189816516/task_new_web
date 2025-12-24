@@ -102,12 +102,17 @@
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
-        <el-table-column label="X-MTLS-Verified" min-width="120" prop="X-MTLS-Verified" show-overflow-tooltip>
+        <el-table-column label="X-MTLS-Verified" min-width="130" prop="X-MTLS-Verified" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
         </el-table-column>
         <el-table-column label="cf-ip" min-width="120" prop="cf-ip" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="机型" min-width="120" prop="device" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -123,6 +128,23 @@
           </template>
         </el-table-column>
         <el-table-column label="任务状态" min-width="120" prop="code" show-overflow-tooltip>
+          <template slot="header">
+            <el-dropdown trigger="click" @command="(val) => handleRowQueryFun(val,'code')">
+              <span :class="[Number(queryData.code)>0?'dropdown_title':'']" style="color:#909399"> 任务状态
+                <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item,index) in codeList"
+                  :key="index"
+                  :class="{'dropdown_selected':item.value===queryData.code}"
+                  :command="item.value"
+                >{{ item.label }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+
           <template slot-scope="scope">
             {{ getLabelByVal(scope.row[scope.column.property], codeList)||'-' }}
           </template>
@@ -217,6 +239,7 @@ export default {
         uniqueid: '',
         l_account: '',
         time: [],
+        code: '',
         'cf-ip': '',
       },
       pageOption: resetPage(),
@@ -289,6 +312,7 @@ export default {
         report_id: this.queryData.report_id,
         uniqueid: this.queryData.uniqueid,
         l_account: this.queryData.l_account,
+        code: this.queryData.code,
         'cf-ip': this.queryData['cf-ip']
       }
       if (startTime && endTime) {
@@ -403,6 +427,8 @@ export default {
         uniqueid: '',
         l_account: '',
         time: [],
+        code: '',
+        'cf-ip': '',
       }
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
