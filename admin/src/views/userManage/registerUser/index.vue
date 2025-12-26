@@ -20,6 +20,9 @@
           <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" />
         </el-form-item>
         <el-form-item>
+          <el-input v-model="queryData.channel" clearable placeholder="请输入渠道" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
           <el-date-picker
             v-model="queryData.time"
             end-placeholder="结束日期"
@@ -193,7 +196,7 @@
 <script>
 import { successTips, resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp } from '@/filters'
-import { getappuserlist, blacklist, batchExportApi ,randStatisticsAPi} from './api'
+import { getappuserlist, blacklist, batchExportApi ,randStatisticsAPi } from './api'
 import pieChart from '@/components/echarts/PieChart.vue'
 export default {
   components: {
@@ -210,6 +213,7 @@ export default {
         account_id: '',
         f_account: '',
         level: null,
+        channel: '',
         time: []
       },
       tableData: [],
@@ -261,7 +265,8 @@ export default {
         country: this.queryData.country,
         account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
         level: Number(this.queryData.level),
-        f_account: this.queryData.f_account
+        f_account: this.queryData.f_account,
+        channel: this.queryData.channel
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -299,7 +304,7 @@ export default {
     // 打开品牌统计
     openPieModal() {
       this.pieModal.show = true
-      randStatisticsAPi({}).then(res=>{
+      randStatisticsAPi({}).then(res => {
         if (res.msg === 'success') {
           this.pieModal.list = res.data.list
           console.log('res',res)

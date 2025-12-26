@@ -160,7 +160,18 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
+        <el-table-column label="param" min-width="120" prop="param" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row[scope.column.property]" class="clickPointer">{{ scope.row[scope.column.property] }}</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
         <el-table-column label="version" min-width="120" prop="version" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column label="env" min-width="120" prop="env" show-overflow-tooltip>
           <template slot-scope="scope">
             {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
           </template>
@@ -410,6 +421,15 @@ export default {
           this.configData.title = column.label
           this.configData.show = true
           this.configData.value = JSON.parse(row.activity)
+        } else {
+          this.$message.warning('activity为空')
+        }
+      }
+      if (column.label === 'param') {
+        if (row.param) {
+          this.configData.title = column.label
+          this.configData.show = true
+          this.configData.value = JSON.parse(row.param)
         } else {
           this.$message.warning('activity为空')
         }
