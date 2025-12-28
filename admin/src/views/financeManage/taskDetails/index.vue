@@ -15,6 +15,9 @@
             <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
           </el-form-item>
           <el-form-item>
+            <el-input v-model="queryData.laccount_id" clearable placeholder="请输入用户ID" />
+          </el-form-item>
+          <el-form-item>
             <el-date-picker
               v-model="queryData.time"
               end-placeholder="结束日期"
@@ -569,7 +572,8 @@ export default {
         settle_status: '',
         l_account: '',
         id: '',
-        time: []
+        time: [],
+        laccount_id: '',
       },
       tableData: [],
       cliHeight: null,
@@ -733,6 +737,7 @@ export default {
         execute_status: this.queryData.execute_status ? Number(this.queryData.execute_status) : 0,
         settle_status: this.queryData.settle_status ? Number(this.queryData.settle_status) : 0,
         id: this.queryData.id,
+        laccount_id:this.queryData.laccount_id
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -767,6 +772,7 @@ export default {
         l_account: '',
         id: '',
         time: [],
+        laccount_id: '',
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'

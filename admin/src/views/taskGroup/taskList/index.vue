@@ -631,7 +631,42 @@
               </el-form-item>
             </div>
           </div>
+          <el-form-item
+            v-show="['3', '4'].includes(confModal.cloneRow.task_type)"
+            class=""
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">监控号配置</div>
+          </el-form-item>
+          <el-form-item
+            v-show="['3', '4'].includes(confModal.cloneRow.task_type)"
+            label="用户ID"
+            prop="l_account_id"
+          >
+            <el-input
+              v-model="confModal.formData.l_account_id"
+              placeholder="请输入用户ID"
+              style="width: 100%"
+              @input="changeInput"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="['3', '4'].includes(confModal.cloneRow.task_type)"
+            label="监控号"
+            prop="monitor_phones"
+            style="width: 100%"
+          >
+            <el-input
+              v-model="confModal.formData.monitor_phones"
+              :autosize="{ minRows: 4, maxRows: 10}"
+              placeholder="请输入监控号"
+              style="width: 100%"
+              type="textarea"
+              @input="changeInput"
+            />
+          </el-form-item>
         </el-form>
+
       </div>
       <div slot="footer">
         <div class="el-item-bottom" style="text-align:center;">
@@ -791,6 +826,8 @@ export default {
           desc: '',
           link_type: 1,
           content: '',
+          l_account_id: '',
+          monitor_phones: '',
         },
         rules: {
           conf: [
@@ -906,6 +943,9 @@ export default {
         this.confModal.formData.in_group_id = this.confModal.cloneRow.conf.in_group_id || ''
         this.confModal.formData.share_group_id = this.confModal.cloneRow.conf.share_group_id || ''
         this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
+
+        this.confModal.formData.l_account_id = this.confModal.cloneRow.conf.l_account_id || ''
+        this.confModal.formData.monitor_phones = this.confModal.cloneRow.conf.monitor_phones || ''
       }
       if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
         this.confModal.formData.domains.forEach(item => {
@@ -1014,6 +1054,10 @@ export default {
           if (['3', '4', '7'].includes(taskType)) {
             formData.conf.message = trimOuterSpace(this.confModal.formData.conf)
             formData.conf.data_pack_id = this.confModal.formData.data_pack_id
+          }
+          if (['3', '4'].includes(taskType)) {
+            formData.conf.l_account_id = this.confModal.formData.l_account_id
+            formData.conf.monitor_phones = this.confModal.formData.monitor_phones
           }
 
           if (taskType === '9') {
