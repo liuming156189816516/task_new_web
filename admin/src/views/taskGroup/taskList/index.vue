@@ -1048,7 +1048,7 @@ export default {
 
           const formData = {
             id: this.confModal.cloneRow.id,
-            task_type: taskType,
+            task_type: Number(this.confModal.cloneRow.task_type),
             conf: {
               limit_by_level: levelData,
             }
