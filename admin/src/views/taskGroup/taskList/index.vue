@@ -635,6 +635,7 @@
             v-show="['3', '4'].includes(confModal.cloneRow.task_type)"
             class=""
             label=""
+            style="width: 100%"
           >
             <div style="font-size: 18px;color: #333333">监控号配置</div>
           </el-form-item>
@@ -1044,7 +1045,7 @@ export default {
             levelData[item.key] = Number(item.value)
           })
           const taskType = this.confModal.cloneRow.task_type
-          
+
           const formData = {
             id: this.confModal.cloneRow.id,
             task_type: taskType,
