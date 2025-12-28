@@ -190,7 +190,7 @@ export default {
         task_record_id: this.queryData.task_record_id,
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
-        laccount_id: this.queryData.laccount_id
+        laccount_id: this.queryData.laccount_id ? Number(this.queryData.laccount_id) : -1,
       }
       if (startTime && endTime) {
         params.start_time = startTime

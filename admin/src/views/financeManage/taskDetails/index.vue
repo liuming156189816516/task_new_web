@@ -737,7 +737,7 @@ export default {
         execute_status: this.queryData.execute_status ? Number(this.queryData.execute_status) : 0,
         settle_status: this.queryData.settle_status ? Number(this.queryData.settle_status) : 0,
         id: this.queryData.id,
-        laccount_id:this.queryData.laccount_id
+        laccount_id: this.queryData.laccount_id ? Number(this.queryData.laccount_id) : 0,
       }
       if (startTime && endTime) {
         params.start_time = startTime
