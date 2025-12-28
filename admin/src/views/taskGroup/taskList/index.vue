@@ -1043,13 +1043,15 @@ export default {
           this.confModal.formData.domains.forEach(item => {
             levelData[item.key] = Number(item.value)
           })
+          const taskType = this.confModal.cloneRow.task_type
+          
           const formData = {
             id: this.confModal.cloneRow.id,
+            task_type: taskType,
             conf: {
               limit_by_level: levelData,
             }
           }
-          const taskType = this.confModal.cloneRow.task_type
 
           if (['3', '4', '7'].includes(taskType)) {
             formData.conf.message = trimOuterSpace(this.confModal.formData.conf)
