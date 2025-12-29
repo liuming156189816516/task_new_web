@@ -22,7 +22,6 @@
           range-separator="至"
           start-placeholder="开始日期"
           style="width: 380px"
-          :clearable="false"
           type="datetimerange"
         />
       </el-form-item>

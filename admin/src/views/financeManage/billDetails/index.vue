@@ -10,12 +10,11 @@
         <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.laccount_id" clearable placeholder="请输入用户ID" />
+        <el-input v-model="queryData.laccount_id" clearable placeholder="请输入用户ID1" />
       </el-form-item>
       <el-form-item>
         <el-date-picker
           v-model="queryData.time"
-          popper-class="my-date-picker"
           end-placeholder="结束日期"
           range-separator="至"
           start-placeholder="开始日期"
@@ -725,9 +724,4 @@ export default {
   margin-top: 10px;
 }
 
-.my-date-picker {
-  .el-picker-panel__footer {
-    color: #f0f9eb; // 你想要的颜色
-  }
-}
 </style>

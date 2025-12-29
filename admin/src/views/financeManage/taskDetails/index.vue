@@ -20,7 +20,6 @@
           <el-form-item>
             <el-date-picker
               v-model="queryData.time"
-              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
@@ -226,7 +225,6 @@
           <el-form-item>
             <el-date-picker
               v-model="taskWsTable.queryData.time"
-              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
@@ -430,7 +428,6 @@
           <el-form-item>
             <el-date-picker
               v-model="taskWsShareTable.queryData.time"
-              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
