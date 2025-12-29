@@ -15,10 +15,12 @@
       <el-form-item>
         <el-date-picker
           v-model="queryData.time"
+          popper-class="my-date-picker"
           end-placeholder="结束日期"
           range-separator="至"
           start-placeholder="开始日期"
           style="width: 400px"
+          :clearable="false"
           type="datetimerange"
         />
       </el-form-item>
@@ -721,5 +723,11 @@ export default {
 
 .loading_icon {
   margin-top: 10px;
+}
+
+.my-date-picker {
+  .el-picker-panel__footer {
+    color: #f0f9eb; // 你想要的颜色
+  }
 }
 </style>

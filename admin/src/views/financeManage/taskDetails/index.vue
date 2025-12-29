@@ -20,6 +20,7 @@
           <el-form-item>
             <el-date-picker
               v-model="queryData.time"
+              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
@@ -225,6 +226,7 @@
           <el-form-item>
             <el-date-picker
               v-model="taskWsTable.queryData.time"
+              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
@@ -419,13 +421,16 @@
           <el-form-item>
             <el-input v-model="taskWsShareTable.queryData.l_account" clearable placeholder="请输入所属用户" />
           </el-form-item>
-
+          <el-form-item>
+            <el-input v-model="taskWsShareTable.queryData.laccount_id" clearable placeholder="请输入用户ID" />
+          </el-form-item>
           <el-form-item>
             <el-input v-model="taskWsShareTable.queryData.reason" clearable placeholder="请输入原因" />
           </el-form-item>
           <el-form-item>
             <el-date-picker
               v-model="taskWsShareTable.queryData.time"
+              :clearable="false"
               end-placeholder="结束日期"
               range-separator="至"
               start-placeholder="开始日期"
@@ -672,6 +677,7 @@ export default {
           q_url: '',
           l_account: '',
           reason: '',
+          laccount_id: '',
           time: []
         },
         tableData: [],
@@ -945,6 +951,7 @@ export default {
         q_url: this.taskWsShareTable.queryData.q_url,
         l_account: this.taskWsShareTable.queryData.l_account,
         reason: this.taskWsShareTable.queryData.reason,
+        laccount_id: this.taskWsShareTable.queryData.laccount_id ? Number(this.taskWsShareTable.queryData.laccount_id) : 0,
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -969,12 +976,11 @@ export default {
         total: 0,
         task_id: '',
         execute_status: '',
-        name: '',
         q_url: '',
-        qid: '',
-        q_create: '',
         l_account: '',
-        time: [],
+        reason: '',
+        laccount_id: '',
+        time: []
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
