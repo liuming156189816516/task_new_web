@@ -330,6 +330,7 @@ export default {
           const formData = deepClone(this.addModal.formData)
           formData.level = formData.level ? Number(formData.level) : 0
           formData.tar_points = formData.tar_points ? Number(formData.tar_points) : 0
+          formData.reward_points = formData.reward_points ? Number(formData.reward_points) : 0
           if (this.addModal.type === 'add') {
             addDataApi(formData).then(res => {
               if (res.msg === 'success') {
