@@ -129,6 +129,9 @@
           <el-form-item label="目标积分:" prop="tar_points">
             <el-input v-model="addModal.formData.tar_points" placeholder="请输入目标积分" type="number" @input="changeInput" />
           </el-form-item>
+          <el-form-item label="升级奖励:" prop="reward_points">
+            <el-input v-model="addModal.formData.reward_points" placeholder="请输入升级奖励" type="number" @input="changeInput" />
+          </el-form-item>
           <el-form-item label="徽章图标:" prop="badge_icon">
             <div v-if="addModal.formData.badge_icon" class="imgBox">
               <el-image :src="addModal.formData.badge_icon" style="width: 120px;height: 120px" />
@@ -207,6 +210,7 @@ export default {
           badge_icon: '',
           avatar_coin: '',
           tar_points: null,
+          reward_points: null,
         },
         rules: {
           level: [
@@ -228,6 +232,19 @@ export default {
           avatar_coin: [{ required: true, message: '请上传头像上的图标！', trigger: 'change' }],
           tar_points: [
             { required: true, message: '请输入目标积分！', trigger: 'change' },
+            {
+              required: true, validator: (rule, value, callback) => {
+                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
+                if (reg.test(value)) {
+                  callback()
+                } else {
+                  return callback(new Error('请输入大于0的数！'))
+                }
+              }, trigger: 'change'
+            },
+          ],
+          reward_points: [
+            { required: true, message: '请输入升级奖励！', trigger: 'change' },
             {
               required: true, validator: (rule, value, callback) => {
                 const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
@@ -362,6 +379,7 @@ export default {
         badge_icon: '',
         avatar_coin: '',
         tar_points: null,
+        reward_points: null,
       }
     },
     // 批量操作
