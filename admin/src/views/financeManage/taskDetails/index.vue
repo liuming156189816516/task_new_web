@@ -518,9 +518,9 @@
                   {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
-              <el-table-column label="原因" min-width="120" prop="reason" show-overflow-tooltip>
+              <el-table-column label="原因" min-width="120" prop="reason"  show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+                    <span>{{ getLabelByVal(scope.row[scope.column.property], reasonList) }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
@@ -690,7 +690,8 @@ export default {
           { label: 'Completed', value: '4' },
         ],
       },
-      titleList: []
+      titleList: [],
+      reasonList: [],
     }
   },
   computed: {},
@@ -1032,7 +1033,10 @@ export default {
       getLanguagePageListApi({}).then(res => {
         if (res.msg === 'success') {
           const kay = 'server.enums'
+          const kay2 = 'server.share_group'
+
           this.titleList = getLanguagePageList(res.data.content,kay)
+          this.reasonList = getLanguagePageList(res.data.content,kay2)
         }
       })
     },

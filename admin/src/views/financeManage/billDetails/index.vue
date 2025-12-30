@@ -10,7 +10,7 @@
         <el-input v-model="queryData.l_account" clearable placeholder="请输入所属用户" />
       </el-form-item>
       <el-form-item>
-        <el-input v-model="queryData.laccount_id" clearable placeholder="请输入用户ID1" />
+        <el-input v-model="queryData.laccount_id" clearable placeholder="请输入用户ID" />
       </el-form-item>
       <el-form-item>
         <el-date-picker
@@ -154,6 +154,7 @@ export default {
         { label: 'Whatsapp-Send-Auto', value: '13' },
         { label: 'Whatsapp-Group', value: '15' },
         { label: 'Share-Group', value: '16' },
+        { label: '等级提升', value: '17' },
       ],
       typeList2: [
         { label: '签到', value: '1' },

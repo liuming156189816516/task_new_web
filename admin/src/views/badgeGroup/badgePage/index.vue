@@ -66,6 +66,11 @@
             {{ scope.row[scope.column.property] }}
           </template>
         </el-table-column>
+        <el-table-column label="升级奖励" min-width="120" prop="reward_points" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{ scope.row[scope.column.property] }}
+          </template>
+        </el-table-column>
         <el-table-column label="徽章图标" min-width="120" prop="badge_icon" show-overflow-tooltip>
           <template slot-scope="scope">
             <div v-if="scope.row[scope.column.property]" @click.stop="openImageViewFun(scope.row,'badge_icon')">
@@ -82,7 +87,6 @@
             <div v-else>-</div>
           </template>
         </el-table-column>
-
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
              {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
