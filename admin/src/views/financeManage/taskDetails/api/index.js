@@ -26,3 +26,11 @@ export const getTaskWsShareGroupRecordListApi = (params) => {
     data: params
   })
 }
+// 分享群任务明细 列表
+export const exportDataApi = (params) => {
+  return request({
+    url: '/taskwssharegrouprecord/exporttaskwssharegrouprecordlist',
+    method: 'post',
+    data: params
+  })
+}

@@ -438,6 +438,7 @@
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getTaskWsShareGroupRecordListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restTaskWsShareQueryBtn">重置</el-button>
+            <el-button type="primary" :loading="taskWsShareTable.exportLoading" @click="exportDataFun">导出</el-button>
           </el-form-item>
         </el-form>
         <!-- 列表 -->
@@ -518,9 +519,9 @@
                   {{ scope.row[scope.column.property] }}
                 </template>
               </el-table-column>
-              <el-table-column label="原因" min-width="120" prop="reason"  show-overflow-tooltip>
+              <el-table-column label="原因" min-width="120" prop="reason" show-overflow-tooltip>
                 <template slot-scope="scope">
-                    <span>{{ getLabelByVal(scope.row[scope.column.property], reasonList) }}</span>
+                  <span>{{ getLabelByVal(scope.row[scope.column.property], reasonList) }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="所属用户" min-width="150" prop="l_account" show-overflow-tooltip>
@@ -556,7 +557,7 @@
 <script>
 import { resetPage, getLabelByVal,zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp, getLanguagePageList } from '@/filters'
-import { getTaskRecordListApi, getTaskWsGroupRecordListApi, getTaskWsShareGroupRecordListApi } from './api'
+import { exportDataApi, getTaskRecordListApi, getTaskWsGroupRecordListApi, getTaskWsShareGroupRecordListApi } from './api'
 import { getLanguagePageListApi } from '@/api/common';
 
 export default {
@@ -665,6 +666,8 @@ export default {
         ]
       },
       taskWsShareTable: {
+        exportQueryData: {},
+        exportLoading: false,
         queryData: {
           page: 1,
           limit: 10,
@@ -718,7 +721,7 @@ export default {
         this.getDataListFun(1)
       } else if (tab.label === '拉群任务明细') {
         this.getTaskWsGroupRecordListFun(1)
-      } else if (tab.label === '分析群任务明细') {
+      } else if (tab.label === '分享群任务明细') {
         this.getTaskWsShareGroupRecordListFun(1)
       }
     },
@@ -955,6 +958,7 @@ export default {
         params.start_time = startTime
         params.end_time = endTime
       }
+      this.taskWsShareTable.exportQueryData = params
       getTaskWsShareGroupRecordListApi(params).then(res => {
         if (res.msg === 'success') {
           this.taskWsShareTable.loading = false;
@@ -985,6 +989,14 @@ export default {
       this.taskWsShareTable.queryData.time = [Number(new Date(startTime)), Number(new Date(endTime))]
       this.getTaskWsShareGroupRecordListFun(1)
       this.$refs.serveTableWs.clearSelection();
+    },
+    // 导出
+    exportDataFun() {
+      exportDataApi(this.taskWsShareTable.exportQueryData).then(res => {
+        if (res.msg === 'success') {
+          window.location.href = res.data.url
+        }
+      })
     },
     // 行筛选
     handleTaskWsShareRowQueryFun(val, kay) {
