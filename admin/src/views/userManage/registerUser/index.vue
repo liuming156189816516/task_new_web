@@ -20,6 +20,9 @@
           <el-input v-model="queryData.f_account" clearable placeholder="请输入上级账户" style="width: 200px" />
         </el-form-item>
         <el-form-item>
+          <el-input v-model="queryData.f_account_id" clearable placeholder="请输入上级账户ID" style="width: 200px" />
+        </el-form-item>
+        <el-form-item>
           <el-input v-model="queryData.channel" clearable placeholder="请输入渠道" style="width: 200px" />
         </el-form-item>
         <el-form-item>
@@ -157,6 +160,11 @@
               {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
             </template>
           </el-table-column>
+          <el-table-column label="上级账号ID" min-width="120" prop="f_account_id" show-overflow-tooltip>
+            <template slot-scope="scope">
+              {{ scope.row[scope.column.property] ? scope.row[scope.column.property] : '-' }}
+            </template>
+          </el-table-column>
           <el-table-column label="注册时间" min-width="160" prop="itime" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
@@ -212,6 +220,7 @@ export default {
         country: '',
         account_id: '',
         f_account: '',
+        f_account_id: null,
         level: null,
         channel: '',
         time: []
@@ -265,6 +274,7 @@ export default {
         country: this.queryData.country,
         account_id: this.queryData.account_id ? Number(this.queryData.account_id) : -1,
         level: Number(this.queryData.level),
+        f_account_id: Number(this.queryData.f_account_id),
         f_account: this.queryData.f_account,
         channel: this.queryData.channel
       }
@@ -292,8 +302,11 @@ export default {
         account: '',
         country: '',
         account_id: '',
+        f_account: '',
+        f_account_id: null,
         level: null,
-        time: [],
+        channel: '',
+        time: []
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
