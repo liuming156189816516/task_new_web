@@ -14,6 +14,7 @@ import './utils/error-log' // error log
 import * as filters from './filters' // global filters
 import funHandle from '@/utils/index';
 import TimeZonePlugin from '@/plugins/time-zone'
+import '@wangeditor/editor/dist/css/style.css'
 
 Vue.prototype.$baseFun = funHandle;
 

@@ -165,6 +165,14 @@ export const asyncRoutes = [
           title: '通用配置',
         }
       },
+      {
+        path: '/proclamation',
+        component: () => import('@/views/appConfig/proclamation'),
+        name: 'proclamation',
+        meta: {
+          title: '公告',
+        }
+      },
     ]
   },
   // 轮播图
