@@ -219,9 +219,11 @@ export default {
       countryList: [
         { label: '全部',value: '' },
         { label: '巴西',value: 'BR' },
+        { label: '印尼',value: 'ID' },
       ],
       countryList2: [
         { label: '巴西',value: 'BR' },
+        { label: '印尼',value: 'ID' },
       ],
       titleList: []
     }

@@ -87,6 +87,11 @@
               {{ scope.row.payee_name || "-" }}
             </template>
           </el-table-column>
+          <el-table-column align="center" label="银行编码" min-width="120" prop="code">
+            <template slot-scope="scope">
+              {{ scope.row.code || "-" }}
+            </template>
+          </el-table-column>
           <el-table-column align="center" label="提现金额" min-width="100" prop="amount" />
           <el-table-column label="状态" min-width="100" prop="status">
             <template slot="header">
