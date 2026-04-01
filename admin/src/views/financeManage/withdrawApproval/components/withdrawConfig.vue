@@ -135,7 +135,7 @@
           size="small"
         >
           <el-form-item v-if="addModal.type==='add'" label="国家:" prop="title">
-            <el-select v-model="addModal.formData.country" clearable filterable placeholder="请选择国家">
+            <el-select v-model="addModal.formData.country" filterable placeholder="请选择国家">
               <el-option v-for="item in countryList2" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>

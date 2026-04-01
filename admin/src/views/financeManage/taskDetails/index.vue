@@ -6,6 +6,11 @@
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
           <el-form-item>
+            <el-select v-model="queryData.country" placeholder="请选择国家">
+              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
             <el-input v-model="queryData.id" clearable placeholder="请输入任务ID" />
           </el-form-item>
           <el-form-item>
@@ -162,12 +167,12 @@
               </el-table-column>
               <el-table-column label="执行时间" min-width="150" prop="execute_time" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
                 </template>
               </el-table-column>
               <el-table-column label="结算时间" min-width="150" prop="settle_time" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
                 </template>
               </el-table-column>
               <el-table-column label="任务奖励" min-width="80" prop="reward" show-overflow-tooltip>
@@ -182,7 +187,7 @@
               </el-table-column>
               <el-table-column label="创建时间" min-width="150" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
                 </template>
               </el-table-column>
             </el-table>
@@ -204,6 +209,11 @@
       <el-tab-pane key="tabs2" label="拉群任务明细" name="tabs2">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
+          <el-form-item>
+            <el-select v-model="taskWsTable.queryData.country" filterable placeholder="请选择国家">
+              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-input v-model="taskWsTable.queryData.task_id" clearable placeholder="请输入任务ID" />
           </el-form-item>
@@ -234,7 +244,12 @@
           </el-form-item>
           <el-form-item>
             <el-select v-model="taskWsTable.queryData.group_status" clearable filterable placeholder="请选择群状态">
-              <el-option v-for="item in taskWsTable.groupStatusList" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option
+                v-for="item in taskWsTable.groupStatusList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
@@ -306,7 +321,9 @@
               </el-table-column>
               <el-table-column label="群管理员1的状态" min-width="140" prop="admin_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]===1 ? '已设置' : scope.row[scope.column.property]===0? '未设置':'-' }}
+                  {{
+                    scope.row[scope.column.property] === 1 ? '已设置' : scope.row[scope.column.property] === 0 ? '未设置' : '-'
+                  }}
                 </template>
               </el-table-column>
               <el-table-column label="群管理员2" min-width="120" prop="admin_two" show-overflow-tooltip>
@@ -316,7 +333,9 @@
               </el-table-column>
               <el-table-column label="群管理员2的状态" min-width="140" prop="admin_two_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]===1 ? '已设置' : scope.row[scope.column.property]===0? '未设置':'-' }}
+                  {{
+                    scope.row[scope.column.property] === 1 ? '已设置' : scope.row[scope.column.property] === 0 ? '未设置' : '-'
+                  }}
                 </template>
               </el-table-column>
               <el-table-column label="初始化成员" min-width="120" prop="member_list" show-overflow-tooltip>
@@ -365,14 +384,21 @@
               </el-table-column>
               <el-table-column label="消息提示" min-width="120" prop="msg_str">
                 <template slot-scope="scope">
-                  <el-tooltip class="item" effect="dark" :content="getLabelByVal(scope.row[scope.column.property], titleList)" placement="top">
+                  <el-tooltip
+                    :content="getLabelByVal(scope.row[scope.column.property], titleList)"
+                    class="item"
+                    effect="dark"
+                    placement="top"
+                  >
                     <span>{{ getLabelByVal(scope.row[scope.column.property], titleList) }}</span>
                   </el-tooltip>
                 </template>
               </el-table-column>
               <el-table-column label="群状态" min-width="120" prop="group_status" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]!=='0'?getLabelByVal(scope.row[scope.column.property], taskWsTable.groupStatusList):'-' }}
+                  {{
+                    scope.row[scope.column.property] !== '0' ? getLabelByVal(scope.row[scope.column.property], taskWsTable.groupStatusList) : '-'
+                  }}
                 </template>
               </el-table-column>
               <el-table-column label="群原因" min-width="120" prop="group_reason" show-overflow-tooltip>
@@ -388,7 +414,7 @@
               </el-table-column>
               <el-table-column label="创建时间" min-width="180" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
                 </template>
               </el-table-column>
             </el-table>
@@ -410,6 +436,11 @@
       <el-tab-pane key="tabs3" label="分享群任务明细" name="tabs3">
         <!-- 筛选条件 -->
         <el-form :inline="true" size="small" style="margin-top: 10px;">
+          <el-form-item>
+            <el-select v-model="taskWsShareTable.queryData.country" filterable placeholder="请选择国家">
+              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item>
             <el-input v-model="taskWsShareTable.queryData.task_id" clearable placeholder="请输入任务ID" />
           </el-form-item>
@@ -438,7 +469,7 @@
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getTaskWsShareGroupRecordListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restTaskWsShareQueryBtn">重置</el-button>
-            <el-button type="primary" :loading="taskWsShareTable.exportLoading" @click="exportDataFun">导出</el-button>
+            <el-button :loading="taskWsShareTable.exportLoading" type="primary" @click="exportDataFun">导出</el-button>
           </el-form-item>
         </el-form>
         <!-- 列表 -->
@@ -478,7 +509,10 @@
               <el-table-column label="执行状态" min-width="120" prop="execute_status" show-overflow-tooltip>
                 <template slot="header">
                   <el-dropdown trigger="click" @command="(val) => handleTaskWsShareRowQueryFun(val,'execute_status')">
-                    <span :class="[(taskWsShareTable.queryData.execute_status)>0?'dropdown_title':'']" style="color:#909399"> 执行状态
+                    <span
+                      :class="[(taskWsShareTable.queryData.execute_status)>0?'dropdown_title':'']"
+                      style="color:#909399"
+                    > 执行状态
                       <i class="el-icon-arrow-down el-icon--right" />
                     </span>
                     <el-dropdown-menu slot="dropdown">
@@ -531,7 +565,7 @@
               </el-table-column>
               <el-table-column label="创建时间" min-width="180" prop="itime" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+                  {{ scope.row[scope.column.property] ? $time(scope.row[scope.column.property]) : "-" }}
                 </template>
               </el-table-column>
             </el-table>
@@ -555,7 +589,7 @@
 </template>
 
 <script>
-import { resetPage, getLabelByVal,zonedTimeToTimestamp } from '@/utils/index'
+import { resetPage, getLabelByVal, zonedTimeToTimestamp } from '@/utils/index'
 import { formatDateTime, formatTimestamp, getLanguagePageList } from '@/filters'
 import { exportDataApi, getTaskRecordListApi, getTaskWsGroupRecordListApi, getTaskWsShareGroupRecordListApi } from './api'
 import { getLanguagePageListApi } from '@/api/common';
@@ -577,7 +611,14 @@ export default {
         id: '',
         time: [],
         laccount_id: '',
+        country: 'BR',
       },
+      countryList: [
+        { label: '全部', value: '0' },
+        { label: '巴西', value: 'BR' },
+        { label: '印尼', value: 'ID' },
+        { label: '印度', value: 'IN' },
+      ],
       tableData: [],
       cliHeight: null,
       loading: false,
@@ -602,17 +643,17 @@ export default {
         { label: 'Sms', value: '4' },
       ],
       executeStatusList: [
-        { label: '全部', en: '全部',value: '0' },
-        { label: '执行中',en: 'Running', value: '1' },
-        { label: '已超时',en: 'Timeout', value: '2' },
-        { label: '失败', en: 'Err',value: '3' },
-        { label: '已完成', en: 'Completed',value: '4' },
+        { label: '全部', en: '全部', value: '0' },
+        { label: '执行中', en: 'Running', value: '1' },
+        { label: '已超时', en: 'Timeout', value: '2' },
+        { label: '失败', en: 'Err', value: '3' },
+        { label: '已完成', en: 'Completed', value: '4' },
       ],
       settleStatusList: [
-        { label: '全部', en: '全部',value: '0' },
-        { label: '结算中',en: 'Settling', value: '1' },
-        { label: '未结算',en: 'Unsettled', value: '2' },
-        { label: '已结算',en: 'Settled', value: '3' },
+        { label: '全部', en: '全部', value: '0' },
+        { label: '结算中', en: 'Settling', value: '1' },
+        { label: '未结算', en: 'Unsettled', value: '2' },
+        { label: '已结算', en: 'Settled', value: '3' },
       ],
       confModal: {
         show: false,
@@ -639,7 +680,8 @@ export default {
           l_account: '',
           group_status: '',
           group_reason: '',
-          time: []
+          time: [],
+          country: 'BR',
         },
         tableData: [],
         loading: false,
@@ -663,7 +705,8 @@ export default {
           { label: '全部', value: '0' },
           { label: '正常', value: '1' },
           { label: '异常', value: '2' },
-        ]
+        ],
+
       },
       taskWsShareTable: {
         exportQueryData: {},
@@ -678,7 +721,8 @@ export default {
           l_account: '',
           reason: '',
           laccount_id: '',
-          time: []
+          time: [],
+          country: 'BR',
         },
         tableData: [],
         loading: false,
@@ -745,6 +789,8 @@ export default {
         settle_status: this.queryData.settle_status ? Number(this.queryData.settle_status) : 0,
         id: this.queryData.id,
         laccount_id: this.queryData.laccount_id ? Number(this.queryData.laccount_id) : 0,
+        country: this.queryData.country
+
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -780,6 +826,7 @@ export default {
         id: '',
         time: [],
         laccount_id: '',
+        country: 'BR',
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
@@ -836,7 +883,7 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.taskWsTable.loading = true;
-      console.log('this.taskWsTable.queryData.time',this.taskWsTable.queryData.time)
+      console.log('this.taskWsTable.queryData.time', this.taskWsTable.queryData.time)
       const startTime = this.taskWsTable.queryData.time && this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[0]))) / 1000 : ''
       const endTime = this.taskWsTable.queryData.time && this.taskWsTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsTable.queryData.time[1]))) / 1000 : ''
       const params = {
@@ -851,6 +898,7 @@ export default {
         l_account: this.taskWsTable.queryData.l_account,
         group_status: Number(this.taskWsTable.queryData.group_status),
         group_reason: this.taskWsTable.queryData.group_reason,
+        country: this.taskWsTable.queryData.country
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -885,6 +933,7 @@ export default {
         q_create: '',
         l_account: '',
         time: [],
+        country: 'BR',
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
@@ -941,7 +990,7 @@ export default {
         tableBodyWrapper.scrollTop = 0
       })
       this.taskWsShareTable.loading = true;
-      console.log('this.taskWsShareTable.queryData.time',this.taskWsShareTable.queryData.time)
+      console.log('this.taskWsShareTable.queryData.time', this.taskWsShareTable.queryData.time)
       const startTime = this.taskWsShareTable.queryData.time && this.taskWsShareTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsShareTable.queryData.time[0]))) / 1000 : ''
       const endTime = this.taskWsShareTable.queryData.time && this.taskWsShareTable.queryData.time.length ? zonedTimeToTimestamp(formatDateTime(new Date(this.taskWsShareTable.queryData.time[1]))) / 1000 : ''
       const params = {
@@ -953,6 +1002,7 @@ export default {
         l_account: this.taskWsShareTable.queryData.l_account,
         reason: this.taskWsShareTable.queryData.reason,
         laccount_id: this.taskWsShareTable.queryData.laccount_id ? Number(this.taskWsShareTable.queryData.laccount_id) : 0,
+        country: this.taskWsShareTable.queryData.country
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -982,7 +1032,8 @@ export default {
         l_account: '',
         reason: '',
         laccount_id: '',
-        time: []
+        time: [],
+        country: 'BR',
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
@@ -1047,8 +1098,8 @@ export default {
           const kay = 'server.enums'
           const kay2 = 'server.share_group'
 
-          this.titleList = getLanguagePageList(res.data.content,kay)
-          this.reasonList = getLanguagePageList(res.data.content,kay2)
+          this.titleList = getLanguagePageList(res.data.content, kay)
+          this.reasonList = getLanguagePageList(res.data.content, kay2)
         }
       })
     },

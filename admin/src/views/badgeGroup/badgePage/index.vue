@@ -4,6 +4,11 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
+        <el-select v-model="queryData.country" placeholder="请选择国家">
+          <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-input v-model="queryData.level" clearable placeholder="请输入等级" type="number" @input="changeInput" />
       </el-form-item>
       <el-form-item>
@@ -89,7 +94,7 @@
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
           <template slot-scope="scope">
-             {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
+            {{ scope.row[scope.column.property]?$time(scope.row[scope.column.property]):"-" }}
           </template>
         </el-table-column>
         <el-table-column label="操作" prop="operation" show-overflow-tooltip width="180">
@@ -131,6 +136,11 @@
           </el-form-item>
           <el-form-item label="升级奖励:" prop="reward_points">
             <el-input v-model="addModal.formData.reward_points" placeholder="请输入升级奖励" type="number" @input="changeInput" />
+          </el-form-item>
+          <el-form-item v-if="addModal.type==='add'" label="国家:" prop="country">
+            <el-select v-model="addModal.formData.country" placeholder="请选择国家">
+              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item label="徽章图标:" prop="badge_icon">
             <div v-if="addModal.formData.badge_icon" class="imgBox">
@@ -198,7 +208,14 @@ export default {
         total: 0,
         level: null,
         tar_points: null,
+        country: 'BR',
       },
+      countryList: [
+        { label: '全部', value: '0' },
+        { label: '巴西', value: 'BR' },
+        { label: '印尼', value: 'ID' },
+        { label: '印度', value: 'IN' },
+      ],
       pageOption: resetPage(),
       tableData: [],
       cliHeight: null,
@@ -211,6 +228,7 @@ export default {
           avatar_coin: '',
           tar_points: null,
           reward_points: null,
+          country:'',
         },
         rules: {
           level: [
@@ -256,6 +274,9 @@ export default {
               }, trigger: 'change'
             },
           ],
+          country: [
+            { required: true, message: '请选择国家！', trigger: 'change' },
+          ],
         },
         isLoading: false,
       },
@@ -299,6 +320,7 @@ export default {
         limit: this.queryData.limit,
         level: Number(this.queryData.level) || -1,
         tar_points: Number(this.queryData.tar_points) || -1,
+        country: this.queryData.country
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -452,6 +474,7 @@ export default {
         total: 0,
         level: null,
         tar_points: null,
+        country: 'BR',
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();

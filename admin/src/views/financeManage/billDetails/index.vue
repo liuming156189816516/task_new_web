@@ -4,6 +4,11 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
+        <el-select v-model="queryData.country" placeholder="请选择国家">
+          <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-input v-model="queryData.task_record_id" clearable placeholder="请输入任务明细ID" />
       </el-form-item>
       <el-form-item>
@@ -129,6 +134,7 @@ export default {
         time: [],
         timeNum: [],
         laccount_id: '',
+        country: 'BR',
       },
       tableData: [],
       cliHeight: null,
@@ -158,7 +164,13 @@ export default {
       ],
       typeList2: [
         { label: '签到', value: '1' },
-      ]
+      ],
+      countryList: [
+        { label: '全部', value: '0' },
+        { label: '巴西', value: 'BR' },
+        { label: '印尼', value: 'ID' },
+        { label: '印度', value: 'IN' },
+      ],
     }
   },
   computed: {},
@@ -193,6 +205,7 @@ export default {
         l_account: this.queryData.l_account,
         type: this.queryData.type ? Number(this.queryData.type) : -1,
         laccount_id: this.queryData.laccount_id ? Number(this.queryData.laccount_id) : -1,
+        country: this.queryData.country
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -221,6 +234,7 @@ export default {
         time: [],
         timeNum: [],
         laccount_id: '',
+        country: 'BR'
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'

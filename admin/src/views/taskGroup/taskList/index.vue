@@ -4,6 +4,11 @@
     <!-- 筛选条件 -->
     <el-form :inline="true" size="small" style="margin-top: 10px;">
       <el-form-item>
+        <el-select v-model="queryData.country" placeholder="请选择国家">
+          <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
         <el-select v-model="queryData.title" clearable filterable placeholder="请选择标题">
           <el-option v-for="item in titleList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -393,7 +398,11 @@
           <el-form-item label="跳转地址:" prop="deeplink">
             <el-input v-model="addModal.formData.deeplink" placeholder="请输入跳转地址" @input="changeInput" />
           </el-form-item>
-
+          <el-form-item v-if="addModal.type==='add'" label="国家:" prop="country">
+            <el-select v-model="addModal.formData.country" placeholder="请选择国家">
+              <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
         </el-form>
       </div>
       <div slot="footer">
@@ -718,8 +727,15 @@ export default {
         category: '',
         release_status: null,
         task_type: null,
-        platform: ''
+        platform: '',
+        country: 'BR',
       },
+      countryList: [
+        { label: '全部', value: '0' },
+        { label: '巴西', value: 'BR' },
+        { label: '印尼', value: 'ID' },
+        { label: '印度', value: 'IN' },
+      ],
       pageOption: resetPage(),
       tableData: [],
       cliHeight: null,
@@ -740,6 +756,7 @@ export default {
           task_type: '',
           platform: '',
           is_recommend: '0',
+          country: 'BR',
         },
         rules: {
           title: [{ required: true, message: '请输入标题！', trigger: 'change' }],
@@ -755,6 +772,9 @@ export default {
           points_icon: [{ required: true, message: '请上传任务中间的积分图标！', trigger: 'change' }],
           deeplink: [{ required: false, message: '请输入跳转地址！', trigger: 'change' }],
           is_recommend: [{ required: true, message: '请选择是否推荐！', trigger: 'change' }],
+          country: [
+            { required: true, message: '请选择国家！', trigger: 'change' },
+          ],
         },
         isLoading: false,
       },
@@ -904,6 +924,7 @@ export default {
         category: Number(this.queryData.category),
         platform: Number(this.queryData.platform),
         task_type: Number(this.queryData.task_type),
+        country: this.queryData.country
       }
       getDataApi(params).then(res => {
         if (res.msg === 'success') {
@@ -1152,6 +1173,7 @@ export default {
         task_type: '',
         platform: '',
         is_recommend: '0',
+        country: 'BR',
       }
     },
     // 批量操作
@@ -1253,7 +1275,8 @@ export default {
         category: '',
         release_status: null,
         task_type: null,
-        platform: ''
+        platform: '',
+        country: 'BR',
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
