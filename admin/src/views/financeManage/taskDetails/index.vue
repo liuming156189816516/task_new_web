@@ -614,7 +614,7 @@ export default {
         country: 'BR',
       },
       countryList: [
-        { label: '全部', value: '0' },
+        { label: '全部', value: '' },
         { label: '巴西', value: 'BR' },
         { label: '印尼', value: 'ID' },
         { label: '印度', value: 'IN' },
