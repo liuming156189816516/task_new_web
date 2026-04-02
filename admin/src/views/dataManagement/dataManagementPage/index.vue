@@ -277,6 +277,7 @@ export default {
         { label: '马来西亚', value: 'MY' },
         { label: '老挝', value: 'LA' },
         { label: '印度', value: 'IN' },
+        { label: '印尼', value: 'ID' },
         { label: '全球', value: 'ALL' },
       ],
       checkIdArry: [],
