@@ -896,7 +896,6 @@ export default {
   mounted() {
     this.getDataListFun(); // 获取列表
     this.getLanguagePageListFun();
-    this.getBadgeListFun()
     this.setFullHeight();
     this.getSendMsgGroupApi()
     window.addEventListener('resize', this.setFullHeight);
@@ -938,6 +937,7 @@ export default {
             item.is_recommend = item.is_recommend ? String(item.is_recommend) : '0'
             return item
           })
+          this.getBadgeListFun()
         }
       })
     },
@@ -968,7 +968,9 @@ export default {
         this.confModal.formData.l_account_id = this.confModal.cloneRow.conf.l_account_id || ''
         this.confModal.formData.monitor_phones = this.confModal.cloneRow.conf.monitor_phones || ''
       }
+      console.log('row',row)
       if (deepClone(row).conf && deepClone(row).conf.limit_by_level) {
+        console.log('this.confModal.formData.domains',this.confModal.formData.domains)
         this.confModal.formData.domains.forEach(item => {
           item.value = row.conf.limit_by_level[item.key]
         })
@@ -1318,14 +1320,19 @@ export default {
     },
     // 获取 徽章列表 配置 等级列表
     getBadgeListFun() {
+      this.confModal.formData.domains = []
       const params = {
+        country: this.queryData.country,
         page: 1,
         limit: 100,
         level: -1,
         tar_points: -1,
       }
       getBadgeListApi(params).then(res => {
+        console.log('获取 徽章列表 配置 等级列表',res)
+
         if (res.msg === 'success') {
+          console.log('获取 徽章列表 配置 等级列表',res)
           this.confModal.formColumn = res.data.list.map((item, index) => {
             item.label = '等级' + (index + 1)
             item.prop = 'level' + (index + 1)
