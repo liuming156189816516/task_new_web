@@ -44,7 +44,7 @@
           <el-button size="small" type="primary" @click="openWithdrawFun">
             提现配置
           </el-button>
-          <el-button :disabled="!pay_id.length" type="primary" size="small" @click="batchBlockFun">
+          <el-button :disabled="!app_uidArr.length" type="primary" size="small" @click="batchBlockFun">
             批量拉黑
           </el-button>
         </el-form-item>
@@ -245,6 +245,7 @@ export default {
       type: 0,
       cliHeight: null,
       pay_id: [],
+      app_uidArr: [],
       loading: false,
       bannerList: [],
       isLoading: false,
@@ -377,7 +378,7 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
             const formData = {
-              account: this.pay_id,// 要删除与的id集合
+              app_ids: this.pay_id,
             }
             batchBlockApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -401,16 +402,13 @@ export default {
       return true
     },
     selectAllChange(row) {
+      console.log('row',row)
       this.pay_id = row.map(item => {
         return item.id
       })
-      if (row.status !== 1) {
-        for (let k = 0; k < this.pay_id.length; k++) {
-          if (this.pay_id[k] === row.id) {
-            this.pay_id.splice(k, 1)
-          }
-        }
-      }
+      this.app_uidArr = row.map(item => {
+        return item.app_uid
+      })
     },
     rowSelectChange(row, column, event) {
       const refsElTable = this.$refs.serveTable;
@@ -463,7 +461,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const data = {
-            ids: this.pay_id,
+            ids: this.app_uidArr,
             approval_status: this.sendForm.replay_type
           }
           this.isLoading = true;
