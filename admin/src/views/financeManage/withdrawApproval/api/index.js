@@ -52,3 +52,12 @@ export const delDataApi = (params) => {
     data: params
   })
 }
+
+// 批量拉黑
+export const batchBlockApi = (params) => {
+  return request({
+    url: '/withdraw/batchblock',
+    method: 'post',
+    data: params
+  })
+}

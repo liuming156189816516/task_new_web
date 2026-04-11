@@ -44,6 +44,9 @@
           <el-button size="small" type="primary" @click="openWithdrawFun">
             提现配置
           </el-button>
+          <el-button :disabled="!pay_id.length" type="primary" size="small"  @click="batchBlockFun">
+            批量拉黑
+          </el-button>
         </el-form-item>
         <el-form-item class="fr">
           提现金额
@@ -213,11 +216,12 @@
 </template>
 
 <script>
-import { getLabelByVal, resetPage ,zonedTimeToTimestamp } from '@/utils'
-import { getwithdrawapprovallist, doapproval } from './api'
+import {getLabelByVal, resetPage, successTips, zonedTimeToTimestamp} from '@/utils'
+import {getwithdrawapprovallist, doapproval, batchBlockApi} from './api'
 import withdrawConfig from './components/withdrawConfig'
 import { getLanguagePageListApi } from '@/api/common';
 import { getLanguagePageList ,formatDateTime } from '@/filters';
+import {delDataApi} from "@/views/releaseTask/platform/api";
 export default {
   components: {
     withdrawConfig
@@ -363,6 +367,35 @@ export default {
     // 提现配置
     openWithdrawFun() {
       this.$refs.refWithdrawConfig.open()
+    },
+    // 批量拉黑
+    batchBlockFun(){
+      this.$confirm(`确认拉黑吗？`, '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            const formData = {
+              account: this.pay_id,// 要删除与的id集合
+            }
+            batchBlockApi(formData).then(res => {
+              if (res.msg === 'success') {
+                successTips(this)
+                this.getPayOrderList()
+                done();
+                instance.confirmButtonLoading = false;
+              }
+            })
+          } else {
+            done();
+            instance.confirmButtonLoading = false;
+          }
+        }
+      }).catch(() => {
+        this.$message({ type: 'info', message: '已取消' });
+      })
     },
     checkSelectable(row) {
       return row.status === 1 && row.approval_status === 1;
