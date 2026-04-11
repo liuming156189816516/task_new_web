@@ -44,7 +44,7 @@
           <el-button size="small" type="primary" @click="openWithdrawFun">
             提现配置
           </el-button>
-          <el-button :disabled="!pay_id.length" type="primary" size="small"  @click="batchBlockFun">
+          <el-button :disabled="!pay_id.length" type="primary" size="small" @click="batchBlockFun">
             批量拉黑
           </el-button>
         </el-form-item>
@@ -216,12 +216,11 @@
 </template>
 
 <script>
-import {getLabelByVal, resetPage, successTips, zonedTimeToTimestamp} from '@/utils'
-import {getwithdrawapprovallist, doapproval, batchBlockApi} from './api'
+import { getLabelByVal, resetPage, successTips, zonedTimeToTimestamp } from '@/utils'
+import { getwithdrawapprovallist, doapproval, batchBlockApi } from './api'
 import withdrawConfig from './components/withdrawConfig'
 import { getLanguagePageListApi } from '@/api/common';
 import { getLanguagePageList ,formatDateTime } from '@/filters';
-import {delDataApi} from "@/views/releaseTask/platform/api";
 export default {
   components: {
     withdrawConfig
@@ -369,7 +368,7 @@ export default {
       this.$refs.refWithdrawConfig.open()
     },
     // 批量拉黑
-    batchBlockFun(){
+    batchBlockFun() {
       this.$confirm(`确认拉黑吗？`, '提示', {
         type: 'warning',
         confirmButtonText: '确定',
@@ -398,7 +397,8 @@ export default {
       })
     },
     checkSelectable(row) {
-      return row.status === 1 && row.approval_status === 1;
+      // return row.status === 1 && row.approval_status === 1;
+      return true
     },
     selectAllChange(row) {
       this.pay_id = row.map(item => {
