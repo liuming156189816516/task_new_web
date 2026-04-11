@@ -378,7 +378,7 @@ export default {
           if (action === 'confirm') {
             instance.confirmButtonLoading = true;
             const formData = {
-              app_ids: this.pay_id,
+              app_ids: this.app_uidArr,
             }
             batchBlockApi(formData).then(res => {
               if (res.msg === 'success') {
@@ -461,7 +461,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const data = {
-            ids: this.app_uidArr,
+            ids: this.pay_id,
             approval_status: this.sendForm.replay_type
           }
           this.isLoading = true;
