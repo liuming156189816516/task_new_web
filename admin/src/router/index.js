@@ -316,6 +316,14 @@ export const asyncRoutes = [
         }
       },
       {
+        path: '/withdrawAccount',
+        component: () => import('@/views/financeManage/withdrawAccount'),
+        name: 'withdrawAccount',
+        meta: {
+          title: '提现账户',
+        }
+      },
+      {
         path: '/executeLog',
         component: () => import('@/views/financeManage/executeLog'),
         name: 'executeLog',
