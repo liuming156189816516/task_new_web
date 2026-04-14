@@ -63,42 +63,42 @@
         <el-table-column label="序号" type="index" width="60" />
         <el-table-column label="账号" min-width="120" prop="account" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
+            {{ scope.row[scope.column.property]||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="账号ID" min-width="120" prop="account_id" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
+            {{ scope.row[scope.column.property] ||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="提现类型" min-width="120" prop="type" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], typeSelectData) }}
+            {{ getLabelByVal(scope.row[scope.column.property], typeSelectData)||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="银行卡号" min-width="120" prop="card_no" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
+            {{ scope.row[scope.column.property] ||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="银行编码" min-width="120" prop="code" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], codeSelectData) }}
+            {{ getLabelByVal(scope.row[scope.column.property], codeSelectData)||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="收款姓名" min-width="120" prop="payee_name" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
+            {{ scope.row[scope.column.property] ||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="证件号码" min-width="120" prop="identify_Num" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ scope.row[scope.column.property] }}
+            {{ scope.row[scope.column.property]||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="国家" min-width="120" prop="country" show-overflow-tooltip>
           <template slot-scope="scope">
-            {{ getLabelByVal(scope.row[scope.column.property], countryList) }}
+            {{ getLabelByVal(scope.row[scope.column.property], countryList)||'-' }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" min-width="120" prop="itime" show-overflow-tooltip>
@@ -154,7 +154,7 @@
           <el-form-item label="收款姓名:" prop="payee_name">
             <el-input v-model="addModal.formData.payee_name" placeholder="请输入收款姓名" @input="changeInput" />
           </el-form-item>
-          <el-form-item label="证件号码:" prop="identify_Num">
+          <el-form-item v-if="addModal.formData.country==='BR'" label="证件号码:" prop="identify_Num">
             <el-input v-model="addModal.formData.identify_Num" placeholder="请输入证件号码" @input="changeInput" />
           </el-form-item>
         </el-form>
@@ -216,52 +216,13 @@ export default {
           country: '',
         },
         rules: {
-          level: [
-            { required: true, message: '请输入等级！', trigger: 'change' },
-            {
-              required: true, validator: (rule, value, callback) => {
-                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
-                if (reg.test(value)) {
-                  callback()
-                } else {
-                  return callback(new Error('请输入大于0的数！'))
-                }
-              }, trigger: 'change'
-            },
+          code: [{ required: true, message: '请选择银行编码！', trigger: 'change' }],
+          type: [
+            { required: true, message: '请选择提现类型！', trigger: 'change' },
           ],
-          badge_icon: [
-            { required: true, message: '请上传徽章图标！', trigger: 'change' },
-          ],
-          avatar_coin: [{ required: true, message: '请上传头像上的图标！', trigger: 'change' }],
-          tar_points: [
-            { required: true, message: '请输入目标积分！', trigger: 'change' },
-            {
-              required: true, validator: (rule, value, callback) => {
-                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
-                if (reg.test(value)) {
-                  callback()
-                } else {
-                  return callback(new Error('请输入大于0的数！'))
-                }
-              }, trigger: 'change'
-            },
-          ],
-          reward_points: [
-            { required: true, message: '请输入升级奖励！', trigger: 'change' },
-            {
-              required: true, validator: (rule, value, callback) => {
-                const reg = /^(?:0(?:\.\d+)?|[1-9]\d*(?:\.\d+)?)$/
-                if (reg.test(value)) {
-                  callback()
-                } else {
-                  return callback(new Error('请输入大于0的数！'))
-                }
-              }, trigger: 'change'
-            },
-          ],
-          country: [
-            { required: true, message: '请选择国家！', trigger: 'change' },
-          ],
+          card_no: [{ required: true, message: '请输入银行卡号！', trigger: 'change' }],
+          payee_name: [{ required: true, message: '请输入收款姓名！', trigger: 'change' }],
+          identify_Num: [{ required: true, message: '请输入证件号码！', trigger: 'change' }],
         },
         isLoading: false,
       },
