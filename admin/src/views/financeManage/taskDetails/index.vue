@@ -467,6 +467,11 @@
             />
           </el-form-item>
           <el-form-item>
+            <el-select v-model="taskWsShareTable.queryData.is_bot" filterable placeholder="请选择是否机器人">
+              <el-option v-for="item in is_botList" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="getTaskWsShareGroupRecordListFun(1)">查询</el-button>
             <el-button icon="el-icon-refresh-right" @click="restTaskWsShareQueryBtn">重置</el-button>
             <el-button :loading="taskWsShareTable.exportLoading" type="primary" @click="exportDataFun">导出</el-button>
@@ -619,6 +624,11 @@ export default {
         { label: '印尼', value: 'ID' },
         { label: '印度', value: 'IN' },
       ],
+      is_botList: [
+        { label: '全部', value: '0' },
+        { label: '用户', value: '1' },
+        { label: '机器人', value: '2' },
+      ],
       tableData: [],
       cliHeight: null,
       loading: false,
@@ -723,6 +733,7 @@ export default {
           laccount_id: '',
           time: [],
           country: 'BR',
+          is_bot: '',
         },
         tableData: [],
         loading: false,
@@ -790,7 +801,6 @@ export default {
         id: this.queryData.id,
         laccount_id: this.queryData.laccount_id ? Number(this.queryData.laccount_id) : 0,
         country: this.queryData.country
-
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -826,7 +836,7 @@ export default {
         id: '',
         time: [],
         laccount_id: '',
-        country: 'BR',
+        country: 'BR'
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'
@@ -1002,7 +1012,8 @@ export default {
         l_account: this.taskWsShareTable.queryData.l_account,
         reason: this.taskWsShareTable.queryData.reason,
         laccount_id: this.taskWsShareTable.queryData.laccount_id ? Number(this.taskWsShareTable.queryData.laccount_id) : 0,
-        country: this.taskWsShareTable.queryData.country
+        country: this.taskWsShareTable.queryData.country,
+        is_bot: this.taskWsShareTable.queryData.is_bot ? Number(this.taskWsShareTable.queryData.is_bot) : 0,
       }
       if (startTime && endTime) {
         params.start_time = startTime
@@ -1034,6 +1045,7 @@ export default {
         laccount_id: '',
         time: [],
         country: 'BR',
+        is_bot: '',
       };
       const startTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 00:00:00'
       const endTime = formatDateTime(new Date(), 'YYYY-MM-DD') + ' 23:59:59'

@@ -511,6 +511,41 @@
             </el-select>
           </el-form-item>
           <el-form-item
+            v-show="confModal.cloneRow.task_type === '10'"
+            class="formTitleRules"
+            label=""
+          >
+            <div style="font-size: 18px;color: #333333">验群分组机器人</div>
+          </el-form-item>
+          <el-form-item
+            v-show="confModal.cloneRow.task_type === '10'"
+            label=""
+            prop="bot_share_group_id"
+            style="width: 100%"
+          >
+            <el-select v-model="confModal.formData.bot_share_group_id" clearable filterable placeholder="请选择验群分组机器人">
+              <el-option v-for="item in accountRoleList3" :key="item.value" :label="item.label" :value="item.value">
+                <span style="float: left">{{ item.label + '(数量：' + item.count + '，在线：' + item.online_num + ')' }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="confModal.cloneRow.task_type === '10'"
+            label="判定机器人限制"
+            prop="bot_num"
+            style="width: 100%"
+          >
+            <el-input
+              v-model="confModal.formData.bot_num"
+              type="number"
+              :min="0"
+              placeholder="请输入判定机器人限制"
+              style="width: 100%"
+              @input="changeInput"
+            />
+          </el-form-item>
+
+          <el-form-item
             v-show="confModal.cloneRow.task_type === '9'"
             class="formTitleRules"
             label=""
@@ -848,6 +883,8 @@ export default {
           content: '',
           l_account_id: '',
           monitor_phones: '',
+          bot_share_group_id: '',
+          bot_num: '',
         },
         rules: {
           conf: [
@@ -861,6 +898,7 @@ export default {
       accountRoleList1: [],
       accountRoleList2: [],
       accountRoleList3: [],
+      accountRoleList4: [],
     }
   },
   computed: {
@@ -881,8 +919,11 @@ export default {
         rules.desc = [{ required: true, message: '请输入描述！', trigger: 'change' }]
         rules.content = [{ required: true, message: '请输入文本内容', trigger: 'change' }]
       }
+
       if (type === '10') {
         rules.share_group_id = [{ required: true, message: '请选择验群分组', trigger: 'change' }]
+        rules.bot_share_group_id = [{ required: true, message: '请选择验群分组机器人', trigger: 'change' }]
+        rules.bot_num = [{ required: true, message: '请选择判定机器人限制', trigger: 'change' }]
       }
 
       if (type === '9') {
@@ -963,6 +1004,8 @@ export default {
         this.confModal.formData.admin_group_id = this.confModal.cloneRow.conf.admin_group_id || ''
         this.confModal.formData.in_group_id = this.confModal.cloneRow.conf.in_group_id || ''
         this.confModal.formData.share_group_id = this.confModal.cloneRow.conf.share_group_id || ''
+        this.confModal.formData.bot_share_group_id = this.confModal.cloneRow.conf.bot_share_group_id || ''
+        this.confModal.formData.bot_num = String(this.confModal.cloneRow.conf.bot_num) || ''
         this.confModal.formData.is_prefer_local_data = this.confModal.cloneRow.conf.is_prefer_local_data ? '1' : '0'
 
         this.confModal.formData.l_account_id = this.confModal.cloneRow.conf.l_account_id || ''
@@ -1101,6 +1144,8 @@ export default {
           if (taskType === '10') {
             formData.conf.share_send_material = {}
             formData.conf.share_group_id = this.confModal.formData.share_group_id
+            formData.conf.bot_share_group_id = this.confModal.formData.bot_share_group_id
+            formData.conf.bot_num = Number(this.confModal.formData.bot_num)
             formData.conf.share_send_material.title = this.confModal.formData.title
             formData.conf.share_send_material.image = this.confModal.formData.image
             formData.conf.share_send_material.link = this.confModal.formData.link
