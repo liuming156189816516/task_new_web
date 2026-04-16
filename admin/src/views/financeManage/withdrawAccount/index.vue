@@ -154,7 +154,7 @@
           <el-form-item label="收款姓名:" prop="payee_name">
             <el-input v-model="addModal.formData.payee_name" placeholder="请输入收款姓名" @input="changeInput" />
           </el-form-item>
-          <el-form-item v-if="addModal.formData.country==='BR'" label="证件号码:" prop="identify_Num">
+          <el-form-item v-if="addModal.formData.country==='BR' &&(addModal.formData.type==='CPF'||addModal.formData.type==='CNPJ')" label="证件号码:" prop="identify_Num">
             <el-input v-model="addModal.formData.identify_Num" placeholder="请输入证件号码" @input="changeInput" />
           </el-form-item>
         </el-form>
