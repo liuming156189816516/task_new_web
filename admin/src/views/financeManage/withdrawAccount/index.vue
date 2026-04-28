@@ -8,11 +8,15 @@
       <!--          <el-option v-for="item in countryList" :key="item.value" :label="item.label" :value="item.value" />-->
       <!--        </el-select>-->
       <!--      </el-form-item>-->
+
       <el-form-item>
         <el-input v-model="queryData.account" clearable placeholder="请输入账号" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-input v-model="queryData.account_id" clearable placeholder="请输入账号id" @input="changeInput" />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="queryData.card_no" clearable placeholder="请输入银行卡号" @input="changeInput" />
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-search" type="primary" @click="getDataListFun(1)">查询</el-button>
@@ -188,6 +192,7 @@ export default {
         total: 0,
         account: '',
         account_id: '',
+        card_no: '',
       },
       countryList: [
         { label: '巴西', value: 'BR' },
@@ -262,6 +267,7 @@ export default {
         page: this.queryData.page,
         limit: this.queryData.limit,
         account: this.queryData.account,
+        card_no: this.queryData.card_no,
         account_id: Number(this.queryData.account_id),
       }
       getDataApi(params).then(res => {
@@ -425,6 +431,7 @@ export default {
         total: 0,
         account: '',
         account_id: '',
+        card_no: '',
       }
       this.getDataListFun(1)
       this.$refs.serveTable.clearSelection();
